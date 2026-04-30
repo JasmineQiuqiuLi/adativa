@@ -1,0 +1,104 @@
+# =========================
+# OS Files
+# =========================
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# =========================
+# Logs
+# =========================
+*.log
+logs/
+
+# =========================
+# Environment Variables (CRITICAL)
+# =========================
+.env
+.env.*
+*.env
+
+# =========================
+# Python Backend
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Python packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# =========================
+# FastAPI / Uvicorn
+# =========================
+*.pid
+
+# =========================
+# Node / Frontend (React + Vite)
+# =========================
+node_modules/
+frontend/node_modules/
+
+# Vite build output
+dist/
+frontend/dist/
+
+# Vite cache
+.vite/
+
+# =========================
+# Editor / IDE
+# =========================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# =========================
+# Database / Local files
+# =========================
+*.sqlite3
+*.db
+
+# =========================
+# Docker (optional)
+# =========================
+*.tar
+docker-compose.override.yml
+
+# =========================
+# Misc
+# =========================
+*.zip
+*.tar.gz
+*.rar
+
+# =========================
+# Project-specific (RECOMMENDED for you)
+# =========================
+# Data files (large / generated)
+data/raw/
+data/processed/
+data/chunks/
+
+# Embeddings / outputs
+*.npy
+*.pkl
+*.parquet
+
+# Temporary scripts / notebooks
+*.ipynb_checkpoints/
