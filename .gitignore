@@ -31,6 +31,9 @@ venv/
 env/
 .venv/
 
+# uv cache (optional but recommended)
+.uv/
+
 # Python packaging
 build/
 dist/
