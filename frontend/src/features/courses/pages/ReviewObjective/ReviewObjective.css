@@ -1,0 +1,141 @@
+.objectives-container {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.8rem;
+}
+
+/* Header */
+.objectives-header h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.objectives-header p {
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+/* List */
+.objectives-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Item */
+.objective-item {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: white;
+}
+
+/* Index */
+.objective-index {
+  width: 28px;
+  height: 28px;
+  background: #e0e7ff;
+  color: #4f46e5;
+  font-weight: 700;
+  font-size: 0.75rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Content */
+.objective-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #1e293b;
+}
+
+.objective-desc {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+/* Feedback */
+.feedback-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.feedback-section label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.feedback-section span {
+  font-weight: normal;
+  color: #94a3b8;
+}
+
+textarea {
+  padding: 0.6rem;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+}
+
+textarea:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px #e0e7ff;
+}
+
+/* Error */
+.error-box {
+  padding: 0.6rem;
+  background: #fef2f2;
+  color: #dc2626;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+
+/* Buttons */
+.actions {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.secondary-btn {
+  flex: 1;
+  padding: 0.6rem;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  cursor: pointer;
+}
+
+.secondary-btn:hover {
+  border-color: #6366f1;
+  color: #6366f1;
+}
+
+.primary-btn {
+  flex: 1;
+  padding: 0.6rem;
+  border-radius: 10px;
+  background: #6366f1;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.primary-btn:hover {
+  background: #4f46e5;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

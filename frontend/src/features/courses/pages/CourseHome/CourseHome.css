@@ -1,0 +1,53 @@
+/* Container */
+.course-home-container {
+  padding: 2rem;
+  font-family: Arial, sans-serif;
+}
+
+/* Header */
+.course-home-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Button */
+.create-btn {
+  padding: 0.6rem 1rem;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.create-btn:hover {
+  background-color: #45a049;
+}
+
+/* Section */
+.course-section {
+  margin-top: 2rem;
+}
+
+/* Grid */
+.course-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* Card */
+.course-card {
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.course-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
