@@ -1,5 +1,6 @@
 import "./CreateLesson.css"
 import { useState } from "react"
+import { useNavigate } from "react-router-dom";
 
 type LearningPreferences={
     style:"visual" | "reading" | "hands-on" | "mixed";
@@ -29,9 +30,37 @@ const CreateLesson = () => {
   const [style,setStyle]=useState<LearningPreferences["style"]>("mixed")
   const [pace,setPace]=useState<LearningPreferences["pace"]>("normal")
 
+  const navigate = useNavigate();
+
+  const handleSubmit=async (e:React.FormEvent)=>{
+    e.preventDefault()
+    const data={
+        goal,
+        ageRange,
+        style,
+        pace,
+    }
+    try{
+        const res=await fetch("http://127.0.0.1:8000/lessons/create",{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify(data)
+        })
+        const result=await res.json()
+        console.log("Backend response",result)
+
+        navigate(`/objectives/${result.lessonId}`)
+        
+    } catch(err){
+        console.error("Error calling backend",err)
+    }
+  }
+
   return (
     <div className="create-lesson-container">
-      <form className="create-lesson-form">
+      <form className="create-lesson-form" onSubmit={handleSubmit}>
         {/** Goal */}
         <div className="form-group">
             <label >What do you want to learn?</label>
@@ -101,7 +130,7 @@ const CreateLesson = () => {
         </div>
 
         {/** submit */}
-        <button className="submit-btn">
+        <button type="submit" className="submit-btn">
             Build my learning path
         </button>
       </form>

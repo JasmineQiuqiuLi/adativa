@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from 'react'
 import "./ReviewObjective.css"
+import { useParams } from 'react-router-dom'
 
 
 type GeneratedObjective={
@@ -9,18 +10,27 @@ type GeneratedObjective={
     description:string;
 }
 
-type Props={
-    objectives:GeneratedObjective[];
-    onRevise:(feedback:string)=>Promise<void>;
-    onAccept:()=>Promise<void>
-}
+const ReviewObjective = () => {
+  const {lessonId}=useParams()
+  const [objectives,setObjectives]=useState<GeneratedObjective[]>([])
 
-const ReviewObjective = ({objectives,onRevise,onAccept}:Props) => {
   const [feedback,setFeedback]=useState("")
   const [loadingRevise,setLoadingRevise]=useState(false)
   const [loadingAccept,setLoadingAccept]=useState(false)
   const [error,setError]=useState<string | null>(null)
   const isLoading=loadingRevise || loadingAccept
+
+  useEffect(()=>{
+    if (!lessonId) return;
+
+    fetch(`http://127.0.0.1:8000/lessons/${lessonId}`)
+        .then(res=>res.json())
+        .then(data=>setObjectives(data.objectives))
+        .catch(err=>{
+            console.error(err);
+            setError("Failed to load objectives")
+        });
+  },[lessonId])
 
   async function handleRevise(){
     if (!feedback.trim()) return;
@@ -28,7 +38,7 @@ const ReviewObjective = ({objectives,onRevise,onAccept}:Props) => {
     setLoadingRevise(true)
 
     try {
-        await onRevise(feedback.trim());
+        alert("data will be revise, wating")
         setFeedback("");
     } catch {
         setError("Failed to revise. Please try again")
@@ -41,7 +51,7 @@ const ReviewObjective = ({objectives,onRevise,onAccept}:Props) => {
     setError(null)
     setLoadingAccept(true)
     try{
-        await onAccept()
+        alert("we will accept the objective")
     } catch(err){
         const msg=err instanceof Error ?err.message :"Failed to save";
         setError(msg)

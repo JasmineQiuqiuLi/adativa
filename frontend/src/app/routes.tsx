@@ -2,7 +2,7 @@ import {createBrowserRouter} from "react-router-dom"
 import CourseHome from "../features/courses/pages/CourseHome/CourseHome"
 import CourseDetail from "../features/courses/pages/CourseDetail/CourseDetail";
 import CreateLesson from "../features/courses/pages/CreateLesson/CreateLesson";
-import ObjectivesReviewWrapper from "../features/courses/pages/ReviewObjective/ObjectiveReviewWrapper";
+import ReviewObjective from "../features/courses/pages/ReviewObjective/ReviewObjective";
 
 export const router = createBrowserRouter([
     {
@@ -18,7 +18,7 @@ export const router = createBrowserRouter([
         element:<CreateLesson/>
     },
     {
-        path:"objectives-review",
-        element:<ObjectivesReviewWrapper/>
+        path:'/objectives/:lessonId',
+        element:<ReviewObjective/>
     }
 ]);
