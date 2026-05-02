@@ -102,6 +102,7 @@ def get_lesson_by_id(lesson_id:int):
             SELECT order_index,title,description
             FROM objectives
             WHERE lesson_id=%s
+            AND status='active'
             ORDER BY order_index
         """,(lesson_id,))
         rows=cur.fetchall()
@@ -125,3 +126,82 @@ def get_lesson_by_id(lesson_id:int):
         "lessonTitle":lesson_title,
         "objectives": objectives
     }
+
+def get_active_objectives(cur, lesson_id):
+
+    cur.execute("""
+        SELECT order_index, title, description
+        FROM objectives
+        WHERE lesson_id = %s AND status = 'active'
+        ORDER BY order_index;
+    """, (lesson_id,))
+    
+    rows = cur.fetchall()
+
+    return [
+        {
+            "orderIndex": r[0],
+            "title": r[1],
+            "description": r[2]
+        }
+        for r in rows
+    ]
+
+def revise_with_ai(objectives, feedback):
+    prompt = f"""
+You are an instructional designer.
+
+Current objectives:
+{objectives}
+
+User feedback:
+{feedback}
+
+Revise the objectives accordingly.
+
+Return JSON:
+{{
+  "objectives": [
+    {{
+      "orderIndex": 1,
+      "title": "...",
+      "description": "..."
+    }}
+  ]
+}}
+"""
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": "Return JSON only"},
+            {"role": "user", "content": prompt}
+        ],
+        response_format={"type": "json_object"}
+    )
+
+    import json
+    return json.loads(response.choices[0].message.content)["objectives"]
+
+def replace_objectives(conn, lesson_id, new_objectives):
+    cur = conn.cursor()
+    # 1. soft delete old
+    cur.execute("""
+        UPDATE objectives
+        SET status = 'deleted'
+        WHERE lesson_id = %s AND status = 'active';
+    """, (lesson_id,))
+
+    # 2. insert new
+    for obj in new_objectives:
+        cur.execute("""
+            INSERT INTO objectives (lesson_id, order_index, title, description, status)
+            VALUES (%s, %s, %s, %s, 'active');
+        """, (
+            lesson_id,
+            obj["orderIndex"],
+            obj["title"],
+            obj["description"]
+        ))
+
+    conn.commit()
+    cur.close()

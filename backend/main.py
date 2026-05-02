@@ -3,9 +3,10 @@ from typing import List, Literal
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import logging
-from services.lesson_service import generate_objectives,save_lesson_to_db,get_lesson_by_id
+from services.lesson_service import generate_objectives,save_lesson_to_db,get_lesson_by_id,get_active_objectives,revise_with_ai,replace_objectives
 from models.schemas import CreateLessonRequest,CreateLessonResponse, GeneratedObjective,CreateLessonDBResponse
 from fastapi import HTTPException
+from database.db import get_connection
 
 
 logger=logging.getLogger(__name__)
@@ -103,3 +104,28 @@ def get_lesson(lesson_id:int):
     if not result:
         raise HTTPException(status_code=404,detail='Lesson not found')
     return result
+
+@app.post("/lessons/{lesson_id}/revise")
+def revise_objectives(lesson_id:int,req:ReviseRequest):
+    conn=get_connection()
+
+    try:
+        cur=conn.cursor()
+
+        # 1. get current objectives
+        current=get_active_objectives(cur,lesson_id)
+
+        # 2. AI revise
+        new_objectives=revise_with_ai(current,req.feedback)
+
+        # 3. replace in DB
+        replace_objectives(conn,lesson_id,new_objectives)
+
+        return new_objectives
+    
+    except Exception as e:
+        raise e
+    
+    finally:
+        cur.close()
+        conn.close()

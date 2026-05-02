@@ -33,13 +33,27 @@ const ReviewObjective = () => {
   },[lessonId])
 
   async function handleRevise(){
-    if (!feedback.trim()) return;
+    if (!feedback.trim() || !lessonId) return;
     setError(null)
     setLoadingRevise(true)
 
     try {
-        alert("data will be revise, wating")
+        const res=await fetch(
+            `http://127.0.0.1:8000/lessons/${lessonId}/revise`,
+            {
+                method:'POST',
+                headers:{
+                    "Content-Type":"application/json",
+                },
+                body:JSON.stringify({feedback})
+            }
+        )
+        const data=await res.json()
+
+        setObjectives(data)
+        console.log("REVISE RESPONSE:", data);
         setFeedback("");
+
     } catch {
         setError("Failed to revise. Please try again")
     } finally {
@@ -70,7 +84,7 @@ const ReviewObjective = () => {
 
         {/**Objectives List */}
         <ol className="objectives-list">
-            {objectives.map((obj)=>(
+            {Array.isArray(objectives) && objectives.map((obj)=>(
                 <li key={obj.orderIndex} className='objective-item'>
                     <div className='objective-index'>{obj.orderIndex}</div>
                     <div className="objective-content">
