@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { useState } from 'react'
 import "./ReviewObjective.css"
 import { useParams } from 'react-router-dom'
-
+import { useNavigate } from 'react-router-dom'
 
 type GeneratedObjective={
     orderIndex:number;
@@ -11,6 +11,9 @@ type GeneratedObjective={
 }
 
 const ReviewObjective = () => {
+    
+  const navigate=useNavigate()
+
   const {lessonId}=useParams()
   const [objectives,setObjectives]=useState<GeneratedObjective[]>([])
 
@@ -62,13 +65,16 @@ const ReviewObjective = () => {
   }
 
   async function handleAccept(){
+    if (!lessonId) return;
     setError(null)
     setLoadingAccept(true)
     try{
-        alert("we will accept the objective")
+        navigate(`/skills/${lessonId}`)
     } catch(err){
         const msg=err instanceof Error ?err.message :"Failed to save";
         setError(msg)
+        
+    } finally {
         setLoadingAccept(false)
     }
   }

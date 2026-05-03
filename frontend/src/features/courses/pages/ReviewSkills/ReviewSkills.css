@@ -1,0 +1,99 @@
+.skills-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.skills-header h2 {
+  margin-bottom: 8px;
+}
+
+.skills-header p {
+  color: #666;
+  font-size: 14px;
+}
+
+.objectives-wrapper {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.objective-card {
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 16px;
+  background: #fff;
+}
+
+.objective-top {
+  display: flex;
+  gap: 12px;
+}
+
+.objective-index {
+  font-weight: bold;
+  color: #555;
+}
+
+.objective-title {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.objective-desc {
+  font-size: 14px;
+  color: #666;
+}
+
+/* 🔥 Skills */
+.skills-section {
+  margin-top: 12px;
+}
+
+.skill-tag {
+  display: inline-block;
+  background: #eef3ff;
+  color: #3b5bdb;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  margin-right: 6px;
+  margin-bottom: 6px;
+}
+
+.loading {
+  margin-top: 20px;
+}
+
+.error-box {
+  margin-top: 20px;
+  color: red;
+}
+
+.start-learning-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+
+  background: #3b5bdb;
+  color: white;
+  border: none;
+
+  padding: 12px 20px;
+  border-radius: 999px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+  transition: all 0.2s ease;
+}
+
+.start-learning-btn:hover {
+  background: #2f4bc7;
+  transform: translateY(-2px);
+}

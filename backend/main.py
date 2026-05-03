@@ -3,7 +3,7 @@ from typing import List, Literal
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import logging
-from services.lesson_service import generate_objectives,save_lesson_to_db,get_lesson_by_id,get_active_objectives,revise_with_ai,replace_objectives
+from services.lesson_service import generate_objectives,save_lesson_to_db,get_lesson_by_id,get_active_objectives,revise_with_ai,replace_objectives,generate_and_store_skills_for_lesson,get_objectives_with_skills_db
 from models.schemas import CreateLessonRequest,CreateLessonResponse, GeneratedObjective,CreateLessonDBResponse
 from fastapi import HTTPException
 from database.db import get_connection
@@ -128,4 +128,38 @@ def revise_objectives(lesson_id:int,req:ReviseRequest):
     
     finally:
         cur.close()
+        conn.close()
+
+@app.post("/lessons/{lesson_id}/skills")
+def generate_skills(lesson_id:int):
+    generate_and_store_skills_for_lesson(lesson_id)
+    return {"message":"skills generated"}
+
+@app.get("/lessons/{lesson_id}/objectives-with-skills")
+def get_or_generate_skills(lesson_id: int):
+    conn = get_connection()
+
+    try:
+        cur = conn.cursor()
+
+        # 1. check if skills already exist
+        cur.execute("""
+            SELECT COUNT(*)
+            FROM objective_skill_map osm
+            JOIN objectives o ON osm.objective_id = o.id
+            WHERE o.lesson_id = %s;
+        """, (lesson_id,))
+
+        count = cur.fetchone()[0]
+
+        # 2. if not exist → generate
+        if count == 0:
+            generate_and_store_skills_for_lesson(lesson_id)
+
+        # 3. always return structured data
+        data = get_objectives_with_skills_db(cur, lesson_id)
+
+        return {"objectives": data}
+
+    finally:
         conn.close()

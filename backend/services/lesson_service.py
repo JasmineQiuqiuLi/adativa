@@ -130,7 +130,7 @@ def get_lesson_by_id(lesson_id:int):
 def get_active_objectives(cur, lesson_id):
 
     cur.execute("""
-        SELECT order_index, title, description
+        SELECT id,order_index, title, description
         FROM objectives
         WHERE lesson_id = %s AND status = 'active'
         ORDER BY order_index;
@@ -140,9 +140,10 @@ def get_active_objectives(cur, lesson_id):
 
     return [
         {
-            "orderIndex": r[0],
-            "title": r[1],
-            "description": r[2]
+            "objectiveId":r[0],
+            "orderIndex": r[1],
+            "title": r[2],
+            "description": r[3]
         }
         for r in rows
     ]
@@ -205,3 +206,153 @@ def replace_objectives(conn, lesson_id, new_objectives):
 
     conn.commit()
     cur.close()
+
+
+def generate_skills_from_objectives(objectives):
+    prompt = f"""
+You are an instructional designer.
+
+For each learning objective below, generate 2–3 measurable skills.
+
+Rules:
+- Skills must be observable and measurable
+- Use Bloom's taxonomy verbs
+- Avoid vague topics (e.g., "data science")
+- Keep 2–3 skills per objective
+- Preserve objectiveId
+
+Objectives:
+{objectives}
+
+Return JSON:
+{{
+  "objectiveSkills": [
+    {{
+      "objectiveId": 123,
+      "skills": [
+        {{
+          "name": "...",
+          "description": "...",
+          "bloomLevel": "remember|understand|apply|analyze|evaluate|create"
+        }}
+      ]
+    }}
+  ]
+}}
+"""
+
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": "Return JSON only"},
+            {"role": "user", "content": prompt}
+        ],
+        response_format={"type": "json_object"}
+    )
+
+    
+    data = json.loads(response.choices[0].message.content)
+    return data["objectiveSkills"]
+
+def normalize_skill(skill):
+    return {
+        "name": skill["name"].lower().strip(),
+        "description": skill["description"].strip(),
+        "bloomLevel": skill.get("bloomLevel")
+    }
+
+def upsert_skill(cur, skill):
+    cur.execute("""
+        INSERT INTO skills (name, description)
+        VALUES (%s, %s)
+        ON CONFLICT (name)
+        DO UPDATE SET description = EXCLUDED.description
+        RETURNING id;
+    """, (skill["name"], skill["description"]))
+
+    row = cur.fetchone()
+
+    if row:
+        return row[0]
+
+    # fallback
+    cur.execute("SELECT id FROM skills WHERE name = %s", (skill["name"],))
+    return cur.fetchone()[0]
+
+def insert_mapping(cur, objective_id, skill_id):
+    cur.execute("""
+        INSERT INTO objective_skill_map (objective_id, skill_id)
+        VALUES (%s, %s)
+        ON CONFLICT DO NOTHING;
+    """, (objective_id, skill_id))
+
+def generate_and_store_skills_for_lesson(lesson_id):
+    conn = get_connection()
+
+    try:
+        cur = conn.cursor()
+
+        # 1. get objectives (now includes objectiveId)
+        objectives = get_active_objectives(cur, lesson_id)
+
+        # 2. LLM generate
+        objective_skills = generate_skills_from_objectives(objectives)
+
+        # 3. process each objective
+        for obj in objective_skills:
+            objective_id = obj["objectiveId"]
+
+            for skill in obj["skills"]:
+                s = normalize_skill(skill)
+
+                # 4. upsert skill
+                skill_id = upsert_skill(cur, s)
+
+                # 5. map
+                insert_mapping(cur, objective_id, skill_id)
+
+        conn.commit()
+
+    finally:
+        conn.close()
+
+def get_objectives_with_skills_db(cur, lesson_id):
+    cur.execute("""
+        SELECT 
+            o.id AS objective_id,
+            o.order_index,
+            o.title,
+            o.description,
+            s.id AS skill_id,
+            s.name AS skill_name
+        FROM objectives o
+        LEFT JOIN objective_skill_map osm ON o.id = osm.objective_id
+        LEFT JOIN skills s ON osm.skill_id = s.id
+        WHERE o.lesson_id = %s
+          AND o.status = 'active'
+        ORDER BY o.order_index;
+    """, (lesson_id,))
+    
+    rows = cur.fetchall()
+
+    result = {}
+
+    for row in rows:
+        obj_id = row[0]
+
+        if obj_id not in result:
+            result[obj_id] = {
+                "objectiveId": obj_id,
+                "orderIndex": row[1],
+                "title": row[2],
+                "description": row[3],
+                "skills": []
+            }
+
+        if row[5]:
+            result[obj_id]["skills"].append({
+                "skillId": row[4],
+                "name": row[5]
+            })
+
+    return list(result.values())
