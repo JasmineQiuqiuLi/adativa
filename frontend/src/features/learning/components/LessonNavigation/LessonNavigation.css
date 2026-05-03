@@ -1,0 +1,130 @@
+/* Panel container */
+.lesson-nav-panel {
+  width: 300px;
+  min-width: 300px;
+  height: 100vh;
+  position: relative;
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  transition: width 0.25s ease;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.lesson-nav-panel.collapsed {
+  width: 40px;
+  min-width: 40px;
+}
+
+/* Scrollable content */
+.lesson-nav-content {
+  padding: 20px 16px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Title */
+.lesson-nav-content h3 {
+  margin-bottom: 16px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Toggle button */
+.panel-toggle {
+  position: absolute;
+  top: 14px;
+  right: 8px;
+  z-index: 20;
+  width: 26px;
+  height: 26px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.panel-toggle:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+/* Objective card */
+.nav-objective {
+  margin-bottom: 14px;
+  padding: 12px 12px;
+  border-radius: 10px;
+  background: #f9fafb;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.nav-objective:hover {
+  background: #f3f4f6;
+  transform: translateY(-1px);
+}
+
+/* Objective title */
+.nav-objective-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+/* Description */
+.nav-objective-desc {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+/* Skills list */
+.lesson-nav-content ul {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 4px;
+}
+
+/* Skill item */
+.lesson-nav-content li {
+  font-size: 12.5px;
+  margin-bottom: 5px;
+  padding-left: 16px;
+  position: relative;
+  color: #374151;
+}
+
+/* Custom bullet */
+.lesson-nav-content li::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  background: #9ca3af;
+  border-radius: 50%;
+  position: absolute;
+  left: 0;
+  top: 7px;
+}
+
+/* Loading / status */
+.nav-status {
+  font-size: 13px;
+  color: #6b7280;
+  margin-top: 10px;
+}
+
+/* Error */
+.nav-error {
+  font-size: 13px;
+  color: #dc2626;
+  margin-top: 10px;
+}

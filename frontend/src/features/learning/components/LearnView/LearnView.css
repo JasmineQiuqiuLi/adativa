@@ -1,0 +1,5 @@
+.learn-view-panel {
+  flex: 1;
+  padding: 32px;
+  overflow-y: auto;
+}

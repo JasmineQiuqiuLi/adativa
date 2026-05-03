@@ -1,0 +1,48 @@
+.learn-layout {
+  display: flex;
+  height: 100vh;
+  background: #f9fafb;
+}
+
+/* LEFT */
+.left-panel {
+  width: 260px;
+  border-right: 1px solid #eee;
+  background: white;
+  overflow-y: auto;
+}
+
+/* MIDDLE */
+.middle-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.top-bar {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  background: white;
+  display: flex;
+  gap: 10px;
+}
+
+.middle-panel > *:last-child {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* RIGHT */
+.right-panel {
+  width: 300px;
+  border-left: 1px solid #eee;
+  background: white;
+  overflow-y: auto;
+}
+
+.learn-layout {
+  display: flex;
+  height: 100vh;
+  background: #f8fafc;
+  overflow: hidden;
+}

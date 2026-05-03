@@ -4,7 +4,7 @@ import CourseDetail from "../features/courses/pages/CourseDetail/CourseDetail";
 import CreateLesson from "../features/courses/pages/CreateLesson/CreateLesson";
 import ReviewObjective from "../features/courses/pages/ReviewObjective/ReviewObjective";
 import ReviewSkills from "../features/courses/pages/ReviewSkills/ReviewSkills";
-import LearnLesson from "../features/learning/LearnLesson/LearnLesson";
+import LearnLesson from "../features/learning/pages/LearnLesson/LearnLesson";
 
 export const router = createBrowserRouter([
     {
