@@ -356,3 +356,48 @@ def get_objectives_with_skills_db(cur, lesson_id):
             })
 
     return list(result.values())
+
+
+def get_lessons_db():
+    conn=get_connection()
+    try:
+        cur=conn.cursor()
+        cur.execute("""
+            SELECT id, goal
+            FROM lessons
+            WHERE status <> 'deleted'
+            ORDER BY created_at DESC
+        """)
+        
+        rows=cur.fetchall()
+
+        lessons=[
+            {
+                "id":row[0],
+                "title":row[1]
+            }
+            for row in rows
+        ]
+
+        return lessons
+    except Exception as e:
+        raise e
+    finally:
+        conn.close()
+
+
+def soft_delete_lessons(lesson_id:int):
+    conn=get_connection()
+
+    try:
+        cur=conn.cursor()
+
+        cur.execute("""
+            UPDATE lessons
+            SET status='deleted'
+            WHERE id=%s;
+        """,(lesson_id,))
+
+        conn.commit()
+    finally:
+        conn.close()

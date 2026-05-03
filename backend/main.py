@@ -3,7 +3,18 @@ from typing import List, Literal
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import logging
-from services.lesson_service import generate_objectives,save_lesson_to_db,get_lesson_by_id,get_active_objectives,revise_with_ai,replace_objectives,generate_and_store_skills_for_lesson,get_objectives_with_skills_db
+from services.lesson_service import (
+    generate_objectives,
+    save_lesson_to_db,
+    get_lesson_by_id,
+    get_active_objectives,
+    revise_with_ai,
+    replace_objectives,
+    generate_and_store_skills_for_lesson,
+    get_objectives_with_skills_db,
+    get_lessons_db,
+    soft_delete_lessons
+)
 from models.schemas import CreateLessonRequest,CreateLessonResponse, GeneratedObjective,CreateLessonDBResponse
 from fastapi import HTTPException
 from database.db import get_connection
@@ -38,24 +49,6 @@ class ReviseRequest(BaseModel):
     feedback: str
 
 # -----------------------------
-# Mock data (temporary)
-# -----------------------------
-
-mock_objectives = [
-    {
-        "orderIndex": 1,
-        "title": "Understand AI basics",
-        "description": "Learn what AI is"
-    },
-    {
-        "orderIndex": 2,
-        "title": "Learn ML concepts",
-        "description": "Understand supervised learning"
-    }
-]
-
-
-# -----------------------------
 # Endpoints
 # -----------------------------
 
@@ -63,6 +56,11 @@ mock_objectives = [
 @app.get("/")
 def root():
     return {"message":"backend is running"}
+
+@app.get("/lessons")
+def get_lessons():
+    lessons=get_lessons_db()
+    return {"lessons":lessons}
 
 @app.post("/lessons/create",response_model=CreateLessonDBResponse)
 def create_lesson(req:CreateLessonRequest):
@@ -86,17 +84,10 @@ def create_lesson(req:CreateLessonRequest):
     )
     return {"lessonId":lesson_id}
 
-
-@app.post("/objectives/revise",response_model=List[GeneratedObjective])
-def revise_objectives(req:ReviseRequest):
-    updated: List[GeneratedObjective] = []
-    for obj in mock_objectives:
-        updated.append({
-            **obj,
-            "description":obj['description']+f"(Refined: {req.feedback})"
-        })
-    return updated
-
+@app.delete("/lessons/{lesson_id}")
+def delete_lesson(lesson_id:int):
+    soft_delete_lessons(lesson_id)
+    return {"message":"lesson deleted"}
 
 @app.get("/lessons/{lesson_id}",response_model=CreateLessonResponse)
 def get_lesson(lesson_id:int):

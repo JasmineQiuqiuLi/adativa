@@ -4,13 +4,22 @@ import './CourseCard.css'
 type CourseCardProps ={
     title:string,
     onClick?:()=>void;
+    onDelete?:()=>void;
 };
 
-const CourseCard = ({title, onClick}:CourseCardProps) => {
+const CourseCard = ({title,onClick,onDelete}:CourseCardProps) => {
   return (
     <div className='course-card' onClick={onClick}>
       <h3>{title}</h3>
-      <p>Click to open</p>
+      <button
+        className='delete-btn'
+        onClick={(e)=>{
+          e.stopPropagation(); //prevent from triggering card click
+          onDelete?.()
+        }}
+      >
+        ✕
+      </button>
     </div>
   )
 }

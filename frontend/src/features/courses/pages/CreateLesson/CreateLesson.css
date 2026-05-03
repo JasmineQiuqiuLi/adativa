@@ -131,3 +131,9 @@ textarea:focus {
 .submit-btn:hover {
   background: #4f46e5;
 }
+
+.error-box {
+  margin-top: 12px;
+  color: red;
+  font-size: 14px;
+}

@@ -30,6 +30,9 @@ const CreateLesson = () => {
   const [style,setStyle]=useState<LearningPreferences["style"]>("mixed")
   const [pace,setPace]=useState<LearningPreferences["pace"]>("normal")
 
+  const [loading,setLoading]=useState(false)
+  const [error,setError]=useState<string | null>(null)
+
   const navigate = useNavigate();
 
   const handleSubmit=async (e:React.FormEvent)=>{
@@ -41,6 +44,9 @@ const CreateLesson = () => {
         pace,
     }
     try{
+        setLoading(true)
+        setError(null)
+
         const res=await fetch("http://127.0.0.1:8000/lessons/create",{
             method:"POST",
             headers:{
@@ -52,9 +58,12 @@ const CreateLesson = () => {
         console.log("Backend response",result)
 
         navigate(`/objectives/${result.lessonId}`)
-        
+
     } catch(err){
         console.error("Error calling backend",err)
+        setError("Failed to create lesson")
+    } finally {
+        setLoading(false)
     }
   }
 
@@ -67,6 +76,7 @@ const CreateLesson = () => {
             <textarea 
                 rows={4}
                 placeholder="e.g., I want to learn Python for data analysis"
+                disabled={loading}
                 value={goal}
                 onChange={(e)=>setGoal(e.target.value)}
             />
@@ -83,6 +93,7 @@ const CreateLesson = () => {
                     <button
                         key={r}
                         type="button"
+                        disabled={loading}
                         onClick={()=>setAgeRange(r)}
                         className={ageRange===r?"active":""}
                     >
@@ -100,6 +111,7 @@ const CreateLesson = () => {
                     <button
                         key={s.value}
                         type="button"
+                        disabled={loading}
                         onClick={()=>setStyle(s.value as any)}
                         className={style===s.value?"card active":"card"}
                     >
@@ -119,6 +131,7 @@ const CreateLesson = () => {
                         <button
                             key={p.value}
                             type="button"
+                            disabled={loading}
                             onClick={()=>setPace(p.value as any)}
                             className={pace===p.value?"active":""}
                         >
@@ -130,10 +143,11 @@ const CreateLesson = () => {
         </div>
 
         {/** submit */}
-        <button type="submit" className="submit-btn">
-            Build my learning path
+        <button type="submit" className="submit-btn" disabled={loading}>
+            {loading ? "Building your learning path..." : "Build my learning path"}
         </button>
       </form>
+      {error && <div className="error-box">{error}</div>}
     </div>
   )
 }

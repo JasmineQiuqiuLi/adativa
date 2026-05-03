@@ -1,6 +1,5 @@
 import CourseCard from "../CourseCard/CourseCard";
 import "./CourseList.css"
-import { useNavigate } from "react-router-dom";
 
 type Course={
     id:number;
@@ -8,11 +7,13 @@ type Course={
 }
 
 type Props ={
-    courses:Course[]
+    courses:Course[];
+    onClick?: (id: number) => void;
+    onDelete?: (id: number) => void;
 }
 
-const CourseList = ({courses}:Props) => {
-  const navigate=useNavigate()
+const CourseList = ({courses,onClick,onDelete}:Props) => {
+
   return (
     <div className="course-grid">
         {
@@ -20,7 +21,8 @@ const CourseList = ({courses}:Props) => {
                 <CourseCard
                     key={course.id}
                     title={course.title}
-                    onClick={()=>navigate(`/course/${course.id}`)}
+                    onClick={()=>onClick?.(course.id)}
+                    onDelete={()=>onDelete?.(course.id)}
                 />
             ))
         }
