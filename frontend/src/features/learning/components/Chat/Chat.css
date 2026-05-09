@@ -1,37 +1,124 @@
+/* Panel */
 .chat-panel {
   width: 320px;
   min-width: 320px;
-  position: relative;
-  background: white;
+  height: 100vh;
   border-left: 1px solid #e5e7eb;
-  transition: width 0.2s ease, min-width 0.2s ease;
-  overflow: hidden;
-}
-
-.chat-panel.collapsed {
-  width: 36px;
-  min-width: 36px;
-}
-
-.chat-content {
-  height: 100%;
-  padding: 20px 16px;
+  background: #ffffff;
+  position: relative;
+  transition: width 0.25s ease;
   display: flex;
   flex-direction: column;
 }
 
-.right-toggle {
-  left: 6px;
+.chat-panel.collapsed {
+  width: 40px;
+  min-width: 40px;
 }
 
-.chat-box {
+/* Toggle */
+.panel-toggle {
+  position: absolute;
+  top: 14px;
+  z-index: 20;
+  width: 26px;
+  height: 26px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.right-toggle {
+  left: 8px;
+}
+
+/* Layout */
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Header */
+.chat-header {
+  padding: 16px;
+  font-weight: 600;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: center;
+}
+
+/* Messages */
+.chat-messages {
   flex: 1;
-  margin-top: 16px;
+  padding: 16px;
   overflow-y: auto;
 }
 
+/* Message row */
+.chat-message {
+  display: flex;
+  margin-bottom: 12px;
+}
+
+/* Alignment */
+.chat-message.user {
+  justify-content: flex-end;
+}
+
+.chat-message.assistant {
+  justify-content: flex-start;
+}
+
+/* Bubble */
+.chat-bubble {
+  max-width: 75%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+/* Colors */
+.chat-message.user .chat-bubble {
+  background: #2563eb;
+  color: white;
+}
+
+.chat-message.assistant .chat-bubble {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+/* Input */
 .chat-input {
-  padding: 10px;
+  padding: 12px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chat-input textarea {
+  resize: none;
+  padding: 8px;
+  font-size: 13px;
   border: 1px solid #d1d5db;
   border-radius: 8px;
+  outline: none;
+}
+
+.chat-input button {
+  align-self: flex-end;
+  padding: 6px 12px;
+  font-size: 13px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.chat-input button:hover {
+  background: #1d4ed8;
 }

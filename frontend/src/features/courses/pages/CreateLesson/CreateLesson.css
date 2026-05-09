@@ -86,7 +86,7 @@ textarea:focus {
   gap: 0.6rem;
 }
 
-.card {
+.create-lesson-card {
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 0.8rem;
@@ -95,11 +95,11 @@ textarea:focus {
   transition: all 0.2s;
 }
 
-.card:hover {
+.create-lesson-card:hover {
   border-color: #c7d2fe;
 }
 
-.card.active {
+.create-lesson-card.active {
   background: #eef2ff;
   border-color: #6366f1;
 }

@@ -1,0 +1,119 @@
+.flashcard-block {
+  padding: 20px;
+  max-width: 600px;
+}
+
+.flashcard-title {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+/* Layout */
+.flashcard-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; 
+  gap: 20px;
+}
+
+/* Deck */
+.deck {
+  position: relative;
+  width: 100%;
+  max-width: 400px;   
+  height: 200px;
+  margin: 0 auto;
+}
+
+/* 👇 Ghost cards */
+.ghost {
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+}
+
+.ghost-1 {
+  background: #e0e7ff;
+  transform: rotate(-4deg);
+  z-index: 1;
+}
+
+.ghost-2 {
+  background: #c7d2fe;
+  transform: rotate(3deg);
+  z-index: 2;
+}
+
+/* 👇 Active card */
+.card {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  cursor: pointer;
+}
+
+/* Flip container */
+.card-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.5s ease;
+}
+
+.card-inner.flipped {
+  transform: rotateY(180deg);
+}
+
+/* Front & Back */
+.card-front,
+.card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  border-radius: 16px;
+  backface-visibility: hidden;
+
+  background: white;
+  border: 1px solid #e5e7eb;
+
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.08),
+    0 3px 6px rgba(0, 0, 0, 0.05);
+}
+
+.card-back {
+  transform: rotateY(180deg);
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: white;
+}
+
+/* Buttons */
+button {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  background: white;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Counter */
+.counter {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 13px;
+  color: #9ca3af;
+}

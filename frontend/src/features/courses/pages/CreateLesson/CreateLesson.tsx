@@ -113,7 +113,7 @@ const CreateLesson = () => {
                         type="button"
                         disabled={loading}
                         onClick={()=>setStyle(s.value as any)}
-                        className={style===s.value?"card active":"card"}
+                        className={style===s.value?"create-lesson-card active":"create-lesson-card"}
                     >
                         <div className="card-title">{s.label}</div>
                         <div className="card-desc">{s.desc}</div>

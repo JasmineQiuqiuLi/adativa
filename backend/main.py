@@ -3,6 +3,8 @@ from typing import List, Literal
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import logging
+import os
+import requests
 from services.lesson_service import (
     generate_objectives,
     save_lesson_to_db,
@@ -15,7 +17,8 @@ from services.lesson_service import (
     get_lessons_db,
     soft_delete_lessons
 )
-from models.schemas import CreateLessonRequest,CreateLessonResponse, GeneratedObjective,CreateLessonDBResponse
+from services.content_service import generate_anthropic_content
+from models.schemas import CreateLessonRequest,CreateLessonResponse, CreateLessonDBResponse, GamePromptRequest
 from fastapi import HTTPException
 from database.db import get_connection
 
@@ -154,3 +157,11 @@ def get_or_generate_skills(lesson_id: int):
 
     finally:
         conn.close()
+
+class PromptRequest(BaseModel):
+    prompt: str
+
+@app.post("/anthropic-game")
+def generate_anthropic(req: PromptRequest):
+    html = generate_anthropic_content(req.prompt)
+    return {"html": html}

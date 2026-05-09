@@ -1,0 +1,151 @@
+.mcq-block {
+  padding: 20px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  max-width: 600px;
+}
+
+/* Title */
+.mcq-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+/* Question */
+.mcq-question {
+  font-size: 14px;
+  margin-bottom: 16px;
+  color: #374151;
+}
+
+.mcq-option {
+  display: flex;
+  flex-direction: column;   /* ✅ THIS is the key fix */
+  padding: 12px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mcq-option-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+/* Option base
+.mcq-option {
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  transition: all 0.2s ease;
+} */
+
+.mcq-option:hover {
+  background: #f9fafb;
+}
+
+.mcq-label {
+  font-weight: 600;
+  width: 20px;
+  flex-shrink: 0;
+}
+
+.mcq-feedback {
+  margin-top: 8px;
+  margin-left: 32px; /* aligns under text, not under label */
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: #374151;
+}
+
+/* Selected */
+.mcq-option.selected {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.mcq-option-text {
+  flex: 1;
+}
+
+/* Correct */
+.mcq-option.correct {
+  border-color: #16a34a;
+  background: #ecfdf5;
+}
+
+/* Incorrect */
+.mcq-option.incorrect {
+  border-color: #dc2626;
+  background: #fef2f2;
+}
+
+/* Label */
+.mcq-label {
+  font-weight: 600;
+  width: 20px;
+}
+
+/* Submit */
+.mcq-submit {
+  margin-top: 16px;
+  padding: 8px 14px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.mcq-submit:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* Inline feedback inside option */
+.mcq-feedback {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #374151;
+}
+
+/* Highlight correct explanation */
+.correct-feedback {
+  color: #16a34a;
+}
+
+/* Global feedback block */
+.mcq-feedback-global {
+  margin-top: 14px;
+  padding: 10px 12px;
+  background: #f3f4f6;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.mcq-retry {
+  margin-top: 10px;
+  padding: 8px 14px;
+  background: #f59e0b;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.mcq-retry:hover {
+  background: #d97706;
+}
+
+.mcq-actions {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;  /* ✅ FIX */
+}

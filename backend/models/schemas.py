@@ -31,3 +31,5 @@ class LessonAIOutput(BaseModel):
     lessonTitle: str
     objectives: List[GeneratedObjective]
 
+class GamePromptRequest(BaseModel):
+    prompt:str
