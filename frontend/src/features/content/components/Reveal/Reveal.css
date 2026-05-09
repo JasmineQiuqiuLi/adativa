@@ -1,0 +1,92 @@
+.reveal-block {
+  width: 100%;
+  max-width: 760px;
+
+  margin: 0 auto;
+  padding: 24px;
+
+  border-radius: 20px;
+
+  background: white;
+  border: 1px solid #e2e8f0;
+
+  box-shadow:
+    0 8px 24px rgba(15, 23, 42, 0.06),
+    0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.reveal-headline {
+  margin: 0 0 14px 0;
+
+  font-size: 1.4rem;
+  font-weight: 800;
+
+  color: #0f172a;
+}
+
+.reveal-prompt {
+  font-size: 1rem;
+  line-height: 1.7;
+
+  color: #334155;
+
+  margin-bottom: 18px;
+}
+
+.reveal-button {
+  padding: 10px 18px;
+
+  border: none;
+  border-radius: 12px;
+
+  background: #4f46e5;
+  color: white;
+
+  font-size: 0.95rem;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease;
+}
+
+.reveal-button:hover {
+  background: #4338ca;
+}
+
+.reveal-button:active {
+  transform: scale(0.98);
+}
+
+.reveal-content {
+  margin-top: 20px;
+  padding: 18px;
+
+  border-radius: 14px;
+
+  background: #f8fafc;
+  border: 1px solid #dbe3ee;
+
+  font-size: 1rem;
+  line-height: 1.8;
+
+  color: #334155;
+
+  white-space: pre-wrap;
+
+  animation: revealFade 0.25s ease;
+}
+
+@keyframes revealFade {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

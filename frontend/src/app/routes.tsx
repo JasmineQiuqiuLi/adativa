@@ -53,23 +53,6 @@ export const router = createBrowserRouter([
         element:<TrueOrFalse/>
     },
     {
-        path:"/accordion",
-        element:<Accordion/>
-    },
-    {
-        path:"/flash",
-        element:<FlashCards/>
-    },
-    {
-        path:"/tabs",
-        element:<Tabs/>
-
-    },
-    {
-        path:"/steps",
-        element:<Steps/>
-    },
-    {
         path:'/test',
         element:<TestWrapper/>
     }

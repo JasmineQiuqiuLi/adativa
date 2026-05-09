@@ -1,0 +1,99 @@
+.tabs-block {
+  width: 100%;
+  max-width: 760px;
+
+  margin: 0 auto;
+  padding: 24px;
+
+  border-radius: 20px;
+
+  background: white;
+  border: 1px solid #e2e8f0;
+
+  box-shadow:
+    0 8px 24px rgba(15, 23, 42, 0.06),
+    0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.tabs-header {
+  margin-bottom: 20px;
+}
+
+.tabs-title {
+  margin: 0;
+
+  font-size: 1.25rem;
+  font-weight: 700;
+
+  color: #0f172a;
+}
+
+.tabs-nav {
+  display: flex;
+
+  border-bottom: 1px solid #dbe3ee;
+
+  margin-bottom: 0;
+}
+
+.tabs-trigger {
+  padding: 12px 18px;
+
+  background: transparent;
+  border: none;
+
+  border-bottom: 2px solid transparent;
+
+  color: #64748b;
+
+  font-size: 0.95rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.tabs-trigger:hover {
+  background: #f8fafc;
+  color: #334155;
+}
+
+.tabs-trigger.active {
+  color: #4f46e5;
+
+  border-bottom-color: #4f46e5;
+
+  background: white;
+}
+
+.tabs-trigger:active {
+  transform: scale(0.98);
+}
+
+.tabs-panel {
+  padding: 24px;
+
+  border:
+    1px solid #e2e8f0;
+
+  border-top: none;
+
+  border-radius:
+    0 0 16px 16px;
+
+  background: white;
+
+  min-height: 220px;
+}
+
+.tabs-panel-content {
+  color: #334155;
+
+  line-height: 1.7;
+
+  white-space: pre-wrap;
+}

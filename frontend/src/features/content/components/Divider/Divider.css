@@ -1,0 +1,117 @@
+.divider-block {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 18px;
+
+  margin: 42px auto;
+}
+
+/* ---------- Shared ---------- */
+
+.divider-line {
+  flex: 1;
+
+  height: 1px;
+
+  background: #dbe3ee;
+}
+
+.divider-center {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  flex-shrink: 0;
+}
+
+.divider-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+
+  color: #64748b;
+}
+
+.divider-icon {
+  font-size: 1rem;
+}
+
+/* ---------- Line ---------- */
+
+.divider-block.line .divider-line {
+  background: #dbe3ee;
+}
+
+/* ---------- Gradient ---------- */
+
+.divider-block.gradient .divider-line {
+  height: 2px;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #818cf8,
+    transparent
+  );
+}
+
+/* ---------- Icon ---------- */
+
+.divider-block.icon .divider-center {
+  padding: 8px 14px;
+
+  border-radius: 999px;
+
+  background: #f8fafc;
+  border: 1px solid #dbe3ee;
+}
+
+/* ---------- Chapter ---------- */
+
+.divider-block.chapter {
+  gap: 24px;
+}
+
+.divider-block.chapter .divider-line {
+  height: 2px;
+
+  background: #0f172a;
+}
+
+.divider-block.chapter .divider-label {
+  font-size: 1rem;
+  font-weight: 800;
+
+  letter-spacing: 0.08em;
+
+  color: #0f172a;
+}
+
+/* ---------- Spacer ---------- */
+
+.divider-block.spacer {
+  height: 48px;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 640px) {
+  .divider-block {
+    gap: 12px;
+  }
+
+  .divider-label {
+    font-size: 0.75rem;
+  }
+
+  .divider-block.chapter .divider-label {
+    font-size: 0.9rem;
+  }
+}
