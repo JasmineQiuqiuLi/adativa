@@ -1,31 +1,40 @@
-.mcq-block {
-  padding: 20px;
-  border-radius: 12px;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  max-width: 600px;
+.maq-block {
+  width: 100%;
+  max-width: 780px;
+
+  margin: 0 auto;
+  padding: 26px;
+
+  border-radius: 22px;
+
+  background: white;
+  border: 1px solid #e2e8f0;
+
+  box-shadow:
+    0 8px 24px rgba(15, 23, 42, 0.06),
+    0 2px 8px rgba(15, 23, 42, 0.04);
 }
 
-.mcq-title {
+.maq-title {
   font-size: 18px;
   font-weight: 600;
   margin-bottom: 10px;
 }
 
-.mcq-question {
+.maq-question {
   font-size: 14px;
   margin-bottom: 16px;
   color: #374151;
 }
 
 /* Container spacing FIX */
-.mcq-options {
+.maq-options {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.mcq-option {
+.maq-option {
   display: flex;
   flex-direction: column;
   padding: 12px 14px;
@@ -35,47 +44,47 @@
   transition: all 0.2s ease;
 }
 
-.mcq-option:hover {
+.maq-option:hover {
   background: #f9fafb;
 }
 
-.mcq-option-main {
+.maq-option-main {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.mcq-checkbox {
+.maq-checkbox {
   font-size: 14px;
 }
 
-.mcq-label {
+.maq-label {
   font-weight: 600;
   width: 20px;
 }
 
-.mcq-option-text {
+.maq-option-text {
   flex: 1;
 }
 
 /* States */
-.mcq-option.selected {
+.maq-option.selected {
   border-color: #2563eb;
   background: #eff6ff;
 }
 
-.mcq-option.correct {
+.maq-option.correct {
   border-color: #16a34a;
   background: #ecfdf5;
 }
 
-.mcq-option.incorrect {
+.maq-option.incorrect {
   border-color: #dc2626;
   background: #fef2f2;
 }
 
 /* Feedback */
-.mcq-feedback {
+.maq-feedback {
   margin-top: 8px;
   margin-left: 32px;
   font-size: 12.5px;
@@ -88,15 +97,15 @@
 }
 
 /* Buttons */
-.mcq-actions {
+.maq-actions {
   margin-top: 16px;
   display: flex;
   gap: 12px;
   align-items: flex-end;
 }
 
-.mcq-submit,
-.mcq-retry {
+.maq-submit,
+.maq-retry {
   padding: 8px 14px;
   font-size: 13px;
   line-height: 1;
@@ -105,21 +114,21 @@
   cursor: pointer;
 }
 
-.mcq-submit {
+.maq-submit {
   background: #2563eb;
   color: white;
 }
 
-.mcq-submit:disabled {
+.maq-submit:disabled {
   background: #9ca3af;
   cursor: not-allowed;
 }
 
-.mcq-retry {
+.maq-retry {
   background: #f59e0b;
   color: white;
 }
 
-.mcq-retry:hover {
+.maq-retry:hover {
   background: #d97706;
 }

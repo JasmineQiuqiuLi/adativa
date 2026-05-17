@@ -37,6 +37,371 @@ import Divider from "./Divider/Divider";
 import Video from "./Video/Video";
 import type {VideoBlock,VideoInteraction} from "./Video/Video";
 
+import MultipleChoice from "./MultipleChoice/MultipleChoice";
+import type { MCQBlock,MCQInteraction } from "./MultipleChoice/MultipleChoice";
+
+import MultipleAnswer from "./MultipleAnswer/MultipleAnswer";
+import type { MultipleAnswerBlock,MultipleAnswerInteraction } from "./MultipleAnswer/MultipleAnswer";
+
+import TrueOrFalse from "./TrueOrFalse/TrueOrFalse";
+import type { TrueFalseBlock } from "./TrueOrFalse/TrueOrFalse";
+
+import FillBlank from "./FillBlank/FillBlank";
+import type { FillBlankBlock, FillBlankInteraction } from "./FillBlank/FillBlank";
+
+import Match from "./Match/Match";
+import type { MatchBlock, MatchInteraction } from "./Match/Match";
+
+import Order from "./Order/Order";
+import type { OrderBlock, OrderInteraction } from "./Order/Order";
+
+import ShortEssay from "./ShortEssay/ShortEssay";
+import type { ShortEssayBlock, ShortEssayInteraction,GradeResult } from "./ShortEssay/ShortEssay";
+
+const fakeShortEssay: ShortEssayBlock={
+
+    content_id:
+        "essay001",
+
+    type:
+        "short_essay",
+
+    title:
+        "Machine Learning Basics",
+
+    question:
+        "Explain in one or two sentences what supervised learning is.",
+
+    rubric_hint:
+        "Mention labeled data and prediction.",
+
+};
+
+function fakeGradeEssay(answer:string):Promise<GradeResult>{
+
+    return new Promise(
+
+        resolve=>{
+
+            setTimeout(()=>{
+
+                const normalized=
+                    answer
+                    .toLowerCase();
+
+                let score=0;
+
+                let feedback=
+                    [];
+
+                if(
+                    normalized.includes(
+                        "label"
+                    )
+                ){
+
+                    score+=0.5;
+
+                    feedback.push(
+                        "✓ Mentioned labeled data."
+                    );
+
+                }
+
+                if(
+                    normalized.includes(
+                        "predict"
+                    )
+                    ||
+                    normalized.includes(
+                        "prediction"
+                    )
+                ){
+
+                    score+=0.5;
+
+                    feedback.push(
+                        "✓ Mentioned prediction."
+                    );
+
+                }
+
+                if(
+                    feedback.length===0
+                ){
+
+                    feedback.push(
+
+                        "Try mentioning labeled examples and prediction."
+
+                    );
+
+                }
+
+                resolve({
+
+                    score,
+
+                    is_correct:
+                        score>=0.7,
+
+                    feedback:
+                        feedback.join(
+                            " "
+                        )
+
+                });
+
+            },1500);
+
+        }
+
+    );
+
+}
+
+const fakeOrder: OrderBlock = {
+
+  content_id: "order001",
+
+  type: "order",
+
+  title: "Machine Learning Workflow",
+
+  question:
+    "Arrange the following steps of a machine learning workflow in the correct order.",
+
+  items: [
+
+    {
+      id: "step1",
+      text: "Collect Data"
+    },
+
+    {
+      id: "step2",
+      text: "Preprocess Data"
+    },
+
+    {
+      id: "step3",
+      text: "Train Model"
+    },
+
+    {
+      id: "step4",
+      text: "Evaluate Model"
+    },
+
+    {
+      id: "step5",
+      text: "Deploy Model"
+    }
+
+  ],
+
+  correct_order: [
+
+    "step1",
+    "step2",
+    "step3",
+    "step4",
+    "step5"
+
+  ]
+
+};
+
+const fakeMatch: MatchBlock = {
+
+  content_id: "match001",
+
+  type: "match",
+
+  title: "Machine Learning Concepts",
+
+  question:
+    "Match each algorithm with its category.",
+
+  pairs: [
+
+    {
+      id: "p1",
+      prompt: "Linear Regression",
+      answer: "Supervised Learning"
+    },
+
+    {
+      id: "p2",
+      prompt: "K-Means",
+      answer: "Unsupervised Learning"
+    },
+
+    {
+      id: "p3",
+      prompt: "PCA",
+      answer: "Dimensionality Reduction"
+    },
+
+    {
+      id: "p4",
+      prompt: "Q-Learning",
+      answer: "Reinforcement Learning"
+    }
+
+  ]
+
+};
+
+const fakeFillBlank:FillBlankBlock={
+
+  content_id:"fb001",
+
+  type:"fill_blank",
+
+  title:
+    "Geography",
+
+  question:
+    "The capital city of France is ______.",
+
+  correct_answers:[
+
+    "Paris",
+
+    "paris"
+
+  ],
+
+  explanation:
+    "Paris is the capital and largest city of France."
+
+};
+
+
+const fakeTrueFalse: TrueFalseBlock = {
+
+  content_id: "tf001",
+
+  type: "true_false",
+
+  title: "Biology Basics",
+
+  question:
+    "Yeast is responsible for making dough rise.",
+
+  correct_answer: "true",
+
+  true_feedback:
+    "Correct. Yeast produces carbon dioxide during fermentation, causing the dough to expand and rise.",
+
+  false_feedback:
+    "Incorrect. Yeast actually plays a key role in helping dough rise through fermentation."
+
+};
+
+const fakeMultipleAnswer: MultipleAnswerBlock = {
+  content_id: "multi_001",
+
+  type: "multiple_answer",
+
+  title: "Machine Learning Concepts",
+
+  question:
+    "Which of the following are examples of supervised learning algorithms?",
+
+  options: [
+    {
+      id: "a",
+      text: "Linear Regression",
+      feedback:
+        "Linear Regression learns from labeled data."
+    },
+
+    {
+      id: "b",
+      text: "K-Means Clustering",
+      feedback:
+        "K-Means is unsupervised."
+    },
+
+    {
+      id: "c",
+      text: "Decision Trees",
+      feedback:
+        "Decision Trees can be trained using labeled data."
+    },
+
+    {
+      id: "d",
+      text: "Support Vector Machine (SVM)",
+      feedback:
+        "SVM is commonly used for supervised classification."
+    },
+
+    {
+      id: "e",
+      text: "Principal Component Analysis (PCA)",
+      feedback:
+        "PCA is dimensionality reduction and unsupervised."
+    }
+  ],
+
+  correct_answers: [
+    "a",
+    "c",
+    "d"
+  ]
+};
+
+
+const fakeMCQ:MCQBlock={
+
+  content_id:"mcq_001",
+
+  type:"mcq",
+
+  title:
+    "Machine Learning Basics",
+
+  question:
+    "Which statement best describes supervised learning?",
+
+  options:[
+
+    {
+      id:"a",
+      label:
+      "Learning without labels"
+    },
+
+    {
+      id:"b",
+      label:
+      "Learning from labeled examples"
+    },
+
+    {
+      id:"c",
+      label:
+      "Memorizing data"
+    },
+
+    {
+      id:"d",
+      label:
+      "Only image recognition"
+    }
+
+  ],
+
+  correct_answer_id:"b",
+
+  explanation:
+    "Supervised learning uses labeled input-output pairs to learn patterns."
+};
+
+
 export const fakeVideoContent: VideoBlock =
   {
     content_id: "video-001",
@@ -635,6 +1000,98 @@ const TestWrapper = () => {
   const [showDiagram,setShowDiagram]=useState(true)
   const [showDivider,setShowDivider]=useState(true)
   const [showVideo,setShowVideo]=useState(true)
+  const [showMCQ,setShowMCQ]=useState(true)
+  const [showMultipleAnswer,setShowMultipleAnswer]=useState(true)
+  const [showTrueFalse,setShowTrueFalse]=useState(true)
+  const [showFillBlank,setShowFillBlank]=useState(true)
+  const [showMatch,setShowMatch]=useState(true)
+  const [showOrder,setShowOrder]=useState(true)
+  const [showShortEssay,setShowShortEssay]=useState(true)
+
+  async function handleShortEssayInteraction(interaction:ShortEssayInteraction){
+
+        console.log(
+            "Raw interaction:",
+            interaction
+        );
+
+        if(
+            interaction
+            .interaction_type
+            !==
+            "quiz_attempt"
+        ){
+
+            return;
+
+        }
+
+
+        const grading=
+            await fakeGradeEssay(
+
+                interaction
+                .response
+
+            );
+
+        console.log(
+
+            "AI grading:",
+
+            grading
+
+        );
+
+    }
+
+  const handleOrderInteraction=(interaction:OrderInteraction)=>{
+    const payload={
+      user_id: "123",
+      session_id: "abc",
+      content_id: "order_1",
+      content_type: "order",
+      ...interaction
+    }
+    console.log("FINAL PAYLOAD", payload)
+
+  }
+
+  const handleMatchInteraction=(interaction:MatchInteraction)=>{
+    const payload={
+      user_id: "123",
+      session_id: "abc",
+      content_id: "match_1",
+      content_type: "match",
+      ...interaction
+
+  }
+
+  console.log("FINAL PAYLOAD", payload)
+  }
+
+  const handleFillBlankInteraction=(interaction:FillBlankInteraction)=>{
+
+    const payload={
+      user_id: "123",
+      session_id: "abc",
+      content_id: "fillblank_1",
+      content_type: "fill_blank",
+      ...interaction
+    }
+    console.log("FINAL PAYLOAD", payload)
+  }
+
+  const handleTrueFalseInteraction=(interaction:MCQInteraction)=>{
+    const payload={
+      user_id: "123",
+      session_id: "abc",
+      content_id: "truefalse_1",
+      content_type: "true_false",
+      ...interaction
+    }
+    console.log("FINAL PAYLOAD", payload)
+  }
 
   const handleVideoInteraction=(interaction:VideoInteraction)=>{
         const payload = {
@@ -796,8 +1253,76 @@ const TestWrapper = () => {
       console.log("FINAL PAYLOAD", payload)
   }
 
+  const handleMCQInteraction=(interaction:MCQInteraction)=>{
+    const payload={
+        user_id: "123",
+        session_id: "abc",
+        content_id: "mcq-1",
+        content_type: "mcq",
+        ...interaction
+    }
+    console.log("FINAL PAYLOAD", payload)
+
+
+  }
+
+  const handleMultipleAnswerInteraction=(interaction:MultipleAnswerInteraction)=>{
+    const payload={
+        user_id: "123",
+        session_id: "abc",
+        content_id: "multiple-answer-1",
+        content_type: "multiple_answer",
+        ...interaction
+    }
+    console.log("FINAL PAYLOAD", payload)
+
+  }
+
   return (
     <div>
+      <div className="short-essa">
+        <button onClick={()=>setShowShortEssay(prev=>!prev)}>Toggle Short Essay</button>
+        {
+          showShortEssay && <ShortEssay gradeAnswer={fakeGradeEssay} content={fakeShortEssay} onInteraction={handleShortEssayInteraction}/>
+        }
+
+      </div>
+      <div className="order-container">
+        <button onClick={()=>setShowOrder(prev=>!prev)}>Toggle Order</button>
+        {
+          showOrder && <Order content={fakeOrder} onInteraction={handleOrderInteraction}/>
+        }
+      </div>
+      <div className="match-container">
+        <button onClick={()=>setShowMatch(prev=>!prev)}>Toggle Match</button>
+        {
+          showMatch && <Match content={fakeMatch} onInteraction={handleMatchInteraction}/>
+        }
+      </div>
+      <div className="fillblan-cont">
+        <button onClick={()=>setShowFillBlank(prev=>!prev)}>Toggle Fill Blank</button>
+        {
+          showFillBlank && <FillBlank content={fakeFillBlank} onInteraction={handleFillBlankInteraction}/>
+        }
+      </div>
+      <div className="tf-contain">
+        <button onClick={()=>setShowTrueFalse(prev=>!prev)}>Toggle True/False</button>
+        {
+          showTrueFalse && <TrueOrFalse content={fakeTrueFalse} onInteraction={handleTrueFalseInteraction}/>
+        }
+      </div>
+      <div className="maq-container">
+        <button onClick={()=>setShowMultipleAnswer(prev=>!prev)}>Toggle Multiple Answer</button>
+        {
+          showMultipleAnswer && <MultipleAnswer content={fakeMultipleAnswer} onInteraction={handleMultipleAnswerInteraction}/>
+        }
+      </div>
+      <div className="mcq-c">
+        <button onClick={()=>setShowMCQ(prev=>!prev)}>Toggle MCQ</button>
+        {
+          showMCQ && <MultipleChoice content={fakeMCQ} onInteraction={handleMCQInteraction}/>
+        }
+      </div>
       <div className="videos-container">
         <button onClick={()=>{setShowVideo(prev=>!prev)}}>Toggle Video</button>
         {

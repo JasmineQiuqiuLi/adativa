@@ -1,9 +1,20 @@
 .mcq-block {
-  padding: 20px;
-  border-radius: 12px;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  max-width: 600px;
+
+  width: 100%;
+  max-width: 780px;
+
+  margin: 0 auto;
+  padding: 26px;
+
+  border-radius: 22px;
+
+  background: white;
+  border: 1px solid #e2e8f0;
+
+  box-shadow:
+    0 8px 24px rgba(15, 23, 42, 0.06),
+    0 2px 8px rgba(15, 23, 42, 0.04);
+
 }
 
 /* Title */
@@ -20,21 +31,52 @@
   color: #374151;
 }
 
+.mcq-options{
+
+  display:flex;
+
+  flex-direction:column;
+
+  gap:14px;
+
+}
+
 .mcq-option {
-  display: flex;
-  flex-direction: column;   /* ✅ THIS is the key fix */
-  padding: 12px 14px;
-  border: 1px solid #d1d5db;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.2s ease;
+
+  display:flex;
+
+  flex-direction:column;
+
+  width:100%;
+
+  padding:16px;
+
+  border:1px solid #d1d5db;
+
+  border-radius:12px;
+
+  cursor:pointer;
+
+  transition:all .2s ease;
+
+  box-sizing:border-box;
+
 }
 
 .mcq-option-main {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:flex-start;
+
+  width:100%;
+
+  gap:12px;
+
 }
+
 /* Option base
 .mcq-option {
   padding: 10px 12px;

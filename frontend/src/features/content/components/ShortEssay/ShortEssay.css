@@ -1,0 +1,301 @@
+.saq-block{
+
+  width:min(800px,100%);
+
+  margin:24px auto;
+
+  padding:24px;
+
+  border-radius:16px;
+
+  background:#ffffff;
+
+  border:1px solid #e5e7eb;
+
+  box-shadow:
+    0 2px 8px rgba(
+      0,
+      0,
+      0,
+      .06
+    );
+
+  box-sizing:border-box;
+
+}
+
+
+
+/* title */
+
+.saq-title{
+
+  font-size:18px;
+
+  font-weight:600;
+
+  margin-bottom:10px;
+
+}
+
+
+
+/* question */
+
+.saq-question{
+
+  font-size:14px;
+
+  line-height:1.6;
+
+  color:#111827;
+
+  margin-bottom:12px;
+
+}
+
+
+
+/* rubric */
+
+.saq-rubric-hint{
+
+  padding:12px;
+
+  margin-bottom:20px;
+
+  border-radius:8px;
+
+  background:#eff6ff;
+
+  border:1px solid #bfdbfe;
+
+  color:#1e40af;
+
+  font-size:13px;
+
+}
+
+
+
+/* textarea */
+
+.saq-input{
+
+  width:100%;
+
+  min-height:120px;
+
+  resize:vertical;
+
+  padding:14px;
+
+  border:1px solid #d1d5db;
+
+  border-radius:10px;
+
+  font-size:14px;
+
+  line-height:1.6;
+
+  font-family:inherit;
+
+  box-sizing:border-box;
+
+  outline:none;
+
+  transition:
+    all .2s ease;
+
+}
+
+
+.saq-input:focus{
+
+  border-color:#2563eb;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(
+      37,
+      99,
+      235,
+      .1
+    );
+
+}
+
+
+.saq-input:disabled{
+
+  background:#f9fafb;
+
+}
+
+
+
+/* buttons */
+
+.saq-actions{
+
+  display:flex;
+
+  gap:12px;
+
+  margin-top:20px;
+
+}
+
+
+
+.saq-submit,
+.saq-skip{
+
+  padding:10px 18px;
+
+  border:none;
+
+  border-radius:8px;
+
+  cursor:pointer;
+
+  font-size:14px;
+
+  transition:
+    all .2s ease;
+
+}
+
+
+
+.saq-submit{
+
+  background:#2563eb;
+
+  color:white;
+
+}
+
+
+.saq-submit:hover{
+
+  background:#1d4ed8;
+
+}
+
+
+.saq-submit:disabled{
+
+  opacity:.5;
+
+  cursor:not-allowed;
+
+}
+
+
+
+.saq-skip{
+
+  background:#e5e7eb;
+
+  color:#374151;
+
+}
+
+
+.saq-skip:hover{
+
+  background:#d1d5db;
+
+}
+
+
+
+/* feedback */
+
+.saq-feedback{
+
+  margin-top:24px;
+
+  padding:16px;
+
+  border-radius:12px;
+
+  background:#f9fafb;
+
+}
+
+
+
+/* grading state */
+
+.saq-grading{
+
+  color:#2563eb;
+
+  font-size:14px;
+
+  font-weight:500;
+
+}
+
+
+
+/* result */
+
+.saq-result{
+
+  font-size:15px;
+
+  font-weight:600;
+
+  margin-bottom:10px;
+
+}
+
+
+.saq-score{
+
+  color:#6b7280;
+
+  font-weight:400;
+
+}
+
+
+
+/* ai feedback */
+
+.saq-feedback-text{
+
+  line-height:1.6;
+
+  color:#374151;
+
+}
+
+
+
+/* error */
+
+.saq-error{
+
+  color:#dc2626;
+
+  font-size:14px;
+
+}
+
+
+
+/* mobile */
+
+@media(max-width:768px){
+
+  .saq-actions{
+
+    flex-direction:column;
+
+  }
+
+}

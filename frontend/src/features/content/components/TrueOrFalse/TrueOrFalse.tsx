@@ -1,178 +1,101 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import "./TrueOrFalse.css";
+import MultipleChoice from "../MultipleChoice/MultipleChoice";
+import type { MCQBlock,MCQInteraction } from "../MultipleChoice/MultipleChoice";
 
-type TFOption = {
-  id: "true" | "false";
-  text: string;
-  feedback?: string | null;
+
+export type TrueFalseBlock = {
+  content_id:string;
+
+  type:"true_false";
+
+  title?:string;
+
+  question:string;
+
+  correct_answer:
+    "true"
+    |"false";
+
+  true_feedback?:string;
+
+  false_feedback?:string;
 };
 
-type TFContent = {
-  content_id: string;
-  title: string;
-  question: string;
-  options: TFOption[];
-  correct_answer: "true" | "false";
-};
 
-type InteractionResult = {
-  content_id: string;
-  response: string;
-  is_correct: boolean;
-  score: number;
-  attempt: number;
-  evaluation_type: "local_fast" | "needs_review";
-  evaluation_source: "frontend";
-};
 
-const content: TFContent = {
-  content_id: "tf1",
-  title: "True or False",
-  question: "Yeast is responsible for making dough rise.",
-  options: [
-    { id: "true", text: "True", feedback: "Correct — yeast produces CO₂." },
-    { id: "false", text: "False", feedback: "Incorrect — yeast is essential." },
-  ],
-  correct_answer: "true",
-};
 
-const MAX_ATTEMPTS = 2;
+interface Props{
 
-const TrueOrFalse = () => {
-  const [selected, setSelected] = useState<"true" | "false" | null>(null);
-  const [submitted, setSubmitted] = useState(false);
-  const [attempt, setAttempt] = useState(1);
-  const [showAnswer, setShowAnswer] = useState(false);
+   content:
+      TrueFalseBlock;
 
-  const handleSelect = (id: "true" | "false") => {
-    if (submitted) return;
-    setSelected(id);
-  };
+   onInteraction?:(
+      interaction:
+      MCQInteraction
+   )=>void;
 
-  const evaluate = () => {
-    const isCorrect = selected === content.correct_answer;
-    return {
-      isCorrect,
-      score: isCorrect ? 1 : 0,
-    };
-  };
+}
 
-  const handleSubmit = () => {
-    if (!selected) return;
+export default function TrueOrFalse({
 
-    const { isCorrect, score } = evaluate();
+   content,
+   onInteraction
 
-    const result: InteractionResult = {
-      content_id: content.content_id,
-      response: selected,
-      is_correct: isCorrect,
-      score,
-      attempt,
-      evaluation_type: isCorrect ? "local_fast" : "needs_review",
-      evaluation_source: "frontend",
-    };
+}:Props){
 
-    console.log("Submitted:", result);
+   const mcqContent:MCQBlock={
 
-    setSubmitted(true);
+      content_id:
+         content.content_id,
 
-    if (isCorrect || attempt >= MAX_ATTEMPTS) {
-      setShowAnswer(true);
-    }
-  };
+      type:"mcq",
 
-  const handleRetry = () => {
-    setSelected(null);
-    setSubmitted(false);
-    setAttempt((prev) => prev + 1);
-  };
+      title:
+         content.title,
 
-  const optionStates = useMemo(() => {
-    return content.options.map((opt) => {
-      const isSelected = selected === opt.id;
-      const isCorrect = opt.id === content.correct_answer;
+      question:
+         content.question,
 
-      let state: "default" | "selected" | "correct" | "incorrect" = "default";
+      options:[
 
-      if (submitted) {
-        if (showAnswer) {
-          if (isCorrect) state = "correct";
-          else if (isSelected) state = "incorrect";
-        } else {
-          if (isSelected) state = "incorrect";
-        }
-      } else if (isSelected) {
-        state = "selected";
-      }
+         {
+            id:"true",
+            label:"True"
+         },
 
-      return {
-        ...opt,
-        isSelected,
-        isCorrect,
-        state,
-      };
-    });
-  }, [selected, submitted, showAnswer]);
+         {
+            id:"false",
+            label:"False"
+         }
 
-  return (
-    <div className="tf-block">
-      <h3 className="tf-title">{content.title}</h3>
+      ],
 
-      <p className="tf-question">{content.question}</p>
+      correct_answer_id:
+         content.correct_answer,
 
-      <div className="tf-options">
-        {optionStates.map((opt) => (
-          <div
-            key={opt.id}
-            className={`tf-option ${opt.state}`}
-            onClick={() => handleSelect(opt.id)}
-          >
-            <div className="tf-option-main">
-              <span className="tf-label">{opt.text}</span>
-            </div>
+      explanation:
+         content.correct_answer
+         ==="true"
 
-            {/* Selected feedback */}
-            {submitted && opt.isSelected && opt.feedback && (
-              <div className="tf-feedback">
-                <strong>Explanation:</strong> {opt.feedback}
-              </div>
-            )}
+         ?content.true_feedback
 
-            {/* Correct feedback (only reveal phase) */}
-            {submitted &&
-              showAnswer &&
-              !opt.isSelected &&
-              opt.isCorrect &&
-              opt.feedback && (
-                <div className="tf-feedback correct-feedback">
-                  <strong>Explanation:</strong> {opt.feedback}
-                </div>
-              )}
-          </div>
-        ))}
-      </div>
+         :content.false_feedback
 
-      <div className="tf-actions">
-        <button
-          className="tf-submit"
-          onClick={handleSubmit}
-          disabled={!selected || submitted}
-        >
-          Submit
-        </button>
+   };
 
-        {submitted &&
-          selected !== content.correct_answer &&
-          !showAnswer && (
-            <button className="tf-retry" onClick={handleRetry}>
-              Retry
-            </button>
-          )}
-      </div>
-    </div>
-  );
-};
 
-export default TrueOrFalse;
+   return(
+
+      <MultipleChoice
+         content={
+            mcqContent
+         }
+         onInteraction={
+            onInteraction
+         }
+      />
+
+   );
+
+}
