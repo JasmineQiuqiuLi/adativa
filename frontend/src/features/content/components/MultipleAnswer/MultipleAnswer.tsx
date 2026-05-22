@@ -14,7 +14,7 @@ export type MultipleAnswerBlock = {
     text: string;
     feedback?: string | null;
   }[];
-  correct_answers: string[];
+  correct_answer_ids: string[];
 };
 
 export type MultipleAnswerInteraction = {
@@ -87,10 +87,10 @@ export default function MultipleAnswer({ content, onInteraction }: MultipleAnswe
   }
 
   function evaluateMultiAnswer() {
-    const correctSet = new Set(content.correct_answers);
+    const correctSet = new Set(content.correct_answer_ids);
     const correctSelected = selectedRef.current.filter((id) => correctSet.has(id)).length;
     const incorrectSelected = selectedRef.current.filter((id) => !correctSet.has(id)).length;
-    const totalCorrect = content.correct_answers.length;
+    const totalCorrect = content.correct_answer_ids.length;
 
     const score = Math.max(0, Math.min(1, (correctSelected - incorrectSelected) / totalCorrect));
 
@@ -249,7 +249,7 @@ export default function MultipleAnswer({ content, onInteraction }: MultipleAnswe
   const optionStates = useMemo(() => {
     return content.options.map((opt) => {
       const isSelected = selected.includes(opt.id);
-      const isCorrect = content.correct_answers.includes(opt.id);
+      const isCorrect = content.correct_answer_ids.includes(opt.id);
 
       let state: "default" | "selected" | "correct" | "incorrect" = "default";
 

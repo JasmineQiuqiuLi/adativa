@@ -29,7 +29,13 @@ from models.schemas import (
     GenerateObjectiveContentRequest,
     ObjectiveContentResponse,
     ContentBlockRow,
+    RegisterRequest,
+    LoginRequest,
+    UserResponse
 )
+
+from services.user_service import (register_user,authenticate_user)
+
 
 from fastapi import HTTPException
 from database.db import get_connection
@@ -351,3 +357,26 @@ def generate_objective_content_route(
         raise
     finally:
         conn.close()
+
+
+@app.post("/users/register",response_model=UserResponse)
+def register_user_route(req:RegisterRequest):
+    user=register_user(
+        email=req.email,
+        password=req.password,
+        display_name=req.display_name
+    )
+    return user
+
+@app.post("/users/login",response_model=UserResponse)
+def login_user_route(req:LoginRequest):
+    user=authenticate_user(
+        email=req.email,
+        password=req.password
+    )
+    if not user:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid email or password"
+        )
+    return user

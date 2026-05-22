@@ -200,7 +200,7 @@ const fakeOrder: OrderBlock = {
 
   ],
 
-  correct_order: [
+  correct_order_ids: [
 
     "step1",
     "step2",
@@ -347,7 +347,7 @@ const fakeMultipleAnswer: MultipleAnswerBlock = {
     }
   ],
 
-  correct_answers: [
+  correct_answer_ids: [
     "a",
     "c",
     "d"

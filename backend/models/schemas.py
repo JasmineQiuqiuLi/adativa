@@ -309,5 +309,20 @@ class ObjectiveContentResponse(BaseModel):
     mode: str
     blocks: List[ContentBlockRow]
 
+class RegisterRequest(BaseModel):
+    email:str
+    password:str
+    display_name:Optional[str]=None
+
+
+class LoginRequest(BaseModel):
+    email:str
+    password:str
+
+class UserResponse(BaseModel):
+    id:int
+    email:str
+    display_name:Optional[str]=None
+
 
 

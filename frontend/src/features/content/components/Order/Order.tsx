@@ -14,7 +14,7 @@ export type OrderBlock = {
     text: string;  // display label
   }[];
   // correct_order is the list of item ids in the correct sequence
-  correct_order: string[];
+  correct_order_ids: string[];
 };
 
 export type OrderInteraction = {
@@ -151,7 +151,7 @@ export default function Order({ content, onInteraction }: OrderProps) {
 
     const { score, isCorrect } = evaluateOrder(
       orderedItemsRef.current,
-      content.correct_order
+      content.correct_order_ids
     );
 
     onInteraction?.({
@@ -277,7 +277,7 @@ export default function Order({ content, onInteraction }: OrderProps) {
   // Build per-item state only after submit so we don't leak correct positions
   // mid-attempt. correctOrderMap is derived fresh each render from props.
   const correctOrderMap = Object.fromEntries(
-    content.correct_order.map((id, index) => [id, index])
+    content.correct_order_ids.map((id, index) => [id, index])
   );
 
   function getItemState(
@@ -288,10 +288,10 @@ export default function Order({ content, onInteraction }: OrderProps) {
       return dragIndexRef.current === index ? "dragging" : "default";
     }
     if (showAnswer) {
-      return item.id === content.correct_order[index] ? "correct" : "incorrect";
+      return item.id === content.correct_order_ids[index] ? "correct" : "incorrect";
     }
     // Mid-attempt: only flag wrong, keep correct ones neutral
-    if (item.id !== content.correct_order[index]) return "incorrect";
+    if (item.id !== content.correct_order_ids[index]) return "incorrect";
     return "default";
   }
 
@@ -320,7 +320,7 @@ export default function Order({ content, onInteraction }: OrderProps) {
             <span className="order-text">{item.text}</span>
 
             {/* Reveal correct position on final show-answer phase */}
-            {showAnswer && item.id !== content.correct_order[index] && (
+            {showAnswer && item.id !== content.correct_order_ids[index] && (
               <span className="order-correct-position">
                 ✓ position {correctOrderMap[item.id] + 1}
               </span>

@@ -1,24 +1,15 @@
 "use client";
 
-import {
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useEffect,useRef, useState,} from "react";
 
 import "./Reveal.css";
 
 export type RevealBlock = {
   content_id: string;
-
   type: "reveal";
-
   headline?: string;
-
   prompt: string;
-
   revealed_content: string;
-
   button_label?: string;
 };
 

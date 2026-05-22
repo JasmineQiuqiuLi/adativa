@@ -1,33 +1,19 @@
 "use client";
 
-import {
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useEffect,useRef,useState,} from "react";
 
 import "./Video.css";
 
-export type VideoVariant =
-  | "default"
-  | "featured"
-  | "minimal";
+export type VideoVariant =| "default"| "featured" | "minimal";
 
 export type VideoBlock = {
   content_id: string;
-
   type: "video";
-
   variant?: VideoVariant;
-
   title?: string;
-
   description?: string;
-
   video_url: string;
-
   thumbnail_url?: string;
-
   caption?: string;
 };
 
