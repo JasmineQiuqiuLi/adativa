@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir \"C:\\\\Users\\\\yl73\\\\adativa\\\\frontend\\\\src\\\\features\\\\learning\\\\\" -Recurse *)",
+      "Bash(xargs grep -l \"block.type\\\\|blocks\\\\[\")",
+      "PowerShell(head *)"
+    ]
+  }
+}

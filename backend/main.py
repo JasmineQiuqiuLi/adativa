@@ -1,10 +1,9 @@
+import json
 from pydantic import BaseModel
-from typing import List, Literal
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import logging
-import os
-import requests
+
 from services.lesson_service import (
     generate_objectives,
     save_lesson_to_db,
@@ -17,8 +16,21 @@ from services.lesson_service import (
     get_lessons_db,
     soft_delete_lessons
 )
-from services.content_service import generate_anthropic_content
-from models.schemas import CreateLessonRequest,CreateLessonResponse, CreateLessonDBResponse, GamePromptRequest
+from services.content_service import (
+    generate_anthropic_content,
+    generate_objective_content,
+)
+
+from models.schemas import (
+    CreateLessonRequest,
+    CreateLessonResponse,
+    CreateLessonDBResponse,
+    GamePromptRequest,
+    GenerateObjectiveContentRequest,
+    ObjectiveContentResponse,
+    ContentBlockRow,
+)
+
 from fastapi import HTTPException
 from database.db import get_connection
 
@@ -50,6 +62,49 @@ app.add_middleware(
 
 class ReviseRequest(BaseModel):
     feedback: str
+
+
+def _fetch_generation_context(cur, lesson_id: int, objective_id: int):
+    cur.execute("""
+        SELECT l.age_range, l.style, l.pace,
+                o.title, o.description
+        FROM lessons l
+        JOIN objectives o ON o.lesson_id = l.id
+        WHERE l.id = %s AND o.id = %s AND o.status = 'active';
+    """, (lesson_id, objective_id))
+    row = cur.fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Lesson or objective not found")
+    age_range, style, pace, title, description = row
+
+    cur.execute("""
+        SELECT s.name
+        FROM objective_skill_map osm
+        JOIN skills s ON s.id = osm.skill_id
+        WHERE osm.objective_id = %s;
+    """, (objective_id,))
+    skills = [r[0] for r in cur.fetchall()]
+
+    cur.execute("""
+        SELECT COALESCE(
+            data->>'title',
+            data->>'question',
+            data->>'headline'
+        )
+        FROM content_blocks
+        WHERE objective_id=%s
+        AND status='active';
+    """, (objective_id,))
+    existing_headlines = [r[0] for r in cur.fetchall() if r[0]]
+
+    return {
+        "objective": {"title": title, "description": description},
+        "skills": skills,
+        "age_range": age_range,
+        "style": style,
+        "pace": pace,
+        "existing_headlines": existing_headlines,
+    }
 
 # -----------------------------
 # Endpoints
@@ -165,3 +220,134 @@ class PromptRequest(BaseModel):
 def generate_anthropic(req: PromptRequest):
     html = generate_anthropic_content(req.prompt)
     return {"html": html}
+
+
+@app.get("/debug/context/{lesson_id}/{objective_id}")
+def debug_context(
+    lesson_id: int,
+    objective_id: int
+):
+    conn = get_connection()
+
+    try:
+        cur = conn.cursor()
+
+        ctx = _fetch_generation_context(
+            cur,
+            lesson_id,
+            objective_id
+        )
+
+        return ctx
+
+    finally:
+        conn.close()
+
+@app.post(
+    "/lessons/{lesson_id}/objectives/{objective_id}/content",
+    response_model=ObjectiveContentResponse,
+)
+def generate_objective_content_route(
+    lesson_id: int,
+    objective_id: int,
+    req: GenerateObjectiveContentRequest,
+):
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+
+        # 1. return existing blocks if any and force_regenerate is False
+        if not req.force_regenerate:
+            cur.execute("""
+                SELECT id, lesson_id, objective_id, generation_mode, strategy_used,
+                        type, title, data, order_index, status
+                FROM content_blocks
+                WHERE objective_id = %s
+                AND generation_mode = %s
+                AND status = 'active'
+                ORDER BY order_index;
+            """, (objective_id, req.mode))
+            existing = cur.fetchall()
+            if existing:
+                blocks = [
+                    ContentBlockRow(
+                        id=r[0], lesson_id=r[1], objective_id=r[2],
+                        generation_mode=r[3], strategy_used=r[4],
+                        type=r[5], title=r[6], data=r[7],
+                        order_index=r[8], status=r[9],
+                    )
+                    for r in existing
+                ]
+                return ObjectiveContentResponse(
+                    objective_id=objective_id, mode=req.mode, blocks=blocks
+                )
+
+        # 2. fetch generation context
+        ctx = _fetch_generation_context(cur, lesson_id, objective_id)
+
+        # 3. soft-delete prior blocks for this (objective, mode)
+        cur.execute("""
+            UPDATE content_blocks
+            SET status = 'deleted'
+            WHERE objective_id = %s
+            AND generation_mode = %s
+            AND status = 'active';
+        """, (objective_id, req.mode))
+
+        # 4. generate
+        block_dicts = generate_objective_content(
+            strategy=req.strategy,
+            mode=req.mode,
+            objective=ctx["objective"],
+            skills=ctx["skills"],
+            age_range=ctx["age_range"],
+            style=ctx["style"],
+            pace=ctx["pace"],
+            weak_skills=req.weak_skills,
+            allowed_types=req.allowed_types,
+            existing_headlines=ctx["existing_headlines"],
+        )
+
+        # 5. insert
+        inserted: list[ContentBlockRow] = []
+        for idx, block in enumerate(block_dicts):
+            cur.execute("""
+                INSERT INTO content_blocks
+                (lesson_id, objective_id, generation_mode, strategy_used,
+                    type, title, data, order_index, status)
+                VALUES (%s, %s, %s, %s, %s, %s, %s::jsonb, %s, 'active')
+                RETURNING id;
+            """, (
+                lesson_id,
+                objective_id,
+                req.mode,
+                req.strategy.value,
+                block["type"],
+                block.get("title") or block.get("headline"),
+                json.dumps(block),
+                idx,
+            ))
+            new_id = cur.fetchone()[0]
+            inserted.append(ContentBlockRow(
+                id=new_id,
+                lesson_id=lesson_id,
+                objective_id=objective_id,
+                generation_mode=req.mode,
+                strategy_used=req.strategy.value,
+                type=block["type"],
+                title=block.get("title") or block.get("headline"),
+                data=block,
+                order_index=idx,
+                status="active",
+            ))
+
+        conn.commit()
+        return ObjectiveContentResponse(
+            objective_id=objective_id, mode=req.mode, blocks=inserted
+        )
+
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
