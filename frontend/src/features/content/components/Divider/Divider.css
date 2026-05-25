@@ -102,7 +102,7 @@
 
 /* ---------- Responsive ---------- */
 
-@media (max-width: 640px) {
+@media (max-width: 840px) {
   .divider-block {
     gap: 12px;
   }

@@ -21,6 +21,8 @@ from services.content_service import (
     generate_objective_content,
 )
 
+from services.progress_service import get_lesson_progress
+
 from models.schemas import (
     CreateLessonRequest,
     CreateLessonResponse,
@@ -31,7 +33,8 @@ from models.schemas import (
     ContentBlockRow,
     RegisterRequest,
     LoginRequest,
-    UserResponse
+    UserResponse,
+    LessonProgressResponse
 )
 
 from services.user_service import (register_user,authenticate_user)
@@ -122,8 +125,8 @@ def root():
     return {"message":"backend is running"}
 
 @app.get("/lessons")
-def get_lessons():
-    lessons=get_lessons_db()
+def get_lessons(user_id:int):
+    lessons=get_lessons_db(user_id)
     return {"lessons":lessons}
 
 @app.post("/lessons/create",response_model=CreateLessonDBResponse)
@@ -144,6 +147,7 @@ def create_lesson(req:CreateLessonRequest):
         age_range=req.ageRange,
         style=req.style,
         pace=req.pace,
+        created_by=req.created_by,
         objectives=[obj.dict() for obj in result.objectives]
     )
     return {"lessonId":lesson_id}
@@ -190,6 +194,7 @@ def generate_skills(lesson_id:int):
     generate_and_store_skills_for_lesson(lesson_id)
     return {"message":"skills generated"}
 
+
 @app.get("/lessons/{lesson_id}/objectives-with-skills")
 def get_or_generate_skills(lesson_id: int):
     conn = get_connection()
@@ -221,6 +226,11 @@ def get_or_generate_skills(lesson_id: int):
 
 class PromptRequest(BaseModel):
     prompt: str
+
+
+@app.get("/lessons/{lesson_id}/progress",response_model=LessonProgressResponse)
+def get_lesson_progress_route(lesson_id:int,user_id:int):
+    return get_lesson_progress(user_id=user_id,lesson_id=lesson_id)
 
 @app.post("/anthropic-game")
 def generate_anthropic(req: PromptRequest):

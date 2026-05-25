@@ -1,5 +1,31 @@
-.learn-view-panel {
-  flex: 1;
-  padding: 32px;
-  overflow-y: auto;
+
+.learn-content{
+    width:100%;
+    max-width:840px;
+    margin:0 auto;
+    padding:32px;
+
+    display:flex;
+    flex-direction:column;
+    gap:24px;
 }
+
+.learn-block-wrapper{
+    margin-bottom:24px;
+}
+
+.learn-view-panel p {
+    margin: 0;
+}
+
+.learn-view-panel ul,
+.learn-view-panel ol {
+    margin: 0;
+    padding-left: 1.2rem;
+}
+
+.learn-view-panel li {
+    margin: 0.25rem 0;
+}
+
+

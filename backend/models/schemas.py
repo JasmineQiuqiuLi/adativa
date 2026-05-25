@@ -2,6 +2,8 @@ from __future__ import annotations
 from pydantic import BaseModel, Field, create_model
 from typing import List, Literal, Annotated, Optional, Union
 from enum import Enum
+from datetime import datetime
+from typing import Optional
 
 
 # -----------------------------
@@ -13,6 +15,7 @@ class CreateLessonRequest(BaseModel):
     ageRange:str
     style:Literal["visual","reading","hands-on","mixed"]
     pace:Literal["relaxed","normal","intensive"]
+    created_by:int
 
 class GeneratedObjective(BaseModel):
     orderIndex:int
@@ -151,7 +154,7 @@ class MCQOption(BaseModel):
     label:str # matches frontend MCQBlock options[].label
 
 class MCQBlock(BaseModel):
-    type:Literal["mcq"]
+    type:Literal["multiple_choice"]
     title:Optional[str]=None
     question:str
     options:List[MCQOption]
@@ -243,7 +246,7 @@ BLOCK_REGISTRY: dict[str, type[BaseModel]] = {
     "game":              GameBlock,
     "match":             MatchBlock,
     "multiple_answer":   MultipleAnswerBlock,
-    "mcq":               MCQBlock,
+    "multiple_choice":   MCQBlock,
     "order":             OrderBlock,
     "short_essay":       ShortEssayBlock,
     "true_false":        TrueFalseBlock,
@@ -324,5 +327,20 @@ class UserResponse(BaseModel):
     email:str
     display_name:Optional[str]=None
 
+
+
+class ObjectiveProgressRow(BaseModel):
+    objective_id: int
+    order_index: int
+    status: Literal['not_started','in_progress','completed','mastered']
+    attempts: int
+    correct: int
+    started_at: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+
+class LessonProgressResponse(BaseModel):
+    current_objective_id: Optional[int] = None  # None means all objectives completed
+    objectives: list[ObjectiveProgressRow]
 
 

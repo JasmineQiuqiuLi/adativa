@@ -1,7 +1,8 @@
 "use client";
 
-import {useEffect,useRef} from "react";
+import {useEffect,useRef,useMemo} from "react";
 import "./CharacterMessage.css";
+import { CHARACTERS } from "../../data/characterRegistry";
 
 export type CharacterMessageVariant ="intro"| "tip"| "info"| "warning"| "explanation"| "celebration";
 
@@ -9,19 +10,12 @@ export type CharacterMessageLayout ="left"| "right"| "center";
 
 export type CharacterMessageContent = {
   content_id: string;
-
   type: "character_message";
-
   variant: CharacterMessageVariant;
-
   layout?: CharacterMessageLayout;
-
   character_name?: string;
-
   character_avatar?: string;
-
   headline?: string;
-
   body: string;
 };
 
@@ -60,8 +54,8 @@ const VISIBILITY_THRESHOLD = 0.5;
 const MIN_DWELL_TIME_MS = 1000;
 
 const CharacterMessage = ({
-  content,
-  onInteraction,
+    content,
+    onInteraction,
 }: CharacterMessageProps) => {
   const containerRef =
     useRef<HTMLDivElement | null>(null);
@@ -77,6 +71,27 @@ const CharacterMessage = ({
 
   const layout =
     content.layout || "left";
+
+  function getRandomCharacter(){
+
+    return CHARACTERS[
+        Math.floor(
+            Math.random() * CHARACTERS.length
+        )
+    ];
+  }
+
+  const fallbackCharacter = useMemo(
+    ()=>getRandomCharacter(),
+    []
+);
+
+  const resolvedLayout = content.layout ?? "left";
+
+  const characterName = content.character_name ?? fallbackCharacter.name;
+
+  const characterAvatar = content.character_avatar ?? fallbackCharacter.avatar;
+
 
   useEffect(() => {
     const node = containerRef.current;
@@ -178,24 +193,21 @@ const CharacterMessage = ({
   return (
     <div
       ref={containerRef}
-      className={`character-message-block ${content.variant} ${layout}`}
+      className={`character-message-block ${content.variant} ${resolvedLayout}`}
     >
-        {content.character_avatar && (
+        {characterAvatar && (
         <div className="character-identity">
             <div className="character-avatar-wrapper">
             <img
-                src={content.character_avatar}
-                alt={
-                content.character_name ||
-                "character"
-                }
+                src={characterAvatar}
+                alt={characterName}
                 className="character-avatar"
             />
             </div>
 
-            {content.character_name && (
+            {characterName && (
             <div className="character-name">
-                {content.character_name}
+                {characterName}
             </div>
             )}
         </div>

@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS lessons (
   style TEXT,
   pace TEXT,
   status TEXT DEFAULT 'draft',
+  created_by BIGINT NOT NULL REFERENCES users(id),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

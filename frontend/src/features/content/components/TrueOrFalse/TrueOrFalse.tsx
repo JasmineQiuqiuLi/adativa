@@ -13,9 +13,7 @@ export type TrueFalseBlock = {
 
   question:string;
 
-  correct_answer:
-    "true"
-    |"false";
+  correct_answer:"true"|"false";
 
   true_feedback?:string;
 
@@ -26,15 +24,8 @@ export type TrueFalseBlock = {
 
 
 interface Props{
-
-   content:
-      TrueFalseBlock;
-
-   onInteraction?:(
-      interaction:
-      MCQInteraction
-   )=>void;
-
+   content:TrueFalseBlock;
+   onInteraction?:(interaction:MCQInteraction)=>void;
 }
 
 export default function TrueOrFalse({

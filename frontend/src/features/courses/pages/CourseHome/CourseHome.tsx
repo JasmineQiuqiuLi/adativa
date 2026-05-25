@@ -3,6 +3,7 @@ import "./CourseHome.css";
 import { useEffect, useState } from "react";
 import CourseList from "../../components/CourseList/CourseList";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../../../auth/hooks/useUser";
 
 type Course={
     id:number;
@@ -15,6 +16,8 @@ function CourseHome() {
   const [courses,setCourses]=useState<Course[]>([])
   const [loading,setLoading]=useState(false)
   const [error,setError]=useState<string | null>(null)
+
+  const userId = useUser((s)=>s.user?.id);
 
   const handleCourseClick = (id: number) => {
     navigate(`/skills/${id}`);
@@ -34,10 +37,11 @@ function CourseHome() {
   }
 
   useEffect(()=>{
+    if (!userId) return
     async function fetchCourses(){
       try{
         setLoading(true)
-        const res=await fetch("http://127.0.0.1:8000/lessons")
+        const res=await fetch(`http://127.0.0.1:8000/lessons?user_id=${userId}`)
         const data=await res.json()
         setCourses(data.lessons || []);
       } catch (err) {
@@ -48,7 +52,7 @@ function CourseHome() {
       }
     }
     fetchCourses();
-  },[])
+  },[userId])
 
   return (
     <div className="course-home-container">

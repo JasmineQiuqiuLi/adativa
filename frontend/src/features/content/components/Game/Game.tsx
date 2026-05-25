@@ -30,7 +30,7 @@ export type GameInteraction={
 
 
 type GameProps = {
-  htmlContent: string;
+  content: string; //htmlContent
   onInteraction?:(interaction: GameInteraction)=>void;
 };
 
@@ -38,7 +38,7 @@ const MAX_ATTEMPTS = 2;
 const CORRECT_RULE = 0.8;
 
 const Game = ({
-  htmlContent,
+  content,
   onInteraction
 }: GameProps) => {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
@@ -178,7 +178,7 @@ const Game = ({
         ref={iframeRef}
         className="game-iframe"
         sandbox="allow-scripts"
-        srcDoc={htmlContent}
+        srcDoc={content}
         title="Game"
       />
 

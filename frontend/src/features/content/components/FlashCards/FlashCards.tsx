@@ -17,11 +17,11 @@ export type FlashCardsInteraction={
 }
 
 export type FlashCardsProps={
-  cards:Card[];
+  content:Card[];
   onInteraction?:(interaction:FlashCardsInteraction)=>void;
 }
 
-const FlashCards = ({cards,onInteraction}:FlashCardsProps) => {
+const FlashCards = ({content,onInteraction}:FlashCardsProps) => {
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
 
@@ -33,7 +33,7 @@ const FlashCards = ({cards,onInteraction}:FlashCardsProps) => {
   const revealCountRef = useRef(0);
   const navigationCountRef = useRef(0);
 
-  const card = cards[index];
+  const card = content[index];
 
   // 🔥 helper: mark activity
   const markActivity = () => {
@@ -62,7 +62,7 @@ const FlashCards = ({cards,onInteraction}:FlashCardsProps) => {
 
   // 🔥 next
   const handleNext = () => {
-    if (index < cards.length - 1) {
+    if (index < content.length - 1) {
       markActivity();
       navigationCountRef.current += 1;
 
@@ -129,13 +129,13 @@ const FlashCards = ({cards,onInteraction}:FlashCardsProps) => {
           </div>
         </div>
 
-        <button onClick={handleNext} disabled={index === cards.length - 1}>
+        <button onClick={handleNext} disabled={index === content.length - 1}>
           →
         </button>
       </div>
 
       <div className="counter">
-        {index + 1} / {cards.length}
+        {index + 1} / {content.length}
       </div>
     </div>
   );

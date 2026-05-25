@@ -1,8 +1,9 @@
-.match-block{
+/* .match-block{
 
-  width:min(800px,100%);
+  width: 100%;
+  max-width: 840px;
 
-  margin:24px auto;
+  margin:0 auto;
 
   padding:24px;
 
@@ -22,6 +23,23 @@
 
   box-sizing:border-box;
 
+} */
+
+.match-block {
+    width: 100%;
+    max-width: 840px;
+
+    margin: 0 auto;
+    padding: 24px;
+
+    border-radius: 20px;
+
+    background: white;
+    border: 1px solid #e2e8f0;
+
+    box-shadow:
+      0 8px 24px rgba(15, 23, 42, 0.06),
+      0 2px 8px rgba(15, 23, 42, 0.04);
 }
 
 

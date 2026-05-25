@@ -2,12 +2,12 @@
 .lesson-nav-panel {
   width: 300px;
   min-width: 300px;
-  height: 100vh;
+  height:100%;
   position: relative;
   background: #ffffff;
   border-right: 1px solid #e5e7eb;
   transition: width 0.25s ease;
-  overflow: hidden;
+  overflow-y:visible;
   display: flex;
   flex-direction: column;
 }

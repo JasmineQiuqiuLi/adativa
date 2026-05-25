@@ -44,18 +44,18 @@ return ONLY valid JSON in this format:
     return LessonAIOutput(**data)
 
 
-def save_lesson_to_db(goal,age_range,style,pace,objectives):
+def save_lesson_to_db(goal,age_range,style,pace,created_by,objectives):
     conn=get_connection()
     cur=conn.cursor()
 
     query_lessons=f"""
-    INSERT INTO lessons (goal,age_range,style,pace)
-    VALUES (%s,%s, %s, %s)
+    INSERT INTO lessons (goal,age_range,style,pace,created_by)
+    VALUES (%s,%s, %s, %s,%s)
     RETURNING id;
 """
     try:
         # step 1: insert lesson
-        cur.execute(query_lessons,(goal,age_range,style,pace))
+        cur.execute(query_lessons,(goal,age_range,style,pace,created_by))
         lesson_id=cur.fetchone()[0]
 
         # step 2: insert objectives
@@ -358,7 +358,7 @@ def get_objectives_with_skills_db(cur, lesson_id):
     return list(result.values())
 
 
-def get_lessons_db():
+def get_lessons_db(user_id:int):
     conn=get_connection()
     try:
         cur=conn.cursor()
@@ -366,8 +366,9 @@ def get_lessons_db():
             SELECT id, goal
             FROM lessons
             WHERE status <> 'deleted'
+            AND created_by = %s
             ORDER BY created_at DESC
-        """)
+        """,(user_id,))
         
         rows=cur.fetchall()
 
@@ -383,6 +384,7 @@ def get_lessons_db():
     except Exception as e:
         raise e
     finally:
+        cur.close()
         conn.close()
 
 

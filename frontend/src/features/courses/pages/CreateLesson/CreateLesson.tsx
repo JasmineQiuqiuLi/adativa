@@ -1,6 +1,7 @@
 import "./CreateLesson.css"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../../../auth/hooks/useUser";
 
 type LearningPreferences={
     style:"visual" | "reading" | "hands-on" | "mixed";
@@ -33,6 +34,8 @@ const CreateLesson = () => {
   const [loading,setLoading]=useState(false)
   const [error,setError]=useState<string | null>(null)
 
+  const userId = useUser((s)=>s.user?.id);
+
   const navigate = useNavigate();
 
   const handleSubmit=async (e:React.FormEvent)=>{
@@ -42,6 +45,7 @@ const CreateLesson = () => {
         ageRange,
         style,
         pace,
+        created_by:userId
     }
     try{
         setLoading(true)

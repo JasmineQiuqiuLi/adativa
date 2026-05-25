@@ -58,6 +58,8 @@ import type { OrderBlock, OrderInteraction } from "./Order/Order";
 import ShortEssay from "./ShortEssay/ShortEssay";
 import type { ShortEssayBlock, ShortEssayInteraction,GradeResult } from "./ShortEssay/ShortEssay";
 
+import {useUser} from "../../auth/hooks/useUser"
+
 const fakeShortEssay: ShortEssayBlock={
 
     content_id:
@@ -988,6 +990,9 @@ const stepsContent = {
 };
 
 const TestWrapper = () => {
+
+  const userId=useUser((s)=>s.user?.id)
+
   const [showGame, setShowGame] = useState(true);
   const [showFlashCard,setShowFlashCard]=useState(true);
   const [showAccordion, setShowAccordion]=useState(true);
@@ -1047,7 +1052,7 @@ const TestWrapper = () => {
 
   const handleOrderInteraction=(interaction:OrderInteraction)=>{
     const payload={
-      user_id: "123",
+      user_id: userId,
       session_id: "abc",
       content_id: "order_1",
       content_type: "order",
@@ -1059,7 +1064,7 @@ const TestWrapper = () => {
 
   const handleMatchInteraction=(interaction:MatchInteraction)=>{
     const payload={
-      user_id: "123",
+      user_id: userId,
       session_id: "abc",
       content_id: "match_1",
       content_type: "match",
@@ -1073,7 +1078,7 @@ const TestWrapper = () => {
   const handleFillBlankInteraction=(interaction:FillBlankInteraction)=>{
 
     const payload={
-      user_id: "123",
+      user_id: userId,
       session_id: "abc",
       content_id: "fillblank_1",
       content_type: "fill_blank",
@@ -1084,7 +1089,7 @@ const TestWrapper = () => {
 
   const handleTrueFalseInteraction=(interaction:MCQInteraction)=>{
     const payload={
-      user_id: "123",
+      user_id: userId,
       session_id: "abc",
       content_id: "truefalse_1",
       content_type: "true_false",
@@ -1095,7 +1100,7 @@ const TestWrapper = () => {
 
   const handleVideoInteraction=(interaction:VideoInteraction)=>{
         const payload = {
-          user_id: "123",
+          user_id: userId,
           session_id: "abc",
           content_id: "video_1",
 
@@ -1108,7 +1113,7 @@ const TestWrapper = () => {
   }
   const handleDividerInteraction=(interaction:DividerInteraction)=>{
       const payload = {
-          user_id: "123",
+          user_id: userId,
           session_id: "abc",
           content_id: "divider_1",
 
@@ -1122,7 +1127,7 @@ const TestWrapper = () => {
 
   const handleDiagrameInteraction=(interaction:DiagramInteraction)=>{
     const payload = {
-          user_id: "123",
+          user_id: userId,
           session_id: "abc",
           content_id: "diagrame_1",
 
@@ -1136,7 +1141,7 @@ const TestWrapper = () => {
 
   const handleScenarioInteraction=(interaction:ScenarioInteraction)=>{
     const payload = {
-          user_id: "123",
+          user_id: userId,
           session_id: "abc",
           content_id: "scenario_1",
 
@@ -1150,7 +1155,7 @@ const TestWrapper = () => {
 
   const handleRevealInteraction=(interaction:RevealInteraction)=>{
     const payload = {
-          user_id: "123",
+          user_id: userId,
           session_id: "abc",
           content_id: "reveal1",
 
@@ -1163,7 +1168,7 @@ const TestWrapper = () => {
   }
   const handleStepsInteraction =(interaction:StepsInteraction)=>{
         const payload = {
-          user_id: "123",
+          user_id: userId,
           session_id: "abc",
           content_id: "steps1",
 
@@ -1177,7 +1182,7 @@ const TestWrapper = () => {
 
   const handleFlashCardInteraction =(interaction:FlashCardsInteraction)=>{
       const payload = {
-          user_id: "123",
+          user_id: userId,
           session_id: "abc",
           content_id: "flashcard-1",
 
@@ -1190,7 +1195,7 @@ const TestWrapper = () => {
   }
   const handleGameInteraction = (interaction: GameInteraction) => {
     const payload = {
-      user_id: "123",
+      user_id: userId,
       session_id: "abc",
       content_id: "game-1",
 
@@ -1207,7 +1212,7 @@ const TestWrapper = () => {
 
   const handleAccordionInteraction =(interaction:AccordionInteraction)=>{
     const payload={
-      user_id: "123",
+      user_id: userId,
       session_id: "abc",
       content_id: "accordion-1",
 
@@ -1219,7 +1224,7 @@ const TestWrapper = () => {
 
   const handleTabsInteraction =(interaction:TabsInteraction)=>{
         const payload={
-        user_id: "123",
+        user_id: userId,
         session_id: "abc",
         content_id: "tabs-1",
 
@@ -1231,7 +1236,7 @@ const TestWrapper = () => {
 
   const handleRichContentInteraction=(interaction:RichContentInteraction)=>{
             const payload={
-        user_id: "123",
+        user_id: userId,
         session_id: "abc",
         content_id: "rich content-1",
 
@@ -1243,7 +1248,7 @@ const TestWrapper = () => {
 
   const handleCharacterInteraction =(interaction:CharacterMessageInteraction)=>{
       const payload={
-        user_id: "123",
+        user_id: userId,
         session_id: "abc",
         content_id: "character message 1",
 
@@ -1255,7 +1260,7 @@ const TestWrapper = () => {
 
   const handleMCQInteraction=(interaction:MCQInteraction)=>{
     const payload={
-        user_id: "123",
+        user_id: userId,
         session_id: "abc",
         content_id: "mcq-1",
         content_type: "mcq",
@@ -1268,7 +1273,7 @@ const TestWrapper = () => {
 
   const handleMultipleAnswerInteraction=(interaction:MultipleAnswerInteraction)=>{
     const payload={
-        user_id: "123",
+        user_id: userId,
         session_id: "abc",
         content_id: "multiple-answer-1",
         content_type: "multiple_answer",
@@ -1369,7 +1374,7 @@ const TestWrapper = () => {
         {
           showFlashCard && 
             <FlashCards
-              cards={cards}
+              content={cards}
               onInteraction={handleFlashCardInteraction}
             />
         }
@@ -1381,7 +1386,7 @@ const TestWrapper = () => {
 
       {showGame && 
         <Game
-          htmlContent={gameHTML}
+          content={gameHTML}
           onInteraction={handleGameInteraction}
          />
       }
