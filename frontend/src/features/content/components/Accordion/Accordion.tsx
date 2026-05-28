@@ -1,7 +1,12 @@
 "use client";
 
-import { useState,useRef,useEffect } from "react";
+import { useState, useRef } from "react";
 import "./Accordion.css";
+
+import {
+  useFinalize,
+  type AttemptPayload,
+} from "../EngagementWrapper/EngagementWrapper";
 
 type AccordionItem = {
   id: string;
@@ -15,78 +20,44 @@ type AccordionContent = {
   items: AccordionItem[];
 };
 
-export type AccordionInteraction={
-  interaction_type:string;
-  started_at:string,
-  engagement_end:string,
-  metadata?:any;
-}
+type AccordionProps = {
+  content: AccordionContent;
+  onInteraction?: (payload: AttemptPayload) => void | Promise<void>;
+};
 
-type AccordionProps={
-  content:AccordionContent;
-  onInteraction?:(interaction: AccordionInteraction)=>void;
-}
-
-const Accordion = ({content,onInteraction}:AccordionProps) => {
-  const startedAtRef = useRef<number | null>(null);
-  const lastActivityRef = useRef<number | null>(null);
-
+const Accordion = ({ content, onInteraction }: AccordionProps) => {
   const openedItemsRef = useRef<Set<string>>(new Set());
   const totalOpensRef = useRef(0);
 
   const [openId, setOpenId] = useState<string | null>(null);
 
-  const markActivity = (itemId: string) => {
-  const now = Date.now();
+  const handleToggle = (id: string) => {
+    setOpenId((prev) => {
+      const isOpening = prev !== id;
 
-  if (!startedAtRef.current) {
-    startedAtRef.current = now;
-  }
+      if (isOpening) {
+        openedItemsRef.current.add(id);
+        totalOpensRef.current += 1;
+      }
 
-  lastActivityRef.current = now;
-
-  openedItemsRef.current.add(itemId);
-  totalOpensRef.current += 1;
-};
-
-const handleToggle = (id: string) => {
-  setOpenId((prev) => {
-    const isOpening = prev !== id;
-
-    if (isOpening) {
-      markActivity(id);
-    }
-
-    return isOpening ? id : null;
-  });
-};
-
-const finalize = () => {
-  if (!startedAtRef.current) return;
-
-  const engagementEnd = lastActivityRef.current || Date.now();
-
-  const interaction:AccordionInteraction = {
-    interaction_type: "accordion_exploration",
-
-    started_at: new Date(startedAtRef.current).toISOString(),
-    // submitted_at: null,
-    engagement_end: new Date(engagementEnd).toISOString(),
-
-    metadata: {
-      items_opened: Array.from(openedItemsRef.current),
-      unique_opens: openedItemsRef.current.size,
-      total_opens: totalOpensRef.current,
-    }
+      return isOpening ? id : null;
+    });
   };
 
-  // console.log("Accordion Interaction:", interaction);
-  onInteraction?.(interaction)
-};
-
-  useEffect(() => {
-    return () => finalize();
-  }, []);
+  const hasLoggedRef = useRef(false);
+  useFinalize(() => {
+    if (hasLoggedRef.current) return;
+    hasLoggedRef.current = true;
+    onInteraction?.({
+      interaction_type: "accordion_exploration",
+      attempt_number: 0,
+      metadata: {
+        items_opened: Array.from(openedItemsRef.current),
+        unique_opens: openedItemsRef.current.size,
+        total_opens: totalOpensRef.current,
+      },
+    });
+  });
 
   return (
     <div className="accordion-block">

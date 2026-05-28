@@ -3,6 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import "./Game.css";
 
+import {
+  useFinalize,
+  type AttemptPayload,
+} from "../EngagementWrapper/EngagementWrapper";
+
 type InteractionResult = {
   response: string;
   is_correct: boolean;
@@ -10,28 +15,11 @@ type InteractionResult = {
   metadata?: any;
 };
 
-export type GameInteraction={
-  interaction_type:"game_result"|"game_session";
-
-  started_at:string;
-  submitted_at?:string;
-  engagement_end:string;
-
-  response:string;
-
-  is_correct?:boolean|null;
-  score?:number|null;
-
-  attempt_number:number;
-
-  metadata?:any;
-
-}
-
 
 type GameProps = {
   content: string; //htmlContent
-  onInteraction?:(interaction: GameInteraction)=>void;
+  onInteraction?: (payload: AttemptPayload) => void | Promise<void>;
+  onAttemptRetry?: () => void;
 };
 
 const MAX_ATTEMPTS = 2;
@@ -39,7 +27,8 @@ const CORRECT_RULE = 0.8;
 
 const Game = ({
   content,
-  onInteraction
+  onInteraction,
+  onAttemptRetry,
 }: GameProps) => {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
 
@@ -47,22 +36,14 @@ const Game = ({
   const [submitted, setSubmitted] = useState(false);
   const [result, setResult] = useState<InteractionResult | null>(null);
 
-  // lifecycle tracking
   const attemptRef = useRef(1);
-  const startedAtRef = useRef<number | null>(null);
-  const submittedAtRef = useRef<number | null>(null);
-  const lastActivityRef = useRef<number | null>(null);
-  const resultRef = useRef<any>(null);
+  const interactedRef = useRef(false);
+  const resultRef = useRef<InteractionResult | null>(null);
+  const hasLoggedRef = useRef(false);
 
   // mark activity (start tracking)
   const markActivity = () => {
-    const now = Date.now();
-
-    if (!startedAtRef.current) {
-      startedAtRef.current = now;
-    }
-
-    lastActivityRef.current = now;
+    interactedRef.current = true;
   };
 
   useEffect(() => {
@@ -78,12 +59,9 @@ const Game = ({
 
       markActivity();
 
-      const { total_tasks,correct, metadata } = data.payload || {};
-      const score=correct/total_tasks
+      const { total_tasks, correct, metadata } = data.payload || {};
+      const score = correct / total_tasks;
       if (typeof score !== "number") return;
-
-      // submitted moment
-      submittedAtRef.current = Date.now();
 
       const interaction: InteractionResult = {
         response: "game_play",
@@ -98,6 +76,18 @@ const Game = ({
 
       setResult(interaction);
       setSubmitted(true);
+
+      hasLoggedRef.current = true;
+
+      onInteraction?.({
+        interaction_type: "game_result",
+        submitted_at: new Date().toISOString(),
+        response: "game_play",
+        is_correct: interaction.is_correct,
+        score: interaction.score,
+        attempt_number: attemptRef.current,
+        metadata: interaction.metadata,
+      });
     };
 
     window.addEventListener("message", handleMessage);
@@ -107,63 +97,34 @@ const Game = ({
     };
   }, [attempt]);
 
-  // finalize interaction (IMPORTANT)
-  const finalize = () => {
-    if (!startedAtRef.current) return;
+  // unmount + pagehide: emit game_session if user interacted but no result was captured
+  useFinalize(() => {
+    if (!interactedRef.current) return;
+    if (hasLoggedRef.current) return;
 
-    const engagementEnd =
-      lastActivityRef.current || Date.now();
+    hasLoggedRef.current = true;
 
-    const interaction:GameInteraction = {
-      interaction_type: resultRef.current
-        ? "game_result"
-        : "game_session",
-
-      started_at: new Date(
-        startedAtRef.current
-      ).toISOString(),
-
-      ...(submittedAtRef.current && {
-        submitted_at: new Date(
-          submittedAtRef.current
-        ).toISOString(),
-      }),
-
-      engagement_end: new Date(
-        engagementEnd
-      ).toISOString(),
-
+    onInteraction?.({
+      interaction_type: "game_session",
       response: "game_play",
-
-      is_correct: resultRef.current?.is_correct ?? null,
-      score: resultRef.current?.score ?? null,
-      attempt_number: attemptRef.current,
-
-      metadata: resultRef.current?.metadata ?? null,
-    };
-
-    onInteraction?.(interaction);
-  };
-
-  // unmount tracking
-  useEffect(() => {
-    return () => finalize();
-  }, []);
+      is_correct: null,
+      score: null,
+      attempt_number: 0,
+      metadata: { status: "abandoned" },
+    });
+  });
 
   // Retry logic
   const handleRetry = () => {
-
-    finalize(); 
+    onAttemptRetry?.();
 
     setAttempt((prev) => prev + 1);
     setSubmitted(false);
     setResult(null);
 
-    // reset tracking
-    startedAtRef.current = null;
-    submittedAtRef.current = null;
-    lastActivityRef.current = null;
     resultRef.current = null;
+    hasLoggedRef.current = false;
+    interactedRef.current = false;
   };
 
   return (

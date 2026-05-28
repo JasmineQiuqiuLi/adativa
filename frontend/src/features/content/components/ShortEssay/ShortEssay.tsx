@@ -1,7 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import "./ShortEssay.css";
+
+import {
+  useFinalize,
+  type AttemptPayload,
+} from "../EngagementWrapper/EngagementWrapper";
 
 
 export type ShortEssayBlock = {
@@ -15,29 +20,6 @@ export type ShortEssayBlock = {
 
 export type GradingStatus = "pending" | "complete" | "failed";
 
-export type ShortEssayInteraction = {
-  interaction_type:
-    | "quiz_attempt"
-    | "quiz_grade"
-    | "quiz_skip"
-    | "quiz_abandon";
-  started_at: string;
-  submitted_at?: string;
-  engagement_end?: string;
-  graded_at?: string;
-  response: string;
-  // Null on quiz_attempt (pending grade); real values on quiz_grade
-  is_correct: boolean | null;
-  score: number | null;
-  grading_status?: GradingStatus;
-  grading_feedback?: string;
-  attempt_number: number;
-  metadata?: {
-    time_spent_ms: number;
-    engagement_mode: "visibility_or_action_based";
-  };
-};
-
 export type GradeResult = {
   is_correct: boolean; // whether the answer is correct based on the rubric
   score: number;        // 0–1
@@ -48,11 +30,8 @@ interface ShortEssayProps {
   content: ShortEssayBlock;
   // Parent owns the AI call so it can inject its own model, prompt, auth, etc.
   gradeAnswer: (response: string) => Promise<GradeResult>;
-  onInteraction?: (interaction: ShortEssayInteraction) => void;
+  onInteraction?: (payload: AttemptPayload) => void | Promise<void>;
 }
-
-const VISIBILITY_THRESHOLD = 0.5;
-const MIN_DWELL_TIME_MS = 1000;
 
 // A score of 0.6 or above is considered correct — adjust to taste.
 const CORRECT_THRESHOLD = 0.6;
@@ -68,14 +47,9 @@ export default function ShortEssay({
   const [gradingStatus, setGradingStatus] = useState<GradingStatus | null>(null);
   const [gradeResult, setGradeResult] = useState<GradeResult | null>(null);
 
-  const containerRef = useRef<HTMLDivElement | null>(null);
   const answerRef = useRef("");
   const attemptRef = useRef(1);
-  const startedAtRef = useRef<number | null>(null);
-  const submittedAtRef = useRef<string | null>(null);
-  const dwellTimerRef = useRef<number | null>(null);
-  const engagedRef = useRef(false);
-  const hasSubmittedRef = useRef(false);
+  const interactedRef = useRef(false);
   const hasSkippedRef = useRef(false);
   const hasLoggedRef = useRef(false);
   // Tracks the in-flight grade promise so a stale response from a previous
@@ -83,23 +57,9 @@ export default function ShortEssay({
   const gradeAttemptRef = useRef(0);
 
 
-  function ensureStarted() {
-    if (!engagedRef.current) {
-      engagedRef.current = true;
-    }
-    if (!startedAtRef.current) {
-      startedAtRef.current = Date.now();
-    }
-  }
-
-  function getTimeSpent() {
-    if (!startedAtRef.current) return 0;
-    return Date.now() - startedAtRef.current;
-  }
-
   function handleChange(value: string) {
     if (submitted || hasSkippedRef.current) return;
-    ensureStarted();
+    interactedRef.current = true;
     answerRef.current = value;
     setAnswer(value);
   }
@@ -107,30 +67,21 @@ export default function ShortEssay({
   async function handleSubmit() {
     if (!answerRef.current.trim()) return;
 
-    ensureStarted();
-
     if (hasLoggedRef.current) return;
 
-    hasSubmittedRef.current = true;
     hasLoggedRef.current = true;
 
     const submittedAt = new Date().toISOString();
-    submittedAtRef.current = submittedAt;
 
     // ── Step 1: fire optimistic quiz_attempt immediately ──────────────────
     onInteraction?.({
       interaction_type: "quiz_attempt",
-      started_at: new Date(startedAtRef.current!).toISOString(),
       submitted_at: submittedAt,
       response: answerRef.current,
       is_correct: null,
       score: null,
       grading_status: "pending",
       attempt_number: attemptRef.current,
-      metadata: {
-        time_spent_ms: getTimeSpent(),
-        engagement_mode: "visibility_or_action_based",
-      },
     });
 
     setSubmitted(true);
@@ -150,7 +101,6 @@ export default function ShortEssay({
 
       onInteraction?.({
         interaction_type: "quiz_grade",
-        started_at: new Date(startedAtRef.current!).toISOString(),
         submitted_at: submittedAt,
         graded_at: new Date().toISOString(),
         response: responseSnapshot,
@@ -159,10 +109,6 @@ export default function ShortEssay({
         grading_status: "complete",
         grading_feedback: result.feedback,
         attempt_number: attemptRef.current,
-        metadata: {
-          time_spent_ms: getTimeSpent(),
-          engagement_mode: "visibility_or_action_based",
-        },
       });
 
       setGradeResult(result);
@@ -172,7 +118,6 @@ export default function ShortEssay({
 
       onInteraction?.({
         interaction_type: "quiz_grade",
-        started_at: new Date(startedAtRef.current!).toISOString(),
         submitted_at: submittedAt,
         graded_at: new Date().toISOString(),
         response: responseSnapshot,
@@ -180,10 +125,6 @@ export default function ShortEssay({
         score: null,
         grading_status: "failed",
         attempt_number: attemptRef.current,
-        metadata: {
-          time_spent_ms: getTimeSpent(),
-          engagement_mode: "visibility_or_action_based",
-        },
       });
 
       setGradingStatus("failed");
@@ -191,7 +132,7 @@ export default function ShortEssay({
   }
 
   function handleSkip() {
-    ensureStarted();
+    interactedRef.current = true;
 
     if (hasLoggedRef.current) return;
 
@@ -200,16 +141,12 @@ export default function ShortEssay({
 
     onInteraction?.({
       interaction_type: "quiz_skip",
-      started_at: new Date(startedAtRef.current!).toISOString(),
       submitted_at: new Date().toISOString(),
       response: "",
       is_correct: null,
       score: null,
-      attempt_number: attemptRef.current,
-      metadata: {
-        time_spent_ms: getTimeSpent(),
-        engagement_mode: "visibility_or_action_based",
-      },
+      attempt_number: 0,
+      metadata: { status: "skipped" },
     });
   }
 
@@ -217,62 +154,21 @@ export default function ShortEssay({
   // open-ended response and AI grading cost makes unlimited retries unsuitable.
   // If retries are needed in future, add MAX_ATTEMPTS gating here.
 
-  useEffect(() => {
-    const node = containerRef.current;
-    if (!node) return;
+  useFinalize(() => {
+    if (!interactedRef.current) return;
+    if (hasLoggedRef.current) return;
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (
-          entry.isIntersecting &&
-          entry.intersectionRatio >= VISIBILITY_THRESHOLD
-        ) {
-          if (!dwellTimerRef.current) {
-            dwellTimerRef.current = window.setTimeout(() => {
-              ensureStarted();
-            }, MIN_DWELL_TIME_MS);
-          }
-        } else {
-          if (dwellTimerRef.current) {
-            clearTimeout(dwellTimerRef.current);
-            dwellTimerRef.current = null;
-          }
-        }
-      },
-      { threshold: VISIBILITY_THRESHOLD }
-    );
+    hasLoggedRef.current = true;
 
-    observer.observe(node);
-
-    return () => {
-      observer.disconnect();
-
-      if (dwellTimerRef.current) {
-        clearTimeout(dwellTimerRef.current);
-      }
-
-      if (!engagedRef.current) return;
-      if (!startedAtRef.current) return;
-      if (hasSubmittedRef.current || hasSkippedRef.current) return;
-      if (hasLoggedRef.current) return;
-
-      hasLoggedRef.current = true;
-
-      onInteraction?.({
-        interaction_type: "quiz_abandon",
-        started_at: new Date(startedAtRef.current).toISOString(),
-        engagement_end: new Date().toISOString(),
-        response: answerRef.current,
-        is_correct: null,
-        score: null,
-        attempt_number: attemptRef.current,
-        metadata: {
-          time_spent_ms: getTimeSpent(),
-          engagement_mode: "visibility_or_action_based",
-        },
-      });
-    };
-  }, []);
+    onInteraction?.({
+      interaction_type: "quiz_abandon",
+      response: answerRef.current,
+      is_correct: null,
+      score: null,
+      attempt_number: 0,
+      metadata: { status: "abandoned" },
+    });
+  });
 
   // ── Derived display ────────────────────────────────────────────────────────
 
@@ -282,7 +178,7 @@ export default function ShortEssay({
       : null;
 
   return (
-    <div ref={containerRef} className="saq-block">
+    <div className="saq-block">
       {content.title && (
         <h3 className="saq-title">{content.title}</h3>
       )}

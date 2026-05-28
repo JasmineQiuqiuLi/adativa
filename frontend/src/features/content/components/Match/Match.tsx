@@ -1,7 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import "./Match.css";
+
+import {
+  useFinalize,
+  type AttemptPayload,
+} from "../EngagementWrapper/EngagementWrapper";
 
 
 export type MatchBlock = {
@@ -16,34 +21,13 @@ export type MatchBlock = {
   }[];
 };
 
-export type MatchInteraction = {
-  interaction_type:
-    | "quiz_attempt"
-    | "quiz_skip"
-    | "quiz_abandon";
-  started_at: string;
-  submitted_at?: string;
-  engagement_end?: string;
-  // Serialized as "promptId:answerId,promptId:answerId,..." for each pair the
-  // user matched. Empty string when nothing was selected (skip / early abandon).
-  response: string;
-  is_correct: boolean;
-  score: number;
-  attempt_number: number;
-  metadata?: {
-    time_spent_ms: number;
-    engagement_mode: "visibility_or_action_based";
-  };
-};
-
 interface MatchProps {
   content: MatchBlock;
-  onInteraction?: (interaction: MatchInteraction) => void;
+  onInteraction?: (payload: AttemptPayload) => void | Promise<void>;
+  onAttemptRetry?: () => void;
 }
 
 const MAX_ATTEMPTS = 3;
-const VISIBILITY_THRESHOLD = 0.5;
-const MIN_DWELL_TIME_MS = 1000;
 
 // The right-column options shown in every dropdown are the shuffled answers.
 // We shuffle once at module level so they stay stable across re-renders.
@@ -78,7 +62,7 @@ function evaluateSelections(
 }
 
 
-export default function Match({ content, onInteraction }: MatchProps) {
+export default function Match({ content, onInteraction, onAttemptRetry }: MatchProps) {
   // Shuffle answer options once per mount, kept stable in a ref.
   const shuffledAnswersRef = useRef<string[]>(shuffleAnswers(content.pairs));
 
@@ -89,30 +73,12 @@ export default function Match({ content, onInteraction }: MatchProps) {
   const [submitted, setSubmitted] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
 
-  const containerRef = useRef<HTMLDivElement | null>(null);
   const selectionsRef = useRef<Selections>(emptySelections());
   const attemptRef = useRef(1);
-  const startedAtRef = useRef<number | null>(null);
-  const dwellTimerRef = useRef<number | null>(null);
-  const engagedRef = useRef(false);
-  const hasSubmittedRef = useRef(false);
+  const interactedRef = useRef(false);
   const hasSkippedRef = useRef(false);
   const hasLoggedRef = useRef(false);
 
-
-  function ensureStarted() {
-    if (!engagedRef.current) {
-      engagedRef.current = true;
-    }
-    if (!startedAtRef.current) {
-      startedAtRef.current = Date.now();
-    }
-  }
-
-  function getTimeSpent() {
-    if (!startedAtRef.current) return 0;
-    return Date.now() - startedAtRef.current;
-  }
 
   function hasAnySelection(sel: Selections) {
     return Object.values(sel).some((v) => v !== "");
@@ -121,7 +87,7 @@ export default function Match({ content, onInteraction }: MatchProps) {
   function handleChange(pairId: string, value: string) {
     if (submitted || hasSkippedRef.current) return;
 
-    ensureStarted();
+    interactedRef.current = true;
 
     const updated = { ...selectionsRef.current, [pairId]: value };
     selectionsRef.current = updated;
@@ -131,11 +97,8 @@ export default function Match({ content, onInteraction }: MatchProps) {
   function handleSubmit() {
     if (!hasAnySelection(selectionsRef.current)) return;
 
-    ensureStarted();
-
     if (hasLoggedRef.current) return;
 
-    hasSubmittedRef.current = true;
     hasLoggedRef.current = true;
 
     const { score, isCorrect } = evaluateSelections(
@@ -145,16 +108,11 @@ export default function Match({ content, onInteraction }: MatchProps) {
 
     onInteraction?.({
       interaction_type: "quiz_attempt",
-      started_at: new Date(startedAtRef.current!).toISOString(),
       submitted_at: new Date().toISOString(),
       response: serializeResponse(selectionsRef.current),
       is_correct: isCorrect,
       score,
       attempt_number: attemptRef.current,
-      metadata: {
-        time_spent_ms: getTimeSpent(),
-        engagement_mode: "visibility_or_action_based",
-      },
     });
 
     setSubmitted(true);
@@ -165,7 +123,7 @@ export default function Match({ content, onInteraction }: MatchProps) {
   }
 
   function handleSkip() {
-    ensureStarted();
+    interactedRef.current = true;
 
     if (hasLoggedRef.current) return;
 
@@ -174,93 +132,47 @@ export default function Match({ content, onInteraction }: MatchProps) {
 
     onInteraction?.({
       interaction_type: "quiz_skip",
-      started_at: new Date(startedAtRef.current!).toISOString(),
       submitted_at: new Date().toISOString(),
       response: "",
       is_correct: false,
       score: 0,
-      attempt_number: attemptRef.current,
-      metadata: {
-        time_spent_ms: getTimeSpent(),
-        engagement_mode: "visibility_or_action_based",
-      },
+      attempt_number: 0,
+      metadata: { status: "skipped" },
     });
   }
 
   function handleRetry() {
+    onAttemptRetry?.();
+
     const fresh = emptySelections();
     selectionsRef.current = fresh;
     setSelections(fresh);
     setSubmitted(false);
 
     attemptRef.current += 1;
-    startedAtRef.current = Date.now();
-    // engagedRef stays true — the user is actively retrying
-    engagedRef.current = true;
-    hasSubmittedRef.current = false;
     hasSkippedRef.current = false;
     hasLoggedRef.current = false;
+    interactedRef.current = false;
   }
 
-  useEffect(() => {
-    const node = containerRef.current;
-    if (!node) return;
+  useFinalize(() => {
+    if (!interactedRef.current) return;
+    if (hasLoggedRef.current) return;
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (
-          entry.isIntersecting &&
-          entry.intersectionRatio >= VISIBILITY_THRESHOLD
-        ) {
-          if (!dwellTimerRef.current) {
-            dwellTimerRef.current = window.setTimeout(() => {
-              ensureStarted();
-            }, MIN_DWELL_TIME_MS);
-          }
-        } else {
-          if (dwellTimerRef.current) {
-            clearTimeout(dwellTimerRef.current);
-            dwellTimerRef.current = null;
-          }
-        }
-      },
-      { threshold: VISIBILITY_THRESHOLD }
-    );
+    hasLoggedRef.current = true;
 
-    observer.observe(node);
-
-    return () => {
-      observer.disconnect();
-
-      if (dwellTimerRef.current) {
-        clearTimeout(dwellTimerRef.current);
-      }
-
-      if (!engagedRef.current) return;
-      if (!startedAtRef.current) return;
-      if (hasSubmittedRef.current || hasSkippedRef.current) return;
-      if (hasLoggedRef.current) return;
-
-      hasLoggedRef.current = true;
-
-      onInteraction?.({
-        interaction_type: "quiz_abandon",
-        started_at: new Date(startedAtRef.current).toISOString(),
-        engagement_end: new Date().toISOString(),
-        response: serializeResponse(selectionsRef.current),
-        is_correct: false,
-        score: 0,
-        attempt_number: attemptRef.current,
-        metadata: {
-          time_spent_ms: getTimeSpent(),
-          engagement_mode: "visibility_or_action_based",
-        },
-      });
-    };
-  }, []);
+    onInteraction?.({
+      interaction_type: "quiz_abandon",
+      response: serializeResponse(selectionsRef.current),
+      is_correct: false,
+      score: 0,
+      attempt_number: 0,
+      metadata: { status: "abandoned" },
+    });
+  });
 
   return (
-    <div ref={containerRef} className="match-block">
+    <div className="match-block">
       {content.title && (
         <h3 className="match-title">{content.title}</h3>
       )}

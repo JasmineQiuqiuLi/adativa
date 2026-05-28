@@ -1,11 +1,13 @@
 "use client";
 
-import {
-  useEffect,
-  useRef,
-} from "react";
+import { useRef } from "react";
 
 import "./Steps.css";
+
+import {
+  useFinalize,
+  type AttemptPayload,
+} from "../EngagementWrapper/EngagementWrapper";
 
 export type StepItem = {
   id: string;
@@ -20,152 +22,33 @@ export type StepsContent = {
   steps: StepItem[];
 };
 
-export type StepsInteraction = {
-  interaction_type: "steps_session";
-
-  started_at: string;
-  engagement_end: string;
-
-  metadata: {
-    steps_viewed: number;
-    viewed_step_ids: string[];
-    completed: boolean;
-
-    engagement_mode: "visibility_based";
-    visible_duration_ms: number;
-  };
-};
-
 type StepsProps = {
   content: StepsContent;
-  onInteraction?: (
-    interaction: StepsInteraction
-  ) => void;
+  onInteraction?: (payload: AttemptPayload) => void | Promise<void>;
 };
-
-const VISIBILITY_THRESHOLD = 0.5;
-const MIN_DWELL_TIME_MS = 1000;
 
 const Steps = ({
   content,
   onInteraction,
 }: StepsProps) => {
-  const containerRef =
-    useRef<HTMLDivElement | null>(null);
-
-  const startedAtRef = useRef<number | null>(null);
-
-  const visibleStartRef = useRef<number | null>(null);
-
-  const engagedRef = useRef(false);
-
-  const dwellTimerRef =
-    useRef<number | null>(null);
 
   const hasLoggedRef = useRef(false);
-
-  useEffect(() => {
-    const node = containerRef.current;
-
-    if (!node) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        // entered visibility threshold
-        if (
-          entry.isIntersecting &&
-          entry.intersectionRatio >=
-            VISIBILITY_THRESHOLD
-        ) {
-          visibleStartRef.current =
-            Date.now();
-
-          // wait for minimum dwell time
-          dwellTimerRef.current =
-            window.setTimeout(() => {
-              if (!engagedRef.current) {
-                engagedRef.current = true;
-
-                startedAtRef.current =Date.now();
-              }
-            }, MIN_DWELL_TIME_MS);
-        }
-
-        // left visibility threshold
-        else {
-          visibleStartRef.current = null;
-
-          if (dwellTimerRef.current) {
-            clearTimeout(
-              dwellTimerRef.current
-            );
-
-            dwellTimerRef.current = null;
-          }
-        }
+  useFinalize(() => {
+    if (hasLoggedRef.current) return;
+    hasLoggedRef.current = true;
+    onInteraction?.({
+      interaction_type: "steps_session",
+      attempt_number: 0,
+      metadata: {
+        steps_viewed: content.steps.length,
+        viewed_step_ids: content.steps.map((step) => step.id),
+        completed: true,
       },
-      {
-        threshold: VISIBILITY_THRESHOLD,
-      }
-    );
-
-    observer.observe(node);
-
-    return () => {
-      observer.disconnect();
-
-      if (dwellTimerRef.current) {
-        clearTimeout(
-          dwellTimerRef.current
-        );
-      }
-
-      // never engaged
-      if (!engagedRef.current) return;
-
-      // prevent duplicate logs
-      if (hasLoggedRef.current) return;
-
-      hasLoggedRef.current = true;
-
-      const engagementEnd = Date.now();
-
-      const interaction: StepsInteraction =
-        {
-          interaction_type:"steps_session",
-
-          started_at: new Date(startedAtRef.current!).toISOString(),
-
-          engagement_end: new Date(engagementEnd).toISOString(),
-
-          metadata: {
-            steps_viewed:
-              content.steps.length,
-
-            viewed_step_ids:
-              content.steps.map(
-                (step) => step.id
-              ),
-
-            completed: true,
-
-            engagement_mode:"visibility_based",
-
-            visible_duration_ms:
-              engagementEnd -
-              startedAtRef.current!,
-          },
-        };
-
-      onInteraction?.(interaction);
-    };
-  }, []);
+    });
+  });
 
   return (
-    <div
-      ref={containerRef}
-      className="steps-block"
-    >
+    <div className="steps-block">
       <div className="steps-header">
         <h3 className="steps-title">
           {content.title}

@@ -1,12 +1,14 @@
 
 "use client";
 
-import {
-  useEffect,
-  useRef,
-} from "react";
+import { useRef } from "react";
 
 import "./Diagram.css";
+
+import {
+  useFinalize,
+  type AttemptPayload,
+} from "../EngagementWrapper/EngagementWrapper";
 
 export type DiagramVariant =
   | "flow"
@@ -39,145 +41,30 @@ export type DiagramBlock = {
   comparison_columns?: ComparisonColumn[];
 };
 
-export type DiagramInteraction = {
-  interaction_type: "diagram_session";
-
-  started_at: string;
-
-  engagement_end: string;
-
-  metadata: {
-    variant: DiagramVariant;
-
-    node_count: number;
-
-    engagement_mode: "visibility_based";
-
-    visible_duration_ms: number;
-  };
-};
-
 type DiagramProps = {
   content: DiagramBlock;
 
-  onInteraction?: (
-    interaction: DiagramInteraction
-  ) => void;
+  onInteraction?: (payload: AttemptPayload) => void | Promise<void>;
 };
-
-const VISIBILITY_THRESHOLD = 0.5;
-
-const MIN_DWELL_TIME_MS = 1000;
 
 const Diagram = ({
   content,
   onInteraction,
 }: DiagramProps) => {
-  const containerRef =
-    useRef<HTMLDivElement | null>(null);
-
-  const startedAtRef = useRef<number | null>(
-    null
-  );
-
-  const dwellTimerRef =
-    useRef<number | null>(null);
 
   const hasLoggedRef = useRef(false);
-
-  useEffect(() => {
-    const node = containerRef.current;
-
-    if (!node) return;
-
-    const observer =
-      new IntersectionObserver(
-        ([entry]) => {
-          if (
-            entry.isIntersecting &&
-            entry.intersectionRatio >=
-              VISIBILITY_THRESHOLD
-          ) {
-            if (!dwellTimerRef.current) {
-              dwellTimerRef.current =
-                window.setTimeout(() => {
-                  if (
-                    !startedAtRef.current
-                  ) {
-                    startedAtRef.current =
-                      Date.now();
-                  }
-                }, MIN_DWELL_TIME_MS);
-            }
-          } else {
-            if (dwellTimerRef.current) {
-              clearTimeout(
-                dwellTimerRef.current
-              );
-
-              dwellTimerRef.current =
-                null;
-            }
-          }
-        },
-        {
-          threshold:
-            VISIBILITY_THRESHOLD,
-        }
-      );
-
-    observer.observe(node);
-
-    return () => {
-      observer.disconnect();
-
-      if (dwellTimerRef.current) {
-        clearTimeout(
-          dwellTimerRef.current
-        );
-      }
-
-      if (!startedAtRef.current)
-        return;
-
-      if (hasLoggedRef.current)
-        return;
-
-      hasLoggedRef.current = true;
-
-      const engagementEnd = Date.now();
-
-      const interaction: DiagramInteraction =
-        {
-          interaction_type:
-            "diagram_session",
-
-          started_at: new Date(
-            startedAtRef.current
-          ).toISOString(),
-
-          engagement_end: new Date(
-            engagementEnd
-          ).toISOString(),
-
-          metadata: {
-            variant: content.variant,
-
-            node_count:
-              content.nodes?.length || 0,
-
-            engagement_mode:
-              "visibility_based",
-
-            visible_duration_ms:
-              engagementEnd -
-              startedAtRef.current,
-          },
-        };
-
-      onInteraction?.(interaction);
-    };
-  }, []);
+  useFinalize(() => {
+    if (hasLoggedRef.current) return;
+    hasLoggedRef.current = true;
+    onInteraction?.({
+      interaction_type: "diagram_session",
+      attempt_number: 0,
+      metadata: {
+        variant: content.variant,
+        node_count: content.nodes?.length || 0,
+      },
+    });
+  });
 
   const renderFlow = () => {
     return (
@@ -309,7 +196,6 @@ const Diagram = ({
 
   return (
     <div
-      ref={containerRef}
       className={`diagram-block ${content.variant}`}
     >
       {content.title && (
@@ -324,9 +210,3 @@ const Diagram = ({
 };
 
 export default Diagram;
-
-
-
-
-
-

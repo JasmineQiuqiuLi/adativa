@@ -5,7 +5,7 @@ import CreateLesson from "../features/courses/pages/CreateLesson/CreateLesson";
 import ReviewObjective from "../features/courses/pages/ReviewObjective/ReviewObjective";
 import ReviewSkills from "../features/courses/pages/ReviewSkills/ReviewSkills";
 import LearnLesson from "../features/learning/pages/LearnLesson/LearnLesson";
-import TestWrapper from "../features/content/components/TestWrapper";
+// import TestWrapper from "../features/content/components/TestWrapper";
 import Login from "../features/auth/pages/Login/Login";
 import Register from "../features/auth/pages/Register/Register";
 import RequireAuth from "../features/auth/components/RequireAuth";
@@ -21,5 +21,5 @@ export const router = createBrowserRouter([
     { path:'/objectives/:lessonId',element:<RequireAuth><ReviewObjective/></RequireAuth>},
     { path: "/skills/:lessonId", element:<RequireAuth><ReviewSkills/></RequireAuth>},
     { path:"/learn/:lessonId",element:<RequireAuth><LearnLesson/></RequireAuth>},
-    { path:'/test',element:<TestWrapper/>}
+    // { path:'/test',element:<TestWrapper/>}
 ]);

@@ -21,7 +21,12 @@ from services.content_service import (
     generate_objective_content,
 )
 
-from services.progress_service import get_lesson_progress
+from services.progress_service import get_lesson_progress, update_objective_progress
+
+from services.interaction_service import (
+    create_interaction,
+    finalize_engagement,
+)
 
 from models.schemas import (
     CreateLessonRequest,
@@ -34,7 +39,11 @@ from models.schemas import (
     RegisterRequest,
     LoginRequest,
     UserResponse,
-    LessonProgressResponse
+    LessonProgressResponse,
+    ObjectiveProgressUpdateRequest,
+    InteractionCreateRequest,
+    InteractionCreateResponse,
+    EngagementFinalizeRequest,
 )
 
 from services.user_service import (register_user,authenticate_user)
@@ -232,6 +241,28 @@ class PromptRequest(BaseModel):
 def get_lesson_progress_route(lesson_id:int,user_id:int):
     return get_lesson_progress(user_id=user_id,lesson_id=lesson_id)
 
+
+@app.post(
+    "/lessons/{lesson_id}/objectives/{objective_id}/progress",
+    response_model=LessonProgressResponse,
+)
+def update_objective_progress_route(
+    lesson_id: int,
+    objective_id: int,
+    req: ObjectiveProgressUpdateRequest,
+):
+    try:
+        return update_objective_progress(
+            user_id=req.user_id,
+            lesson_id=lesson_id,
+            objective_id=objective_id,
+            status=req.status,
+            attempts_delta=req.attempts_delta,
+            correct_delta=req.correct_delta,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+
 @app.post("/anthropic-game")
 def generate_anthropic(req: PromptRequest):
     html = generate_anthropic_content(req.prompt)
@@ -367,6 +398,30 @@ def generate_objective_content_route(
         raise
     finally:
         conn.close()
+
+
+@app.post("/interactions", response_model=InteractionCreateResponse)
+def create_interaction_route(req: InteractionCreateRequest):
+    new_id = create_interaction(req.model_dump())
+    return InteractionCreateResponse(id=new_id)
+
+
+@app.patch("/interactions/engagement/{engagement_id}")
+def finalize_engagement_route(
+    engagement_id: str,
+    req: EngagementFinalizeRequest,
+):
+    updated = finalize_engagement(
+        engagement_id=engagement_id,
+        engagement_end=req.engagement_end,
+        active_duration_ms=req.active_duration_ms,
+    )
+    if updated == 0:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No interactions found for engagement_id {engagement_id}",
+        )
+    return {"updated": updated}
 
 
 @app.post("/users/register",response_model=UserResponse)

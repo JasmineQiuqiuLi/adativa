@@ -1,1466 +1,1464 @@
-import { useState } from "react";
+// import { useState } from "react";
 
-import Accordion from "./Accordion/Accordion";
-import type { AccordionInteraction } from "./Accordion/Accordion";
+// import Accordion from "./Accordion/Accordion";
 
-import FlashCards from "./FlashCards/FlashCards";
-import type { FlashCardsInteraction } from "./FlashCards/FlashCards";
+// import FlashCards from "./FlashCards/FlashCards";
 
-import Game from "./Game/Game";
-import type { GameInteraction } from "./Game/Game";
-import { gameHTML } from "./Game/fakeGame";
+// import Game from "./Game/Game";
+// import { gameHTML } from "./Game/fakeGame";
 
-import Steps from "./Steps/Steps";
-import type { StepsInteraction } from "./Steps/Steps";
+// import Steps from "./Steps/Steps";
 
-import Tabs from "./Tabs/Tabs";
-import type { TabsContent, TabsInteraction } from "./Tabs/Tabs";
+// import Tabs from "./Tabs/Tabs";
+// import type { TabsContent } from "./Tabs/Tabs";
 
-import RichContent from "./RichContent/RichContent";
-import type { RichContentBlock,RichContentInteraction } from "./RichContent/RichContent";
+// import RichContent from "./RichContent/RichContent";
+// import type { RichContentBlock } from "./RichContent/RichContent";
 
-import CharacterMessage from "./CharacterMessage/CharacterMessage";
-import type { CharacterMessageContent,CharacterMessageInteraction} from "./CharacterMessage/CharacterMessage";
+// import CharacterMessage from "./CharacterMessage/CharacterMessage";
+// import type { CharacterMessageContent } from "./CharacterMessage/CharacterMessage";
 
-import type { RevealBlock, RevealInteraction } from "./Reveal/Reveal";
-import Reveal from "./Reveal/Reveal";
+// import type { RevealBlock } from "./Reveal/Reveal";
+// import Reveal from "./Reveal/Reveal";
 
-import type { ScenarioBlock,ScenarioInteraction} from "./Scenario/Scenario";
-import Scenario from "./Scenario/Scenario";
+// import type { ScenarioBlock } from "./Scenario/Scenario";
+// import Scenario from "./Scenario/Scenario";
 
-import Diagram from "./Diagram/Diagram";
-import type {DiagramBlock,DiagramInteraction} from "./Diagram/Diagram";
+// import Diagram from "./Diagram/Diagram";
+// import type { DiagramBlock } from "./Diagram/Diagram";
 
-import type {DividerBlock,DividerInteraction} from "./Divider/Divider";
-import Divider from "./Divider/Divider";
+// import type { DividerBlock } from "./Divider/Divider";
+// import Divider from "./Divider/Divider";
 
-import Video from "./Video/Video";
-import type {VideoBlock,VideoInteraction} from "./Video/Video";
+// import Video from "./Video/Video";
+// import type { VideoBlock } from "./Video/Video";
 
-import MultipleChoice from "./MultipleChoice/MultipleChoice";
-import type { MCQBlock,MCQInteraction } from "./MultipleChoice/MultipleChoice";
+// import MultipleChoice from "./MultipleChoice/MultipleChoice";
+// import type { MCQBlock } from "./MultipleChoice/MultipleChoice";
 
-import MultipleAnswer from "./MultipleAnswer/MultipleAnswer";
-import type { MultipleAnswerBlock,MultipleAnswerInteraction } from "./MultipleAnswer/MultipleAnswer";
+// import MultipleAnswer from "./MultipleAnswer/MultipleAnswer";
+// import type { MultipleAnswerBlock } from "./MultipleAnswer/MultipleAnswer";
 
-import TrueOrFalse from "./TrueOrFalse/TrueOrFalse";
-import type { TrueFalseBlock } from "./TrueOrFalse/TrueOrFalse";
+// import TrueOrFalse from "./TrueOrFalse/TrueOrFalse";
+// import type { TrueFalseBlock } from "./TrueOrFalse/TrueOrFalse";
 
-import FillBlank from "./FillBlank/FillBlank";
-import type { FillBlankBlock, FillBlankInteraction } from "./FillBlank/FillBlank";
+// import FillBlank from "./FillBlank/FillBlank";
+// import type { FillBlankBlock } from "./FillBlank/FillBlank";
 
-import Match from "./Match/Match";
-import type { MatchBlock, MatchInteraction } from "./Match/Match";
+// import Match from "./Match/Match";
+// import type { MatchBlock } from "./Match/Match";
 
-import Order from "./Order/Order";
-import type { OrderBlock, OrderInteraction } from "./Order/Order";
+// import Order from "./Order/Order";
+// import type { OrderBlock } from "./Order/Order";
 
-import ShortEssay from "./ShortEssay/ShortEssay";
-import type { ShortEssayBlock, ShortEssayInteraction,GradeResult } from "./ShortEssay/ShortEssay";
+// import ShortEssay from "./ShortEssay/ShortEssay";
+// import type { ShortEssayBlock, GradeResult } from "./ShortEssay/ShortEssay";
 
-import {useUser} from "../../auth/hooks/useUser"
+// import type { AttemptPayload } from "./EngagementWrapper/EngagementWrapper";
 
-const fakeShortEssay: ShortEssayBlock={
+// import {useUser} from "../../auth/hooks/useUser"
 
-    content_id:
-        "essay001",
+// const fakeShortEssay: ShortEssayBlock={
 
-    type:
-        "short_essay",
+//     content_id:
+//         "essay001",
 
-    title:
-        "Machine Learning Basics",
+//     type:
+//         "short_essay",
 
-    question:
-        "Explain in one or two sentences what supervised learning is.",
+//     title:
+//         "Machine Learning Basics",
 
-    rubric_hint:
-        "Mention labeled data and prediction.",
+//     question:
+//         "Explain in one or two sentences what supervised learning is.",
 
-};
+//     rubric_hint:
+//         "Mention labeled data and prediction.",
 
-function fakeGradeEssay(answer:string):Promise<GradeResult>{
+// };
 
-    return new Promise(
+// function fakeGradeEssay(answer:string):Promise<GradeResult>{
 
-        resolve=>{
+//     return new Promise(
 
-            setTimeout(()=>{
+//         resolve=>{
 
-                const normalized=
-                    answer
-                    .toLowerCase();
+//             setTimeout(()=>{
 
-                let score=0;
+//                 const normalized=
+//                     answer
+//                     .toLowerCase();
 
-                let feedback=
-                    [];
+//                 let score=0;
 
-                if(
-                    normalized.includes(
-                        "label"
-                    )
-                ){
+//                 let feedback=
+//                     [];
 
-                    score+=0.5;
+//                 if(
+//                     normalized.includes(
+//                         "label"
+//                     )
+//                 ){
 
-                    feedback.push(
-                        "✓ Mentioned labeled data."
-                    );
+//                     score+=0.5;
 
-                }
+//                     feedback.push(
+//                         "✓ Mentioned labeled data."
+//                     );
 
-                if(
-                    normalized.includes(
-                        "predict"
-                    )
-                    ||
-                    normalized.includes(
-                        "prediction"
-                    )
-                ){
+//                 }
 
-                    score+=0.5;
+//                 if(
+//                     normalized.includes(
+//                         "predict"
+//                     )
+//                     ||
+//                     normalized.includes(
+//                         "prediction"
+//                     )
+//                 ){
 
-                    feedback.push(
-                        "✓ Mentioned prediction."
-                    );
+//                     score+=0.5;
 
-                }
+//                     feedback.push(
+//                         "✓ Mentioned prediction."
+//                     );
 
-                if(
-                    feedback.length===0
-                ){
+//                 }
 
-                    feedback.push(
+//                 if(
+//                     feedback.length===0
+//                 ){
 
-                        "Try mentioning labeled examples and prediction."
+//                     feedback.push(
 
-                    );
+//                         "Try mentioning labeled examples and prediction."
 
-                }
+//                     );
 
-                resolve({
+//                 }
 
-                    score,
+//                 resolve({
 
-                    is_correct:
-                        score>=0.7,
+//                     score,
 
-                    feedback:
-                        feedback.join(
-                            " "
-                        )
+//                     is_correct:
+//                         score>=0.7,
 
-                });
+//                     feedback:
+//                         feedback.join(
+//                             " "
+//                         )
 
-            },1500);
+//                 });
 
-        }
+//             },1500);
 
-    );
+//         }
 
-}
+//     );
 
-const fakeOrder: OrderBlock = {
+// }
 
-  content_id: "order001",
+// const fakeOrder: OrderBlock = {
 
-  type: "order",
+//   content_id: "order001",
 
-  title: "Machine Learning Workflow",
+//   type: "order",
 
-  question:
-    "Arrange the following steps of a machine learning workflow in the correct order.",
+//   title: "Machine Learning Workflow",
 
-  items: [
+//   question:
+//     "Arrange the following steps of a machine learning workflow in the correct order.",
 
-    {
-      id: "step1",
-      text: "Collect Data"
-    },
+//   items: [
 
-    {
-      id: "step2",
-      text: "Preprocess Data"
-    },
+//     {
+//       id: "step1",
+//       text: "Collect Data"
+//     },
 
-    {
-      id: "step3",
-      text: "Train Model"
-    },
+//     {
+//       id: "step2",
+//       text: "Preprocess Data"
+//     },
 
-    {
-      id: "step4",
-      text: "Evaluate Model"
-    },
+//     {
+//       id: "step3",
+//       text: "Train Model"
+//     },
 
-    {
-      id: "step5",
-      text: "Deploy Model"
-    }
+//     {
+//       id: "step4",
+//       text: "Evaluate Model"
+//     },
 
-  ],
+//     {
+//       id: "step5",
+//       text: "Deploy Model"
+//     }
 
-  correct_order_ids: [
+//   ],
 
-    "step1",
-    "step2",
-    "step3",
-    "step4",
-    "step5"
+//   correct_order_ids: [
 
-  ]
+//     "step1",
+//     "step2",
+//     "step3",
+//     "step4",
+//     "step5"
 
-};
+//   ]
 
-const fakeMatch: MatchBlock = {
+// };
 
-  content_id: "match001",
+// const fakeMatch: MatchBlock = {
 
-  type: "match",
+//   content_id: "match001",
 
-  title: "Machine Learning Concepts",
+//   type: "match",
 
-  question:
-    "Match each algorithm with its category.",
+//   title: "Machine Learning Concepts",
 
-  pairs: [
+//   question:
+//     "Match each algorithm with its category.",
 
-    {
-      id: "p1",
-      prompt: "Linear Regression",
-      answer: "Supervised Learning"
-    },
+//   pairs: [
 
-    {
-      id: "p2",
-      prompt: "K-Means",
-      answer: "Unsupervised Learning"
-    },
+//     {
+//       id: "p1",
+//       prompt: "Linear Regression",
+//       answer: "Supervised Learning"
+//     },
 
-    {
-      id: "p3",
-      prompt: "PCA",
-      answer: "Dimensionality Reduction"
-    },
+//     {
+//       id: "p2",
+//       prompt: "K-Means",
+//       answer: "Unsupervised Learning"
+//     },
 
-    {
-      id: "p4",
-      prompt: "Q-Learning",
-      answer: "Reinforcement Learning"
-    }
+//     {
+//       id: "p3",
+//       prompt: "PCA",
+//       answer: "Dimensionality Reduction"
+//     },
 
-  ]
+//     {
+//       id: "p4",
+//       prompt: "Q-Learning",
+//       answer: "Reinforcement Learning"
+//     }
 
-};
+//   ]
 
-const fakeFillBlank:FillBlankBlock={
+// };
 
-  content_id:"fb001",
+// const fakeFillBlank:FillBlankBlock={
 
-  type:"fill_blank",
+//   content_id:"fb001",
 
-  title:
-    "Geography",
+//   type:"fill_blank",
 
-  question:
-    "The capital city of France is ______.",
+//   title:
+//     "Geography",
 
-  correct_answers:[
+//   question:
+//     "The capital city of France is ______.",
 
-    "Paris",
+//   correct_answers:[
 
-    "paris"
+//     "Paris",
 
-  ],
+//     "paris"
 
-  explanation:
-    "Paris is the capital and largest city of France."
+//   ],
 
-};
+//   explanation:
+//     "Paris is the capital and largest city of France."
 
+// };
 
-const fakeTrueFalse: TrueFalseBlock = {
 
-  content_id: "tf001",
+// const fakeTrueFalse: TrueFalseBlock = {
 
-  type: "true_false",
+//   content_id: "tf001",
 
-  title: "Biology Basics",
+//   type: "true_false",
 
-  question:
-    "Yeast is responsible for making dough rise.",
+//   title: "Biology Basics",
 
-  correct_answer: "true",
+//   question:
+//     "Yeast is responsible for making dough rise.",
 
-  true_feedback:
-    "Correct. Yeast produces carbon dioxide during fermentation, causing the dough to expand and rise.",
+//   correct_answer: "true",
 
-  false_feedback:
-    "Incorrect. Yeast actually plays a key role in helping dough rise through fermentation."
+//   true_feedback:
+//     "Correct. Yeast produces carbon dioxide during fermentation, causing the dough to expand and rise.",
 
-};
+//   false_feedback:
+//     "Incorrect. Yeast actually plays a key role in helping dough rise through fermentation."
 
-const fakeMultipleAnswer: MultipleAnswerBlock = {
-  content_id: "multi_001",
+// };
 
-  type: "multiple_answer",
+// const fakeMultipleAnswer: MultipleAnswerBlock = {
+//   content_id: "multi_001",
 
-  title: "Machine Learning Concepts",
+//   type: "multiple_answer",
 
-  question:
-    "Which of the following are examples of supervised learning algorithms?",
+//   title: "Machine Learning Concepts",
 
-  options: [
-    {
-      id: "a",
-      text: "Linear Regression",
-      feedback:
-        "Linear Regression learns from labeled data."
-    },
+//   question:
+//     "Which of the following are examples of supervised learning algorithms?",
 
-    {
-      id: "b",
-      text: "K-Means Clustering",
-      feedback:
-        "K-Means is unsupervised."
-    },
+//   options: [
+//     {
+//       id: "a",
+//       text: "Linear Regression",
+//       feedback:
+//         "Linear Regression learns from labeled data."
+//     },
 
-    {
-      id: "c",
-      text: "Decision Trees",
-      feedback:
-        "Decision Trees can be trained using labeled data."
-    },
+//     {
+//       id: "b",
+//       text: "K-Means Clustering",
+//       feedback:
+//         "K-Means is unsupervised."
+//     },
 
-    {
-      id: "d",
-      text: "Support Vector Machine (SVM)",
-      feedback:
-        "SVM is commonly used for supervised classification."
-    },
+//     {
+//       id: "c",
+//       text: "Decision Trees",
+//       feedback:
+//         "Decision Trees can be trained using labeled data."
+//     },
 
-    {
-      id: "e",
-      text: "Principal Component Analysis (PCA)",
-      feedback:
-        "PCA is dimensionality reduction and unsupervised."
-    }
-  ],
+//     {
+//       id: "d",
+//       text: "Support Vector Machine (SVM)",
+//       feedback:
+//         "SVM is commonly used for supervised classification."
+//     },
 
-  correct_answer_ids: [
-    "a",
-    "c",
-    "d"
-  ]
-};
+//     {
+//       id: "e",
+//       text: "Principal Component Analysis (PCA)",
+//       feedback:
+//         "PCA is dimensionality reduction and unsupervised."
+//     }
+//   ],
 
+//   correct_answer_ids: [
+//     "a",
+//     "c",
+//     "d"
+//   ]
+// };
 
-const fakeMCQ:MCQBlock={
 
-  content_id:"mcq_001",
+// const fakeMCQ:MCQBlock={
 
-  type:"mcq",
+//   content_id:"mcq_001",
 
-  title:
-    "Machine Learning Basics",
+//   type:"mcq",
 
-  question:
-    "Which statement best describes supervised learning?",
+//   title:
+//     "Machine Learning Basics",
 
-  options:[
+//   question:
+//     "Which statement best describes supervised learning?",
 
-    {
-      id:"a",
-      label:
-      "Learning without labels"
-    },
+//   options:[
 
-    {
-      id:"b",
-      label:
-      "Learning from labeled examples"
-    },
+//     {
+//       id:"a",
+//       label:
+//       "Learning without labels"
+//     },
 
-    {
-      id:"c",
-      label:
-      "Memorizing data"
-    },
+//     {
+//       id:"b",
+//       label:
+//       "Learning from labeled examples"
+//     },
 
-    {
-      id:"d",
-      label:
-      "Only image recognition"
-    }
+//     {
+//       id:"c",
+//       label:
+//       "Memorizing data"
+//     },
 
-  ],
+//     {
+//       id:"d",
+//       label:
+//       "Only image recognition"
+//     }
 
-  correct_answer_id:"b",
+//   ],
 
-  explanation:
-    "Supervised learning uses labeled input-output pairs to learn patterns."
-};
+//   correct_answer_id:"b",
 
+//   explanation:
+//     "Supervised learning uses labeled input-output pairs to learn patterns."
+// };
 
-export const fakeVideoContent: VideoBlock =
-  {
-    content_id: "video-001",
 
-    type: "video",
+// export const fakeVideoContent: VideoBlock =
+//   {
+//     content_id: "video-001",
 
-    variant: "featured",
+//     type: "video",
 
-    title:
-      "Introduction to Machine Learning",
+//     variant: "featured",
 
-    description:
-      "This video provides a beginner-friendly overview of how machine learning systems learn patterns from data, including examples of supervised learning, neural networks, and real-world AI applications.",
+//     title:
+//       "Introduction to Machine Learning",
 
-    video_url:
-      "https://www.w3schools.com/html/mov_bbb.mp4",
+//     description:
+//       "This video provides a beginner-friendly overview of how machine learning systems learn patterns from data, including examples of supervised learning, neural networks, and real-world AI applications.",
 
-    thumbnail_url:
-      "https://images.unsplash.com/photo-1677442136019-21780ecad995",
+//     video_url:
+//       "https://www.w3schools.com/html/mov_bbb.mp4",
 
-    caption:
-      "An introductory overview of machine learning concepts and workflows.",
-  };
+//     thumbnail_url:
+//       "https://images.unsplash.com/photo-1677442136019-21780ecad995",
 
-export const fakeLineDivider: DividerBlock =
-  {
-    content_id:
-      "divider-line-001",
+//     caption:
+//       "An introductory overview of machine learning concepts and workflows.",
+//   };
 
-    type: "divider",
+// export const fakeLineDivider: DividerBlock =
+//   {
+//     content_id:
+//       "divider-line-001",
 
-    variant: "line",
-  };
+//     type: "divider",
 
-export const fakeGradientDivider: DividerBlock =
-  {
-    content_id:
-      "divider-gradient-001",
+//     variant: "line",
+//   };
 
-    type: "divider",
+// export const fakeGradientDivider: DividerBlock =
+//   {
+//     content_id:
+//       "divider-gradient-001",
 
-    variant: "gradient",
+//     type: "divider",
 
-    label: "Next Section",
-  };
+//     variant: "gradient",
 
-export const fakeIconDivider: DividerBlock =
-  {
-    content_id:
-      "divider-icon-001",
+//     label: "Next Section",
+//   };
 
-    type: "divider",
+// export const fakeIconDivider: DividerBlock =
+//   {
+//     content_id:
+//       "divider-icon-001",
 
-    variant: "icon",
+//     type: "divider",
 
-    icon: "🧠",
+//     variant: "icon",
 
-    label: "AI Concepts",
-  };
+//     icon: "🧠",
 
-export const fakeChapterDivider: DividerBlock =
-  {
-    content_id:
-      "divider-chapter-001",
+//     label: "AI Concepts",
+//   };
 
-    type: "divider",
+// export const fakeChapterDivider: DividerBlock =
+//   {
+//     content_id:
+//       "divider-chapter-001",
 
-    variant: "chapter",
+//     type: "divider",
 
-    label: "Chapter 2",
-  };
+//     variant: "chapter",
 
-export const fakeSpacerDivider: DividerBlock =
-  {
-    content_id:
-      "divider-spacer-001",
+//     label: "Chapter 2",
+//   };
 
-    type: "divider",
+// export const fakeSpacerDivider: DividerBlock =
+//   {
+//     content_id:
+//       "divider-spacer-001",
 
-    variant: "spacer",
-  };
+//     type: "divider",
 
-export const fakeFlowDiagram: DiagramBlock =
-  {
-    content_id: "diagram-flow-001",
+//     variant: "spacer",
+//   };
 
-    type: "diagram",
+// export const fakeFlowDiagram: DiagramBlock =
+//   {
+//     content_id: "diagram-flow-001",
 
-    variant: "flow",
+//     type: "diagram",
 
-    title:
-      "Machine Learning Pipeline",
+//     variant: "flow",
 
-    nodes: [
-      {
-        id: "collect",
+//     title:
+//       "Machine Learning Pipeline",
 
-        title: "Collect Data",
+//     nodes: [
+//       {
+//         id: "collect",
 
-        description:
-          "Gather raw training data from multiple sources.",
-      },
+//         title: "Collect Data",
 
-      {
-        id: "clean",
+//         description:
+//           "Gather raw training data from multiple sources.",
+//       },
 
-        title: "Clean Data",
+//       {
+//         id: "clean",
 
-        description:
-          "Handle missing values and remove inconsistencies.",
-      },
+//         title: "Clean Data",
 
-      {
-        id: "train",
+//         description:
+//           "Handle missing values and remove inconsistencies.",
+//       },
 
-        title: "Train Model",
+//       {
+//         id: "train",
 
-        description:
-          "Use algorithms to learn patterns from data.",
-      },
+//         title: "Train Model",
 
-      {
-        id: "evaluate",
+//         description:
+//           "Use algorithms to learn patterns from data.",
+//       },
 
-        title: "Evaluate",
+//       {
+//         id: "evaluate",
 
-        description:
-          "Measure model performance using validation metrics.",
-      },
-    ],
-  };
+//         title: "Evaluate",
 
-export const fakeTimelineDiagram: DiagramBlock =
-  {
-    content_id:
-      "diagram-timeline-001",
+//         description:
+//           "Measure model performance using validation metrics.",
+//       },
+//     ],
+//   };
 
-    type: "diagram",
+// export const fakeTimelineDiagram: DiagramBlock =
+//   {
+//     content_id:
+//       "diagram-timeline-001",
 
-    variant: "timeline",
+//     type: "diagram",
 
-    title:
-      "Major Milestones in AI History",
+//     variant: "timeline",
 
-    nodes: [
-      {
-        id: "1950",
+//     title:
+//       "Major Milestones in AI History",
 
-        title: "1950 — Turing Test",
+//     nodes: [
+//       {
+//         id: "1950",
 
-        description:
-          "Alan Turing proposes a test for machine intelligence.",
-      },
+//         title: "1950 — Turing Test",
 
-      {
-        id: "1986",
+//         description:
+//           "Alan Turing proposes a test for machine intelligence.",
+//       },
 
-        title:
-          "1986 — Backpropagation",
+//       {
+//         id: "1986",
 
-        description:
-          "Neural network training becomes more practical.",
-      },
+//         title:
+//           "1986 — Backpropagation",
 
-      {
-        id: "2012",
+//         description:
+//           "Neural network training becomes more practical.",
+//       },
 
-        title:
-          "2012 — Deep Learning Breakthrough",
+//       {
+//         id: "2012",
 
-        description:
-          "AlexNet dramatically improves image recognition performance.",
-      },
+//         title:
+//           "2012 — Deep Learning Breakthrough",
 
-      {
-        id: "2017",
+//         description:
+//           "AlexNet dramatically improves image recognition performance.",
+//       },
 
-        title:
-          "2017 — Transformers",
+//       {
+//         id: "2017",
 
-        description:
-          "Attention-based architectures reshape NLP and AI.",
-      },
-    ],
-  };
+//         title:
+//           "2017 — Transformers",
 
-export const fakeHierarchyDiagram: DiagramBlock =
-  {
-    content_id:
-      "diagram-hierarchy-001",
+//         description:
+//           "Attention-based architectures reshape NLP and AI.",
+//       },
+//     ],
+//   };
 
-    type: "diagram",
+// export const fakeHierarchyDiagram: DiagramBlock =
+//   {
+//     content_id:
+//       "diagram-hierarchy-001",
 
-    variant: "hierarchy",
+//     type: "diagram",
 
-    title:
-      "Neural Network Structure",
+//     variant: "hierarchy",
 
-    nodes: [
-      {
-        id: "input",
+//     title:
+//       "Neural Network Structure",
 
-        title: "Input Layer",
+//     nodes: [
+//       {
+//         id: "input",
 
-        description:
-          "Receives raw input features.",
-      },
+//         title: "Input Layer",
 
-      {
-        id: "hidden",
+//         description:
+//           "Receives raw input features.",
+//       },
 
-        title: "Hidden Layers",
+//       {
+//         id: "hidden",
 
-        description:
-          "Extract increasingly complex representations.",
-      },
+//         title: "Hidden Layers",
 
-      {
-        id: "output",
+//         description:
+//           "Extract increasingly complex representations.",
+//       },
 
-        title: "Output Layer",
+//       {
+//         id: "output",
 
-        description:
-          "Produces final prediction results.",
-      },
-    ],
-  };
+//         title: "Output Layer",
 
-export const fakeComparisonDiagram: DiagramBlock =
-  {
-    content_id:
-      "diagram-comparison-001",
+//         description:
+//           "Produces final prediction results.",
+//       },
+//     ],
+//   };
 
-    type: "diagram",
+// export const fakeComparisonDiagram: DiagramBlock =
+//   {
+//     content_id:
+//       "diagram-comparison-001",
 
-    variant: "comparison",
+//     type: "diagram",
 
-    title:
-      "Supervised vs Unsupervised Learning",
+//     variant: "comparison",
 
-    comparison_columns: [
-      {
-        title:
-          "Supervised Learning",
+//     title:
+//       "Supervised vs Unsupervised Learning",
 
-        items: [
-          "Uses labeled data",
-          "Predicts known outputs",
-          "Examples: classification and regression",
-          "Requires human-labeled datasets",
-        ],
-      },
+//     comparison_columns: [
+//       {
+//         title:
+//           "Supervised Learning",
 
-      {
-        title:
-          "Unsupervised Learning",
+//         items: [
+//           "Uses labeled data",
+//           "Predicts known outputs",
+//           "Examples: classification and regression",
+//           "Requires human-labeled datasets",
+//         ],
+//       },
 
-        items: [
-          "Uses unlabeled data",
-          "Finds hidden patterns",
-          "Examples: clustering and dimensionality reduction",
-          "Discovers structure automatically",
-        ],
-      },
-    ],
-  };
+//       {
+//         title:
+//           "Unsupervised Learning",
 
-export const fakeScenarioContent: ScenarioBlock =
-  {
-    content_id: "scenario-001",
+//         items: [
+//           "Uses unlabeled data",
+//           "Finds hidden patterns",
+//           "Examples: clustering and dimensionality reduction",
+//           "Discovers structure automatically",
+//         ],
+//       },
+//     ],
+//   };
 
-    type: "scenario",
+// export const fakeScenarioContent: ScenarioBlock =
+//   {
+//     content_id: "scenario-001",
 
-    title:
-      "AI Hiring System Decision Scenario",
+//     type: "scenario",
 
-    scenario:
-      "A company is preparing to deploy an AI system to help screen job applicants. Early testing shows that the model performs well overall, but some employees are concerned that the training data may contain historical hiring bias.\n\nAs part of the AI ethics review team, what would you choose to do next?",
+//     title:
+//       "AI Hiring System Decision Scenario",
 
-    choices: [
-      {
-        id: "deploy-immediately",
+//     scenario:
+//       "A company is preparing to deploy an AI system to help screen job applicants. Early testing shows that the model performs well overall, but some employees are concerned that the training data may contain historical hiring bias.\n\nAs part of the AI ethics review team, what would you choose to do next?",
 
-        label:
-          "Deploy the AI system immediately to improve hiring efficiency.",
+//     choices: [
+//       {
+//         id: "deploy-immediately",
 
-        consequence:
-          "The hiring process becomes faster, but several months later the company discovers that the model systematically disadvantages certain applicant groups because historical bias patterns were learned from the training data.",
-      },
+//         label:
+//           "Deploy the AI system immediately to improve hiring efficiency.",
 
-      {
-        id: "audit-dataset",
+//         consequence:
+//           "The hiring process becomes faster, but several months later the company discovers that the model systematically disadvantages certain applicant groups because historical bias patterns were learned from the training data.",
+//       },
 
-        label:
-          "Pause deployment and audit the training dataset for bias.",
+//       {
+//         id: "audit-dataset",
 
-        consequence:
-          "The review process delays deployment, but the team identifies major representation imbalances and improves the dataset before retraining the model.",
-      },
+//         label:
+//           "Pause deployment and audit the training dataset for bias.",
 
-      {
-        id: "human-review",
+//         consequence:
+//           "The review process delays deployment, but the team identifies major representation imbalances and improves the dataset before retraining the model.",
+//       },
 
-        label:
-          "Keep humans involved in reviewing AI recommendations.",
+//       {
+//         id: "human-review",
 
-        consequence:
-          "The hiring process remains partially manual, but human reviewers are able to catch suspicious AI recommendations and reduce harmful outcomes.",
-      },
+//         label:
+//           "Keep humans involved in reviewing AI recommendations.",
 
-      {
-        id: "collect-feedback",
+//         consequence:
+//           "The hiring process remains partially manual, but human reviewers are able to catch suspicious AI recommendations and reduce harmful outcomes.",
+//       },
 
-        label:
-          "Deploy a pilot version and continuously collect fairness feedback from users.",
+//       {
+//         id: "collect-feedback",
 
-        consequence:
-          "The company gathers real-world evidence about model behavior and gradually improves the system over time, though some risks remain during the pilot phase.",
-      },
-    ],
-  };
+//         label:
+//           "Deploy a pilot version and continuously collect fairness feedback from users.",
 
-export const fakeRevealContent: RevealBlock =
-  {
-    content_id: "reveal-001",
+//         consequence:
+//           "The company gathers real-world evidence about model behavior and gradually improves the system over time, though some risks remain during the pilot phase.",
+//       },
+//     ],
+//   };
 
-    type: "reveal",
+// export const fakeRevealContent: RevealBlock =
+//   {
+//     content_id: "reveal-001",
 
-    headline:
-      "Why Do Neural Networks Need Activation Functions?",
+//     type: "reveal",
 
-    prompt:
-      "Think about what would happen if every layer in a neural network only performed simple linear transformations.",
+//     headline:
+//       "Why Do Neural Networks Need Activation Functions?",
 
-    button_label:
-      "Reveal Explanation",
+//     prompt:
+//       "Think about what would happen if every layer in a neural network only performed simple linear transformations.",
 
-    revealed_content:
-      "Without activation functions, a neural network would behave like a single linear equation regardless of how many layers it contains. Activation functions introduce non-linearity, allowing the network to learn complex patterns such as images, language, and decision boundaries.",
-  };
+//     button_label:
+//       "Reveal Explanation",
 
-export const fakeCharacterMessage: CharacterMessageContent =
-  {
-    content_id:
-      "character-message-001",
+//     revealed_content:
+//       "Without activation functions, a neural network would behave like a single linear equation regardless of how many layers it contains. Activation functions introduce non-linearity, allowing the network to learn complex patterns such as images, language, and decision boundaries.",
+//   };
 
-    type: "character_message",
+// export const fakeCharacterMessage: CharacterMessageContent =
+//   {
+//     content_id:
+//       "character-message-001",
 
-    variant: "intro",
+//     type: "character_message",
 
-    layout: "left",
+//     variant: "intro",
 
-    character_name: "Nova",
+//     layout: "left",
 
-    character_avatar:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
+//     character_name: "Nova",
 
-    headline:
-      "Welcome to the Lesson!",
+//     character_avatar:
+//       "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
 
-    body:
-      "In this lesson, we are going to explore how machine learning systems recognize patterns from data. Along the way, you will interact with examples, diagrams, and activities designed to help you build intuition step by step.",
-  };
+//     headline:
+//       "Welcome to the Lesson!",
 
-export const richTextContent: RichContentBlock = {
-  content_id: "rich-text-001",
+//     body:
+//       "In this lesson, we are going to explore how machine learning systems recognize patterns from data. Along the way, you will interact with examples, diagrams, and activities designed to help you build intuition step by step.",
+//   };
 
-  type: "rich_content",
-  variant: "summary",
+// export const richTextContent: RichContentBlock = {
+//   content_id: "rich-text-001",
 
-  layout: "text",
+//   type: "rich_content",
+//   variant: "summary",
 
-  headline: "What Is Machine Learning?",
+//   layout: "text",
 
-  body:
-    "Machine learning is a branch of artificial intelligence that allows systems to learn patterns from data instead of relying entirely on explicit programming instructions. It is widely used in recommendation systems, image recognition, and natural language processing.",
-};
+//   headline: "What Is Machine Learning?",
 
-export const richImageTopContent: RichContentBlock = {
-  content_id: "rich-image-top-001",
+//   body:
+//     "Machine learning is a branch of artificial intelligence that allows systems to learn patterns from data instead of relying entirely on explicit programming instructions. It is widely used in recommendation systems, image recognition, and natural language processing.",
+// };
 
-  type: "rich_content",
+// export const richImageTopContent: RichContentBlock = {
+//   content_id: "rich-image-top-001",
 
-  layout: "image_top",
+//   type: "rich_content",
 
-  headline: "The Structure of a Neural Network",
+//   layout: "image_top",
 
-  body:
-    "Neural networks are inspired by the human brain and consist of layers of interconnected nodes. Each layer extracts increasingly complex features from the input data.",
+//   headline: "The Structure of a Neural Network",
 
-  image_url:
-    "https://images.unsplash.com/photo-1677442136019-21780ecad995",
+//   body:
+//     "Neural networks are inspired by the human brain and consist of layers of interconnected nodes. Each layer extracts increasingly complex features from the input data.",
 
-  image_alt: "AI visualization",
+//   image_url:
+//     "https://images.unsplash.com/photo-1677442136019-21780ecad995",
 
-  caption:
-    "A conceptual visualization of artificial intelligence and neural networks.",
-};
+//   image_alt: "AI visualization",
 
-export const richImageLeftContent: RichContentBlock = {
-  content_id: "rich-image-left-001",
+//   caption:
+//     "A conceptual visualization of artificial intelligence and neural networks.",
+// };
 
-  type: "rich_content",
+// export const richImageLeftContent: RichContentBlock = {
+//   content_id: "rich-image-left-001",
 
-  layout: "image_left",
+//   type: "rich_content",
 
-  headline: "How Bread Fermentation Works",
+//   layout: "image_left",
 
-  body:
-    "During fermentation, yeast consumes sugars and produces carbon dioxide gas. The gas becomes trapped inside the dough, creating air pockets that help bread rise and become fluffy.",
+//   headline: "How Bread Fermentation Works",
 
-  image_url:
-    "https://images.unsplash.com/photo-1509440159596-0249088772ff",
+//   body:
+//     "During fermentation, yeast consumes sugars and produces carbon dioxide gas. The gas becomes trapped inside the dough, creating air pockets that help bread rise and become fluffy.",
 
-  image_alt: "Bread dough",
+//   image_url:
+//     "https://images.unsplash.com/photo-1509440159596-0249088772ff",
 
-  caption:
-    "Fresh dough rising during the fermentation process.",
-};
+//   image_alt: "Bread dough",
 
-export const richImageRightContent: RichContentBlock = {
-  content_id: "rich-image-right-001",
+//   caption:
+//     "Fresh dough rising during the fermentation process.",
+// };
 
-  type: "rich_content",
+// export const richImageRightContent: RichContentBlock = {
+//   content_id: "rich-image-right-001",
 
-  layout: "image_right",
+//   type: "rich_content",
 
-  headline: "Solar Energy Conversion",
+//   layout: "image_right",
 
-  body:
-    "Solar panels convert sunlight into electricity through photovoltaic cells. When sunlight hits the semiconductor material, electrons become energized and generate electric current.",
+//   headline: "Solar Energy Conversion",
 
-  image_url:
-    "https://images.unsplash.com/photo-1509391366360-2e959784a276",
+//   body:
+//     "Solar panels convert sunlight into electricity through photovoltaic cells. When sunlight hits the semiconductor material, electrons become energized and generate electric current.",
 
-  image_alt: "Solar panels",
+//   image_url:
+//     "https://images.unsplash.com/photo-1509391366360-2e959784a276",
 
-  caption:
-    "Large-scale solar panels generating renewable energy.",
-};
+//   image_alt: "Solar panels",
 
-export const richHeroContent: RichContentBlock = {
-  content_id: "rich-hero-001",
+//   caption:
+//     "Large-scale solar panels generating renewable energy.",
+// };
 
-  type: "rich_content",
+// export const richHeroContent: RichContentBlock = {
+//   content_id: "rich-hero-001",
 
-  layout: "hero",
+//   type: "rich_content",
 
-  headline: "Explore the Future of Artificial Intelligence",
+//   layout: "hero",
 
-  body:
-    "Artificial intelligence is transforming industries ranging from healthcare and education to transportation and scientific research. Understanding its foundations is becoming increasingly important in the modern world.",
+//   headline: "Explore the Future of Artificial Intelligence",
 
-  image_url:
-    "https://images.unsplash.com/photo-1674027444485-cec3da58eef4",
+//   body:
+//     "Artificial intelligence is transforming industries ranging from healthcare and education to transportation and scientific research. Understanding its foundations is becoming increasingly important in the modern world.",
 
-  image_alt: "Future AI",
+//   image_url:
+//     "https://images.unsplash.com/photo-1674027444485-cec3da58eef4",
 
-  caption:
-    "Artificial intelligence and the future of human-computer collaboration.",
-};
+//   image_alt: "Future AI",
 
-export const tabsContent: TabsContent = {
-  content_id: "tabs-001",
+//   caption:
+//     "Artificial intelligence and the future of human-computer collaboration.",
+// };
 
-  type: "tabs",
+// export const tabsContent: TabsContent = {
+//   content_id: "tabs-001",
 
-  title: "Types of Machine Learning",
+//   type: "tabs",
 
-  tabs: [
-    {
-      id: "supervised",
+//   title: "Types of Machine Learning",
 
-      label: "Supervised Learning",
+//   tabs: [
+//     {
+//       id: "supervised",
 
-      content:
-        "Supervised learning uses labeled examples to train models. The system learns relationships between inputs and outputs in order to make predictions on new data.",
-    },
+//       label: "Supervised Learning",
 
-    {
-      id: "unsupervised",
+//       content:
+//         "Supervised learning uses labeled examples to train models. The system learns relationships between inputs and outputs in order to make predictions on new data.",
+//     },
 
-      label: "Unsupervised Learning",
+//     {
+//       id: "unsupervised",
 
-      content:
-        "Unsupervised learning works with unlabeled data. The model attempts to discover hidden patterns, clusters, or structures without predefined answers.",
-    },
+//       label: "Unsupervised Learning",
 
-    {
-      id: "reinforcement",
+//       content:
+//         "Unsupervised learning works with unlabeled data. The model attempts to discover hidden patterns, clusters, or structures without predefined answers.",
+//     },
 
-      label: "Reinforcement Learning",
+//     {
+//       id: "reinforcement",
 
-      content:
-        "Reinforcement learning trains agents through rewards and penalties. The system learns strategies by interacting with an environment over time.",
-    },
+//       label: "Reinforcement Learning",
 
-    {
-      id: "deep-learning",
+//       content:
+//         "Reinforcement learning trains agents through rewards and penalties. The system learns strategies by interacting with an environment over time.",
+//     },
 
-      label: "Deep Learning",
+//     {
+//       id: "deep-learning",
 
-      content:
-        "Deep learning uses multi-layer neural networks to automatically learn complex representations from large amounts of data such as images, text, and audio.",
-    },
-  ],
-};
+//       label: "Deep Learning",
 
-const cards = [
-  { id: "1", front: "What is yeast?", back: "A microorganism used in baking." },
-  { id: "2", front: "What does yeast produce?", back: "Carbon dioxide gas." },
-  { id: "3", front: "Why is CO₂ important?", back: "It makes dough fluffy." },
-];
-// 🧪 Fake data (replace later with backend)
-const accordionContent = {
-  content_id: "accordion_1",
-  type: "accordion",
-  items: [
-    {
-      id: "1",
-      title: "What is yeast?",
-      content:
-        "Yeast is a microorganism used in baking. It consumes sugar and produces carbon dioxide, which helps dough rise.",
-    },
-    {
-      id: "2",
-      title: "Why is yeast important?",
-      content:
-        "It creates air bubbles in dough, giving bread and donuts their soft and fluffy texture.",
-    },
-    {
-      id: "3",
-      title: "What happens without yeast?",
-      content:
-        "The dough will not rise, resulting in dense and flat baked goods.",
-    },
-  ],
-};
+//       content:
+//         "Deep learning uses multi-layer neural networks to automatically learn complex representations from large amounts of data such as images, text, and audio.",
+//     },
+//   ],
+// };
 
-const stepsContent = {
-  content_id: "steps-001",
+// const cards = [
+//   { id: "1", front: "What is yeast?", back: "A microorganism used in baking." },
+//   { id: "2", front: "What does yeast produce?", back: "Carbon dioxide gas." },
+//   { id: "3", front: "Why is CO₂ important?", back: "It makes dough fluffy." },
+// ];
+// // 🧪 Fake data (replace later with backend)
+// const accordionContent = {
+//   content_id: "accordion_1",
+//   type: "accordion",
+//   items: [
+//     {
+//       id: "1",
+//       title: "What is yeast?",
+//       content:
+//         "Yeast is a microorganism used in baking. It consumes sugar and produces carbon dioxide, which helps dough rise.",
+//     },
+//     {
+//       id: "2",
+//       title: "Why is yeast important?",
+//       content:
+//         "It creates air bubbles in dough, giving bread and donuts their soft and fluffy texture.",
+//     },
+//     {
+//       id: "3",
+//       title: "What happens without yeast?",
+//       content:
+//         "The dough will not rise, resulting in dense and flat baked goods.",
+//     },
+//   ],
+// };
 
-  type: "steps",
+// const stepsContent = {
+//   content_id: "steps-001",
 
-  title: "How Bread Fermentation Works",
+//   type: "steps",
 
-  steps: [
-    {
-      id: "step-1",
+//   title: "How Bread Fermentation Works",
 
-      title: "Step 1 — Mix Ingredients",
+//   steps: [
+//     {
+//       id: "step-1",
 
-      content:
-        "Flour, water, salt, and yeast are combined together to form dough. Warm water helps activate the yeast.",
-    },
+//       title: "Step 1 — Mix Ingredients",
 
-    {
-      id: "step-2",
+//       content:
+//         "Flour, water, salt, and yeast are combined together to form dough. Warm water helps activate the yeast.",
+//     },
 
-      title: "Step 2 — Yeast Activation",
+//     {
+//       id: "step-2",
 
-      content:
-        "The yeast begins consuming sugars inside the dough and starts producing carbon dioxide gas.",
-    },
+//       title: "Step 2 — Yeast Activation",
 
-    {
-      id: "step-3",
+//       content:
+//         "The yeast begins consuming sugars inside the dough and starts producing carbon dioxide gas.",
+//     },
 
-      title: "Step 3 — Dough Expansion",
+//     {
+//       id: "step-3",
 
-      content:
-        "The gas becomes trapped inside the dough, creating air pockets that make the bread rise and become fluffy.",
-    },
+//       title: "Step 3 — Dough Expansion",
 
-    {
-      id: "step-4",
+//       content:
+//         "The gas becomes trapped inside the dough, creating air pockets that make the bread rise and become fluffy.",
+//     },
 
-      title: "Step 4 — Baking",
+//     {
+//       id: "step-4",
 
-      content:
-        "Heat causes the gases to expand further while the dough structure hardens, producing the final bread texture.",
-    },
-  ],
-};
+//       title: "Step 4 — Baking",
 
-const TestWrapper = () => {
+//       content:
+//         "Heat causes the gases to expand further while the dough structure hardens, producing the final bread texture.",
+//     },
+//   ],
+// };
 
-  const userId=useUser((s)=>s.user?.id)
+// const TestWrapper = () => {
 
-  const [showGame, setShowGame] = useState(true);
-  const [showFlashCard,setShowFlashCard]=useState(true);
-  const [showAccordion, setShowAccordion]=useState(true);
-  const [showSteps,setShowSteps]=useState(true)
-  const [showTabs,setShowTabs]=useState(true)
-  const [showRichContent,setShowRichContent]=useState(true)
-  const [showCharactercontnet,setShowCharacterContent]=useState(true)
-  const [showReveal,setShowReveal]=useState(true)
-  const [showScenario,setShowScenario]=useState(true)
-  const [showDiagram,setShowDiagram]=useState(true)
-  const [showDivider,setShowDivider]=useState(true)
-  const [showVideo,setShowVideo]=useState(true)
-  const [showMCQ,setShowMCQ]=useState(true)
-  const [showMultipleAnswer,setShowMultipleAnswer]=useState(true)
-  const [showTrueFalse,setShowTrueFalse]=useState(true)
-  const [showFillBlank,setShowFillBlank]=useState(true)
-  const [showMatch,setShowMatch]=useState(true)
-  const [showOrder,setShowOrder]=useState(true)
-  const [showShortEssay,setShowShortEssay]=useState(true)
+//   const userId=useUser((s)=>s.user?.id)
 
-  async function handleShortEssayInteraction(interaction:ShortEssayInteraction){
+//   const [showGame, setShowGame] = useState(true);
+//   const [showFlashCard,setShowFlashCard]=useState(true);
+//   const [showAccordion, setShowAccordion]=useState(true);
+//   const [showSteps,setShowSteps]=useState(true)
+//   const [showTabs,setShowTabs]=useState(true)
+//   const [showRichContent,setShowRichContent]=useState(true)
+//   const [showCharactercontnet,setShowCharacterContent]=useState(true)
+//   const [showReveal,setShowReveal]=useState(true)
+//   const [showScenario,setShowScenario]=useState(true)
+//   const [showDiagram,setShowDiagram]=useState(true)
+//   const [showDivider,setShowDivider]=useState(true)
+//   const [showVideo,setShowVideo]=useState(true)
+//   const [showMCQ,setShowMCQ]=useState(true)
+//   const [showMultipleAnswer,setShowMultipleAnswer]=useState(true)
+//   const [showTrueFalse,setShowTrueFalse]=useState(true)
+//   const [showFillBlank,setShowFillBlank]=useState(true)
+//   const [showMatch,setShowMatch]=useState(true)
+//   const [showOrder,setShowOrder]=useState(true)
+//   const [showShortEssay,setShowShortEssay]=useState(true)
 
-        console.log(
-            "Raw interaction:",
-            interaction
-        );
+//   async function handleShortEssayInteraction(interaction:AttemptPayload){
 
-        if(
-            interaction
-            .interaction_type
-            !==
-            "quiz_attempt"
-        ){
+//         console.log(
+//             "Raw interaction:",
+//             interaction
+//         );
 
-            return;
+//         if(
+//             interaction
+//             .interaction_type
+//             !==
+//             "quiz_attempt"
+//         ){
 
-        }
+//             return;
 
+//         }
 
-        const grading=
-            await fakeGradeEssay(
 
-                interaction
-                .response
+//         const grading=
+//             await fakeGradeEssay(
 
-            );
+//                 interaction
+//                 .response
 
-        console.log(
+//             );
 
-            "AI grading:",
+//         console.log(
 
-            grading
+//             "AI grading:",
 
-        );
+//             grading
 
-    }
+//         );
 
-  const handleOrderInteraction=(interaction:OrderInteraction)=>{
-    const payload={
-      user_id: userId,
-      session_id: "abc",
-      content_id: "order_1",
-      content_type: "order",
-      ...interaction
-    }
-    console.log("FINAL PAYLOAD", payload)
+//     }
 
-  }
+//   const handleOrderInteraction=(interaction:AttemptPayload)=>{
+//     const payload={
+//       user_id: userId,
+//       session_id: "abc",
+//       content_id: "order_1",
+//       content_type: "order",
+//       ...interaction
+//     }
+//     console.log("FINAL PAYLOAD", payload)
 
-  const handleMatchInteraction=(interaction:MatchInteraction)=>{
-    const payload={
-      user_id: userId,
-      session_id: "abc",
-      content_id: "match_1",
-      content_type: "match",
-      ...interaction
+//   }
 
-  }
+//   const handleMatchInteraction=(interaction:AttemptPayload)=>{
+//     const payload={
+//       user_id: userId,
+//       session_id: "abc",
+//       content_id: "match_1",
+//       content_type: "match",
+//       ...interaction
 
-  console.log("FINAL PAYLOAD", payload)
-  }
+//   }
 
-  const handleFillBlankInteraction=(interaction:FillBlankInteraction)=>{
+//   console.log("FINAL PAYLOAD", payload)
+//   }
 
-    const payload={
-      user_id: userId,
-      session_id: "abc",
-      content_id: "fillblank_1",
-      content_type: "fill_blank",
-      ...interaction
-    }
-    console.log("FINAL PAYLOAD", payload)
-  }
+//   const handleFillBlankInteraction=(interaction:AttemptPayload)=>{
 
-  const handleTrueFalseInteraction=(interaction:MCQInteraction)=>{
-    const payload={
-      user_id: userId,
-      session_id: "abc",
-      content_id: "truefalse_1",
-      content_type: "true_false",
-      ...interaction
-    }
-    console.log("FINAL PAYLOAD", payload)
-  }
+//     const payload={
+//       user_id: userId,
+//       session_id: "abc",
+//       content_id: "fillblank_1",
+//       content_type: "fill_blank",
+//       ...interaction
+//     }
+//     console.log("FINAL PAYLOAD", payload)
+//   }
 
-  const handleVideoInteraction=(interaction:VideoInteraction)=>{
-        const payload = {
-          user_id: userId,
-          session_id: "abc",
-          content_id: "video_1",
+//   const handleTrueFalseInteraction=(interaction:AttemptPayload)=>{
+//     const payload={
+//       user_id: userId,
+//       session_id: "abc",
+//       content_id: "truefalse_1",
+//       content_type: "true_false",
+//       ...interaction
+//     }
+//     console.log("FINAL PAYLOAD", payload)
+//   }
 
-          content_type: "video",
+//   const handleVideoInteraction=(interaction:AttemptPayload)=>{
+//         const payload = {
+//           user_id: userId,
+//           session_id: "abc",
+//           content_id: "video_1",
 
-          ...interaction,
-    };
+//           content_type: "video",
 
-    console.log("FINAL PAYLOAD", payload);
-  }
-  const handleDividerInteraction=(interaction:DividerInteraction)=>{
-      const payload = {
-          user_id: userId,
-          session_id: "abc",
-          content_id: "divider_1",
+//           ...interaction,
+//     };
 
-          content_type: "divider",
+//     console.log("FINAL PAYLOAD", payload);
+//   }
+//   const handleDividerInteraction=(interaction:AttemptPayload)=>{
+//       const payload = {
+//           user_id: userId,
+//           session_id: "abc",
+//           content_id: "divider_1",
 
-          ...interaction,
-    };
+//           content_type: "divider",
 
-    console.log("FINAL PAYLOAD", payload);
-  }
+//           ...interaction,
+//     };
 
-  const handleDiagrameInteraction=(interaction:DiagramInteraction)=>{
-    const payload = {
-          user_id: userId,
-          session_id: "abc",
-          content_id: "diagrame_1",
+//     console.log("FINAL PAYLOAD", payload);
+//   }
 
-          content_type: "diagram",
+//   const handleDiagrameInteraction=(interaction:AttemptPayload)=>{
+//     const payload = {
+//           user_id: userId,
+//           session_id: "abc",
+//           content_id: "diagrame_1",
 
-          ...interaction,
-    };
+//           content_type: "diagram",
 
-    console.log("FINAL PAYLOAD", payload);
-  }
+//           ...interaction,
+//     };
 
-  const handleScenarioInteraction=(interaction:ScenarioInteraction)=>{
-    const payload = {
-          user_id: userId,
-          session_id: "abc",
-          content_id: "scenario_1",
+//     console.log("FINAL PAYLOAD", payload);
+//   }
 
-          content_type: "scenario",
+//   const handleScenarioInteraction=(interaction:AttemptPayload)=>{
+//     const payload = {
+//           user_id: userId,
+//           session_id: "abc",
+//           content_id: "scenario_1",
 
-          ...interaction,
-    };
+//           content_type: "scenario",
 
-    console.log("FINAL PAYLOAD", payload);
-  }
+//           ...interaction,
+//     };
 
-  const handleRevealInteraction=(interaction:RevealInteraction)=>{
-    const payload = {
-          user_id: userId,
-          session_id: "abc",
-          content_id: "reveal1",
+//     console.log("FINAL PAYLOAD", payload);
+//   }
 
-          content_type: "reveal",
+//   const handleRevealInteraction=(interaction:AttemptPayload)=>{
+//     const payload = {
+//           user_id: userId,
+//           session_id: "abc",
+//           content_id: "reveal1",
 
-          ...interaction,
-    };
+//           content_type: "reveal",
 
-    console.log("FINAL PAYLOAD", payload);
-  }
-  const handleStepsInteraction =(interaction:StepsInteraction)=>{
-        const payload = {
-          user_id: userId,
-          session_id: "abc",
-          content_id: "steps1",
+//           ...interaction,
+//     };
 
-          content_type: "steps",
+//     console.log("FINAL PAYLOAD", payload);
+//   }
+//   const handleStepsInteraction =(interaction:AttemptPayload)=>{
+//         const payload = {
+//           user_id: userId,
+//           session_id: "abc",
+//           content_id: "steps1",
 
-          ...interaction,
-    };
+//           content_type: "steps",
 
-    console.log("FINAL PAYLOAD", payload);
-  }
+//           ...interaction,
+//     };
 
-  const handleFlashCardInteraction =(interaction:FlashCardsInteraction)=>{
-      const payload = {
-          user_id: userId,
-          session_id: "abc",
-          content_id: "flashcard-1",
+//     console.log("FINAL PAYLOAD", payload);
+//   }
 
-          content_type: "accordion",
+//   const handleFlashCardInteraction =(interaction:AttemptPayload)=>{
+//       const payload = {
+//           user_id: userId,
+//           session_id: "abc",
+//           content_id: "flashcard-1",
 
-          ...interaction,
-    };
+//           content_type: "accordion",
 
-    console.log("FINAL PAYLOAD", payload);
-  }
-  const handleGameInteraction = (interaction: GameInteraction) => {
-    const payload = {
-      user_id: userId,
-      session_id: "abc",
-      content_id: "game-1",
+//           ...interaction,
+//     };
 
-      content_type: "game",
+//     console.log("FINAL PAYLOAD", payload);
+//   }
+//   const handleGameInteraction = (interaction: AttemptPayload) => {
+//     const payload = {
+//       user_id: userId,
+//       session_id: "abc",
+//       content_id: "game-1",
 
-      ...interaction,
-    };
+//       content_type: "game",
 
-    console.log("FINAL PAYLOAD", payload);
+//       ...interaction,
+//     };
 
-  // future:
-  // await fetch(...)
-  };
+//     console.log("FINAL PAYLOAD", payload);
 
-  const handleAccordionInteraction =(interaction:AccordionInteraction)=>{
-    const payload={
-      user_id: userId,
-      session_id: "abc",
-      content_id: "accordion-1",
+//   // future:
+//   // await fetch(...)
+//   };
 
-      content_type: "accordion",
-      ...interaction
-    }
-    console.log("FINAL PAYLOAD", payload)
-  }
+//   const handleAccordionInteraction =(interaction:AttemptPayload)=>{
+//     const payload={
+//       user_id: userId,
+//       session_id: "abc",
+//       content_id: "accordion-1",
 
-  const handleTabsInteraction =(interaction:TabsInteraction)=>{
-        const payload={
-        user_id: userId,
-        session_id: "abc",
-        content_id: "tabs-1",
+//       content_type: "accordion",
+//       ...interaction
+//     }
+//     console.log("FINAL PAYLOAD", payload)
+//   }
 
-        content_type: "tab",
-        ...interaction
-      }
-      console.log("FINAL PAYLOAD", payload)
-  }
+//   const handleTabsInteraction =(interaction:AttemptPayload)=>{
+//         const payload={
+//         user_id: userId,
+//         session_id: "abc",
+//         content_id: "tabs-1",
 
-  const handleRichContentInteraction=(interaction:RichContentInteraction)=>{
-            const payload={
-        user_id: userId,
-        session_id: "abc",
-        content_id: "rich content-1",
+//         content_type: "tab",
+//         ...interaction
+//       }
+//       console.log("FINAL PAYLOAD", payload)
+//   }
 
-        content_type: "rich content",
-        ...interaction
-      }
-      console.log("FINAL PAYLOAD", payload)
-  }
+//   const handleRichContentInteraction=(interaction:AttemptPayload)=>{
+//             const payload={
+//         user_id: userId,
+//         session_id: "abc",
+//         content_id: "rich content-1",
 
-  const handleCharacterInteraction =(interaction:CharacterMessageInteraction)=>{
-      const payload={
-        user_id: userId,
-        session_id: "abc",
-        content_id: "character message 1",
+//         content_type: "rich content",
+//         ...interaction
+//       }
+//       console.log("FINAL PAYLOAD", payload)
+//   }
 
-        content_type: "character message",
-        ...interaction
-      }
-      console.log("FINAL PAYLOAD", payload)
-  }
+//   const handleCharacterInteraction =(interaction:AttemptPayload)=>{
+//       const payload={
+//         user_id: userId,
+//         session_id: "abc",
+//         content_id: "character message 1",
 
-  const handleMCQInteraction=(interaction:MCQInteraction)=>{
-    const payload={
-        user_id: userId,
-        session_id: "abc",
-        content_id: "mcq-1",
-        content_type: "mcq",
-        ...interaction
-    }
-    console.log("FINAL PAYLOAD", payload)
+//         content_type: "character message",
+//         ...interaction
+//       }
+//       console.log("FINAL PAYLOAD", payload)
+//   }
 
+//   const handleMCQInteraction=(interaction:AttemptPayload)=>{
+//     const payload={
+//         user_id: userId,
+//         session_id: "abc",
+//         content_id: "mcq-1",
+//         content_type: "mcq",
+//         ...interaction
+//     }
+//     console.log("FINAL PAYLOAD", payload)
 
-  }
 
-  const handleMultipleAnswerInteraction=(interaction:MultipleAnswerInteraction)=>{
-    const payload={
-        user_id: userId,
-        session_id: "abc",
-        content_id: "multiple-answer-1",
-        content_type: "multiple_answer",
-        ...interaction
-    }
-    console.log("FINAL PAYLOAD", payload)
+//   }
 
-  }
+//   const handleMultipleAnswerInteraction=(interaction:AttemptPayload)=>{
+//     const payload={
+//         user_id: userId,
+//         session_id: "abc",
+//         content_id: "multiple-answer-1",
+//         content_type: "multiple_answer",
+//         ...interaction
+//     }
+//     console.log("FINAL PAYLOAD", payload)
 
-  return (
-    <div>
-      <div className="short-essa">
-        <button onClick={()=>setShowShortEssay(prev=>!prev)}>Toggle Short Essay</button>
-        {
-          showShortEssay && <ShortEssay gradeAnswer={fakeGradeEssay} content={fakeShortEssay} onInteraction={handleShortEssayInteraction}/>
-        }
+//   }
 
-      </div>
-      <div className="order-container">
-        <button onClick={()=>setShowOrder(prev=>!prev)}>Toggle Order</button>
-        {
-          showOrder && <Order content={fakeOrder} onInteraction={handleOrderInteraction}/>
-        }
-      </div>
-      <div className="match-container">
-        <button onClick={()=>setShowMatch(prev=>!prev)}>Toggle Match</button>
-        {
-          showMatch && <Match content={fakeMatch} onInteraction={handleMatchInteraction}/>
-        }
-      </div>
-      <div className="fillblan-cont">
-        <button onClick={()=>setShowFillBlank(prev=>!prev)}>Toggle Fill Blank</button>
-        {
-          showFillBlank && <FillBlank content={fakeFillBlank} onInteraction={handleFillBlankInteraction}/>
-        }
-      </div>
-      <div className="tf-contain">
-        <button onClick={()=>setShowTrueFalse(prev=>!prev)}>Toggle True/False</button>
-        {
-          showTrueFalse && <TrueOrFalse content={fakeTrueFalse} onInteraction={handleTrueFalseInteraction}/>
-        }
-      </div>
-      <div className="maq-container">
-        <button onClick={()=>setShowMultipleAnswer(prev=>!prev)}>Toggle Multiple Answer</button>
-        {
-          showMultipleAnswer && <MultipleAnswer content={fakeMultipleAnswer} onInteraction={handleMultipleAnswerInteraction}/>
-        }
-      </div>
-      <div className="mcq-c">
-        <button onClick={()=>setShowMCQ(prev=>!prev)}>Toggle MCQ</button>
-        {
-          showMCQ && <MultipleChoice content={fakeMCQ} onInteraction={handleMCQInteraction}/>
-        }
-      </div>
-      <div className="videos-container">
-        <button onClick={()=>{setShowVideo(prev=>!prev)}}>Toggle Video</button>
-        {
-          showVideo && <Video content={fakeVideoContent} onInteraction={handleVideoInteraction} />
-        }
-      </div>
-      <div className="dividers-container">
-        <button onClick={()=>setShowDivider(prev=>!prev)}>Toggle Divider</button>
-        {
-          showDivider && <Divider content={fakeLineDivider} onInteraction={handleDividerInteraction}/>
-        }
-      </div>
-      <div className="diagrame-container">
-        <button onClick={()=>{setShowDiagram(prev=>!prev)}}>Toggle Diagram</button>
-        {
-          showDiagram && <Diagram content={fakeComparisonDiagram} onInteraction={handleDiagrameInteraction}/>
-        }
+//   return (
+//     <div>
+//       <div className="short-essa">
+//         <button onClick={()=>setShowShortEssay(prev=>!prev)}>Toggle Short Essay</button>
+//         {
+//           showShortEssay && <ShortEssay gradeAnswer={fakeGradeEssay} content={fakeShortEssay} onInteraction={handleShortEssayInteraction}/>
+//         }
 
-      </div>
-      <div className="scenario-container">
-        <button onClick={()=>{setShowScenario(prev=>!prev)}}>toggle scenario</button>
-        {
-          showScenario && <Scenario content={fakeScenarioContent} onInteraction={handleScenarioInteraction}/>
-        }
-      </div>
-      <div className="reveal-container">
-        <button
-          onClick={()=>{setShowReveal(prev=>!prev)}}
-        >Toggle Reveal</button>
-        {
-          showReveal &&
-          <Reveal
-            content={fakeRevealContent}
-            onInteraction={handleRevealInteraction}
-          />
-        }
-      </div>
-      <div className="show-flashcard">
-        <button
-          onClick={()=>{setShowFlashCard(prev=>!prev)}}
-        >
-          Show Flashcard
-        </button>
-        {
-          showFlashCard && 
-            <FlashCards
-              content={cards}
-              onInteraction={handleFlashCardInteraction}
-            />
-        }
-      </div>
-      <div className="game-container">
-      <button onClick={() => setShowGame((s) => !s)}>
-        Toggle Game
-      </button>
+//       </div>
+//       <div className="order-container">
+//         <button onClick={()=>setShowOrder(prev=>!prev)}>Toggle Order</button>
+//         {
+//           showOrder && <Order content={fakeOrder} onInteraction={handleOrderInteraction}/>
+//         }
+//       </div>
+//       <div className="match-container">
+//         <button onClick={()=>setShowMatch(prev=>!prev)}>Toggle Match</button>
+//         {
+//           showMatch && <Match content={fakeMatch} onInteraction={handleMatchInteraction}/>
+//         }
+//       </div>
+//       <div className="fillblan-cont">
+//         <button onClick={()=>setShowFillBlank(prev=>!prev)}>Toggle Fill Blank</button>
+//         {
+//           showFillBlank && <FillBlank content={fakeFillBlank} onInteraction={handleFillBlankInteraction}/>
+//         }
+//       </div>
+//       <div className="tf-contain">
+//         <button onClick={()=>setShowTrueFalse(prev=>!prev)}>Toggle True/False</button>
+//         {
+//           showTrueFalse && <TrueOrFalse content={fakeTrueFalse} onInteraction={handleTrueFalseInteraction}/>
+//         }
+//       </div>
+//       <div className="maq-container">
+//         <button onClick={()=>setShowMultipleAnswer(prev=>!prev)}>Toggle Multiple Answer</button>
+//         {
+//           showMultipleAnswer && <MultipleAnswer content={fakeMultipleAnswer} onInteraction={handleMultipleAnswerInteraction}/>
+//         }
+//       </div>
+//       <div className="mcq-c">
+//         <button onClick={()=>setShowMCQ(prev=>!prev)}>Toggle MCQ</button>
+//         {
+//           showMCQ && <MultipleChoice content={fakeMCQ} onInteraction={handleMCQInteraction}/>
+//         }
+//       </div>
+//       <div className="videos-container">
+//         <button onClick={()=>{setShowVideo(prev=>!prev)}}>Toggle Video</button>
+//         {
+//           showVideo && <Video content={fakeVideoContent} onInteraction={handleVideoInteraction} />
+//         }
+//       </div>
+//       <div className="dividers-container">
+//         <button onClick={()=>setShowDivider(prev=>!prev)}>Toggle Divider</button>
+//         {
+//           showDivider && <Divider content={fakeLineDivider} onInteraction={handleDividerInteraction}/>
+//         }
+//       </div>
+//       <div className="diagrame-container">
+//         <button onClick={()=>{setShowDiagram(prev=>!prev)}}>Toggle Diagram</button>
+//         {
+//           showDiagram && <Diagram content={fakeComparisonDiagram} onInteraction={handleDiagrameInteraction}/>
+//         }
 
-      {showGame && 
-        <Game
-          content={gameHTML}
-          onInteraction={handleGameInteraction}
-         />
-      }
-      </div>
-      <div className="accordions-container">
-        <button
-          onClick={()=>setShowAccordion(prev=>!prev)}
-        >Toggle Accordion</button>
-        {
-          showAccordion &&
-          <Accordion
-            content={accordionContent}
-            onInteraction={handleAccordionInteraction}
-          />
-        }
-      </div>
-      <div className="stepss-container">
-        <button 
-          onClick={()=>setShowSteps(prev=>!prev)}
-        >
-          Toggle Steps
-        </button>
-        {
-          showSteps &&
-          <Steps
-            content={stepsContent}
-            onInteraction={handleStepsInteraction}
-        />
-        }
-      </div>
-      <div className="tabss-container">
-        <button
-          onClick={()=>{setShowTabs(prev=>!prev)}}
-        >
-          toggle tabs
-        </button>
-        {
-          showTabs &&
-          <Tabs
-            content={tabsContent}
-            onInteraction={handleTabsInteraction}
-          />
+//       </div>
+//       <div className="scenario-container">
+//         <button onClick={()=>{setShowScenario(prev=>!prev)}}>toggle scenario</button>
+//         {
+//           showScenario && <Scenario content={fakeScenarioContent} onInteraction={handleScenarioInteraction}/>
+//         }
+//       </div>
+//       <div className="reveal-container">
+//         <button
+//           onClick={()=>{setShowReveal(prev=>!prev)}}
+//         >Toggle Reveal</button>
+//         {
+//           showReveal &&
+//           <Reveal
+//             content={fakeRevealContent}
+//             onInteraction={handleRevealInteraction}
+//           />
+//         }
+//       </div>
+//       <div className="show-flashcard">
+//         <button
+//           onClick={()=>{setShowFlashCard(prev=>!prev)}}
+//         >
+//           Show Flashcard
+//         </button>
+//         {
+//           showFlashCard && 
+//             <FlashCards
+//               content={cards}
+//               onInteraction={handleFlashCardInteraction}
+//             />
+//         }
+//       </div>
+//       <div className="game-container">
+//       <button onClick={() => setShowGame((s) => !s)}>
+//         Toggle Game
+//       </button>
 
-        }
-      </div>
-      <div className="richcontent-container">
-        <button
-          onClick={()=>setShowRichContent(prev=>!prev)}
-        >Toggle Rich Content</button>
-        {
-          showRichContent && 
-          <RichContent
-            content={richTextContent}
-            onInteraction={handleRichContentInteraction}
-          />
-        }
-      </div>
-      <div className="character-message-container">
-        <button
-          onClick={()=>{setShowCharacterContent(prev=>!prev)}}
-        >
-          toggle character message
-        </button>
-        {
-          showCharactercontnet &&
-          <CharacterMessage
-            content={fakeCharacterMessage}
-            onInteraction={handleCharacterInteraction}
-          />
-        }
-      </div>
+//       {showGame && 
+//         <Game
+//           content={gameHTML}
+//           onInteraction={handleGameInteraction}
+//          />
+//       }
+//       </div>
+//       <div className="accordions-container">
+//         <button
+//           onClick={()=>setShowAccordion(prev=>!prev)}
+//         >Toggle Accordion</button>
+//         {
+//           showAccordion &&
+//           <Accordion
+//             content={accordionContent}
+//             onInteraction={handleAccordionInteraction}
+//           />
+//         }
+//       </div>
+//       <div className="stepss-container">
+//         <button 
+//           onClick={()=>setShowSteps(prev=>!prev)}
+//         >
+//           Toggle Steps
+//         </button>
+//         {
+//           showSteps &&
+//           <Steps
+//             content={stepsContent}
+//             onInteraction={handleStepsInteraction}
+//         />
+//         }
+//       </div>
+//       <div className="tabss-container">
+//         <button
+//           onClick={()=>{setShowTabs(prev=>!prev)}}
+//         >
+//           toggle tabs
+//         </button>
+//         {
+//           showTabs &&
+//           <Tabs
+//             content={tabsContent}
+//             onInteraction={handleTabsInteraction}
+//           />
 
-    </div>
-  );
-};
+//         }
+//       </div>
+//       <div className="richcontent-container">
+//         <button
+//           onClick={()=>setShowRichContent(prev=>!prev)}
+//         >Toggle Rich Content</button>
+//         {
+//           showRichContent && 
+//           <RichContent
+//             content={richTextContent}
+//             onInteraction={handleRichContentInteraction}
+//           />
+//         }
+//       </div>
+//       <div className="character-message-container">
+//         <button
+//           onClick={()=>{setShowCharacterContent(prev=>!prev)}}
+//         >
+//           toggle character message
+//         </button>
+//         {
+//           showCharactercontnet &&
+//           <CharacterMessage
+//             content={fakeCharacterMessage}
+//             onInteraction={handleCharacterInteraction}
+//           />
+//         }
+//       </div>
 
-export default TestWrapper
+//     </div>
+//   );
+// };
+
+// export default TestWrapper
