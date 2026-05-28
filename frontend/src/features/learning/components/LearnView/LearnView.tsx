@@ -1,11 +1,11 @@
 import "./LearnView.css";
 
 import type { ObjectiveContent } from "../../api";
+import type { InteractionRecord, EngagementRecord } from "../../types/type";
 
 import BlockRenderer from "../../../content/renderers/BlockRenderer";
 
 type Props = {
-    lessonId: string | null;
     currentObjectiveId: number | null;
 
     loading: boolean;
@@ -15,15 +15,17 @@ type Props = {
     contentLoading: boolean;
     contentError: string | null;
 
-    onInteraction?: (interaction:any)=>Promise<void>;
+    onInteraction?: (record: InteractionRecord) => Promise<void> | void;
+    onEngagementEnd?: (record: EngagementRecord) => Promise<void> | void;
+    onNext?: () => void;
+    canGoNext?: boolean;
 
     gradeAnswer?: (
-        response:string
-    )=>Promise<any>;
+        response: string
+    ) => Promise<any>;
 };
 
 const LearnView = ({
-    lessonId,
     currentObjectiveId,
 
     loading,
@@ -34,6 +36,9 @@ const LearnView = ({
     contentError,
 
     onInteraction,
+    onEngagementEnd,
+    onNext,
+    canGoNext,
     gradeAnswer
 
 }: Props) => {
@@ -104,11 +109,24 @@ const LearnView = ({
                     <BlockRenderer
                         block={block}
                         onInteraction={onInteraction}
+                        onEngagementEnd={onEngagementEnd}
                         gradeAnswer={gradeAnswer}
                     />
                 </div>
 
             ))}
+
+            {onNext && (
+                <div className="learn-next-row">
+                    <button
+                        className="learn-next-button"
+                        onClick={onNext}
+                        disabled={!canGoNext}
+                    >
+                        Next
+                    </button>
+                </div>
+            )}
 
         </div>
 

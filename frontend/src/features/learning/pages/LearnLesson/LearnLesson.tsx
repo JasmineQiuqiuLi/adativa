@@ -1,10 +1,22 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
   import { useParams } from "react-router-dom";
   import LessonNavigation from "../../components/LessonNavigation/LessonNavigation";
   import LearnView from "../../components/LearnView/LearnView";
-  import Chat from "../../components/Chat/Chat";
   import { useUser } from "../../../auth/hooks/useUser";
-  import { fetchLessonProgress,fetchObjectiveContent, type LessonProgress, type ObjectiveContent } from "../../api";
+  import {
+    fetchLessonProgress,
+    fetchObjectiveContent,
+    updateObjectiveProgress,
+    postInteraction,
+    patchInteractionEngagement,
+    type LessonProgress,
+    type ObjectiveContent,
+  } from "../../api";
+  import type {
+    InteractionRecord,
+    EngagementRecord,
+    InteractionCreatePayload,
+  } from "../../types/type";
   import "./LeaarnLesson.css";
 
   const LearnLesson = () => {
@@ -18,6 +30,86 @@ import { useEffect, useState } from "react";
     const [content,setContent] = useState<ObjectiveContent | null> (null)
     const [contentLoading,setContentLoading]=useState(false)
     const [contentError,setContentError]=useState<string | null>(null)
+
+    // One session id per page load — passed on every interaction.
+    const sessionId = useMemo(() => {
+      if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+        return crypto.randomUUID();
+      }
+      return `sess_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    }, []);
+
+    // Tracks how many attempt rows we POSTed for each engagement window.
+    // engagement_end PATCHes if attempts exist; otherwise we POST a single
+    // engagement-only row so non-graded blocks still get recorded.
+    const attemptsPerEngagementRef = useRef<Map<string, number>>(new Map());
+    const startedObjectivesRef = useRef<Set<number>>(new Set());
+
+    const handleInteraction = useCallback(
+      async (record: InteractionRecord) => {
+        if (!userId) return;
+
+        const payload: InteractionCreatePayload = {
+          ...record,
+          user_id: userId,
+          session_id: sessionId,
+        };
+
+        try {
+          await postInteraction(payload);
+          const count =
+            attemptsPerEngagementRef.current.get(record.engagement_id) ?? 0;
+          attemptsPerEngagementRef.current.set(
+            record.engagement_id,
+            count + 1
+          );
+        } catch (err) {
+          console.error("Failed to post interaction", err);
+        }
+      },
+      [userId, sessionId]
+    );
+
+    const handleEngagementEnd = useCallback(
+      async (record: EngagementRecord) => {
+        if (!userId) return;
+
+        const attemptsCount =
+          attemptsPerEngagementRef.current.get(record.engagement_id) ?? 0;
+
+        if (attemptsCount > 0) {
+          try {
+            await patchInteractionEngagement(record.engagement_id, {
+              engagement_end: record.engagement_end!,
+              active_duration_ms: record.active_duration_ms,
+            });
+          } catch (err) {
+            console.error("Failed to patch engagement", err);
+          }
+          return;
+        }
+
+        // Non-graded block with no in-window attempts: emit one engagement row.
+        const payload: InteractionCreatePayload = {
+          engagement_id: record.engagement_id,
+          started_at: record.started_at,
+          engagement_end: record.engagement_end,
+          active_duration_ms: record.active_duration_ms,
+          content_id: record.content_id,
+          content_type: record.content_type,
+          interaction_type: `${record.content_type}_session`,
+          attempt_number: 0,
+          user_id: userId,
+          session_id: sessionId,
+        };
+        try {
+          await postInteraction(payload);
+        } catch (err) {
+          console.error("Failed to post engagement-only row", err);
+        }
+      },
+      [userId, sessionId]
+    );
 
 
     useEffect(() => {
@@ -59,6 +151,22 @@ import { useEffect, useState } from "react";
           const data=await fetchObjectiveContent(lessonId!,currentObjectiveId!)
           if (cancelled) return;
           setContent(data)
+
+          if (
+            userId &&
+            !startedObjectivesRef.current.has(currentObjectiveId!)
+          ) {
+            startedObjectivesRef.current.add(currentObjectiveId!);
+            const progressData = await updateObjectiveProgress(
+              lessonId!,
+              currentObjectiveId!,
+              userId,
+              { status: "in_progress" }
+            );
+            if (!cancelled) {
+              setProgress(progressData);
+            }
+          }
         }
         catch(err){
           if (cancelled) return;
@@ -70,35 +178,66 @@ import { useEffect, useState } from "react";
           }
         }
       }
-      
+
       loadContent()
 
       return ()=>{
         cancelled=true;
       }
 
-    },[lessonId,currentObjectiveId])
-      
+    },[lessonId,currentObjectiveId,userId])
+
+
+    // Resolve the next objective by order_index. Setting currentObjectiveId
+    // causes the content effect above to re-fetch, which unmounts the current
+    // blocks — their useFinalize handlers fire POSTs/PATCHes the same way a
+    // tab close would.
+    const handleNext = useCallback(async () => {
+      if (!lessonId || !userId || currentObjectiveId == null) return;
+      // Clearing content first ensures the old blocks unmount before the new
+      // ones mount, so cleanup handlers (useFinalize) fire predictably.
+      setContent(null);
+      try {
+        const progressData = await updateObjectiveProgress(
+          lessonId,
+          currentObjectiveId,
+          userId,
+          { status: "completed" }
+        );
+        setProgress(progressData);
+        setCurrentObjectiveId(progressData.current_objective_id);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to save lesson progress");
+        setCurrentObjectiveId(currentObjectiveId);
+      }
+    }, [lessonId, userId, currentObjectiveId]);
 
 
     return (
       <div className="learn-layout">
-        <LessonNavigation />
-        
+        <LessonNavigation 
+          currentObjectiveId={currentObjectiveId}
+          progress={progress}
+        />
+
         <div className="middle-panel">
             <LearnView
-              lessonId={lessonId ?? null}
               currentObjectiveId={currentObjectiveId}
               loading={loading}
               error={error}
               content={content}
               contentLoading={contentLoading}
               contentError={contentError}
+              onInteraction={handleInteraction}
+              onEngagementEnd={handleEngagementEnd}
+              onNext={handleNext}
+              canGoNext={currentObjectiveId != null}
             />
         </div>
 
-        <Chat />
-        
+        {/* <Chat /> */}
+
       </div>
     );
   };

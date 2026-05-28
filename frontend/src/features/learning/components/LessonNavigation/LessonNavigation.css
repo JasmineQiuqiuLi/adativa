@@ -7,7 +7,7 @@
   background: #ffffff;
   border-right: 1px solid #e5e7eb;
   transition: width 0.25s ease;
-  overflow-y:visible;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
 }
@@ -73,6 +73,10 @@
 
 /* Objective title */
 .nav-objective-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
   font-weight: 600;
   font-size: 14px;
   color: #111827;
@@ -127,4 +131,39 @@
   font-size: 13px;
   color: #dc2626;
   margin-top: 10px;
+}
+
+/* Current objective */
+
+.nav-objective--current {
+  background: #eef4ff;
+  border-left: 4px solid #2563eb;
+}
+
+/* Completed objective */
+
+.nav-objective--completed {
+  background: #f0fdf4;
+  border-left: 4px solid #16a34a;
+}
+
+/* Upcoming objective */
+
+.nav-objective--upcoming {
+  background: #f9fafb;
+}
+
+.nav-objective-indicator {
+  width: 16px;
+  display: inline-flex;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.nav-objective--current:hover {
+  background: #dbeafe;
+}
+
+.nav-objective--completed:hover {
+  background: #dcfce7;
 }

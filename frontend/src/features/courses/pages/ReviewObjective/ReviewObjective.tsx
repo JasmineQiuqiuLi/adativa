@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import "./ReviewObjective.css"
 import { useParams } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'

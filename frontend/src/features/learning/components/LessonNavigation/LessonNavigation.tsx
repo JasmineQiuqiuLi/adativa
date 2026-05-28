@@ -1,6 +1,7 @@
 import { useState,useEffect} from "react";
 import { useParams } from "react-router-dom";
 import "./LessonNavigation.css";
+import type { LessonProgress } from "../../api";
 
 
 type Skill={
@@ -16,9 +17,33 @@ type Objective={
     skills:Skill[];
 }
 
+type LessonNavigationProps = {
+  currentObjectiveId: number | null;
+  progress: LessonProgress | null;
+};
 
+function getObjectiveState(
+  objectiveId: number,
+  currentObjectiveId: number | null,
+  progress: LessonProgress | null
+): "completed" | "current" | "upcoming" {
 
-const LessonNavigation = () => {
+  const objectiveProgress = progress?.objectives.find(
+    (o) => o.objective_id === objectiveId
+  );
+
+  if (objectiveProgress?.status === "completed") {
+    return "completed";
+  }
+
+  if (objectiveId === currentObjectiveId) {
+    return "current";
+  }
+
+  return "upcoming";
+}
+
+const LessonNavigation = ({currentObjectiveId,progress}:LessonNavigationProps) => {
   const {lessonId}=useParams<{lessonId:string}>()
 
   const [collapsed, setCollapsed] = useState(false);
@@ -47,6 +72,7 @@ const LessonNavigation = () => {
     fetchObjectives()
   },[lessonId])
 
+
   return (
     <aside className={`lesson-nav-panel ${collapsed ? "collapsed" : ""}`}>
       <button
@@ -72,23 +98,39 @@ const LessonNavigation = () => {
             !error &&
             objectives
               .sort((a, b) => a.orderIndex - b.orderIndex)
-              .map((obj) => (
-                <div key={obj.objectiveId} className="nav-objective">
-                  <p className="nav-objective-title">
-                    {obj.orderIndex}. {obj.title}
-                  </p>
+              .map((obj) => {
+                  const state = getObjectiveState(
+                    obj.objectiveId,
+                    currentObjectiveId,
+                    progress
+                  );
 
-                  <p className="nav-objective-desc">
-                    {obj.description}
-                  </p>
+                return (
+                    <div
+                      key={obj.objectiveId}
+                      className={`nav-objective nav-objective--${state}`}
+                    >
+                      <p className="nav-objective-title">
+                        <span className="nav-objective-indicator">
+                          {state === "completed" && "✓"}
+                          {state === "current" && "●"}
+                          {state === "upcoming" && "○"}
+                        </span>
 
-                  <ul>
-                    {obj.skills.map((skill) => (
-                      <li key={skill.skillId}>{skill.name}</li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+                        {obj.orderIndex}. {obj.title}
+                      </p>
+
+                      <p className="nav-objective-desc">{obj.description}</p>
+
+                      <ul>
+                        {obj.skills.map((skill) => (
+                          <li key={skill.skillId}>{skill.name}</li>
+                        ))}
+                      </ul>
+                    </div>
+                )
+
+            })}
         </div>
       )}
     </aside>

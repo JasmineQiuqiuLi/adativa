@@ -1,7 +1,8 @@
 "use client";
 
 import MultipleChoice from "../MultipleChoice/MultipleChoice";
-import type { MCQBlock,MCQInteraction } from "../MultipleChoice/MultipleChoice";
+import type { MCQBlock } from "../MultipleChoice/MultipleChoice";
+import type { AttemptPayload } from "../EngagementWrapper/EngagementWrapper";
 
 
 export type TrueFalseBlock = {
@@ -25,13 +26,15 @@ export type TrueFalseBlock = {
 
 interface Props{
    content:TrueFalseBlock;
-   onInteraction?:(interaction:MCQInteraction)=>void;
+   onInteraction?:(payload:AttemptPayload)=>void|Promise<void>;
+   onAttemptRetry?: () => void;
 }
 
 export default function TrueOrFalse({
 
    content,
-   onInteraction
+   onInteraction,
+   onAttemptRetry
 
 }:Props){
 
@@ -84,6 +87,9 @@ export default function TrueOrFalse({
          }
          onInteraction={
             onInteraction
+         }
+         onAttemptRetry={
+            onAttemptRetry
          }
       />
 

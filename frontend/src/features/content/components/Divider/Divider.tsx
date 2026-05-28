@@ -1,11 +1,13 @@
 "use client";
 
-import {
-  useEffect,
-  useRef,
-} from "react";
+import { useRef } from "react";
 
 import "./Divider.css";
+
+import {
+  useFinalize,
+  type AttemptPayload,
+} from "../EngagementWrapper/EngagementWrapper";
 
 export type DividerVariant =
   | "line"
@@ -26,155 +28,34 @@ export type DividerBlock = {
   icon?: string;
 };
 
-export type DividerInteraction = {
-  interaction_type: "divider_session";
-
-  started_at: string;
-
-  engagement_end: string;
-
-  metadata: {
-    variant: DividerVariant;
-
-    has_label: boolean;
-
-    engagement_mode:
-      | "visibility_based";
-
-    visible_duration_ms: number;
-  };
-};
-
 type DividerProps = {
   content: DividerBlock;
 
-  onInteraction?: (
-    interaction: DividerInteraction
-  ) => void;
+  onInteraction?: (payload: AttemptPayload) => void | Promise<void>;
 };
-
-const VISIBILITY_THRESHOLD = 0.5;
-
-const MIN_DWELL_TIME_MS = 600;
 
 const Divider = ({
   content,
   onInteraction,
 }: DividerProps) => {
-  const containerRef =
-    useRef<HTMLDivElement | null>(null);
-
-  const startedAtRef = useRef<number | null>(
-    null
-  );
-
-  const dwellTimerRef =
-    useRef<number | null>(null);
+  const variant = content.variant || "line";
 
   const hasLoggedRef = useRef(false);
-
-  const variant =
-    content.variant || "line";
-
-  useEffect(() => {
-    const node = containerRef.current;
-
-    if (!node) return;
-
-    const observer =
-      new IntersectionObserver(
-        ([entry]) => {
-          if (
-            entry.isIntersecting &&
-            entry.intersectionRatio >=
-              VISIBILITY_THRESHOLD
-          ) {
-            if (!dwellTimerRef.current) {
-              dwellTimerRef.current =
-                window.setTimeout(() => {
-                  if (
-                    !startedAtRef.current
-                  ) {
-                    startedAtRef.current =
-                      Date.now();
-                  }
-                }, MIN_DWELL_TIME_MS);
-            }
-          } else {
-            if (dwellTimerRef.current) {
-              clearTimeout(
-                dwellTimerRef.current
-              );
-
-              dwellTimerRef.current =
-                null;
-            }
-          }
-        },
-        {
-          threshold:
-            VISIBILITY_THRESHOLD,
-        }
-      );
-
-    observer.observe(node);
-
-    return () => {
-      observer.disconnect();
-
-      if (dwellTimerRef.current) {
-        clearTimeout(
-          dwellTimerRef.current
-        );
-      }
-
-      if (!startedAtRef.current)
-        return;
-
-      if (hasLoggedRef.current)
-        return;
-
-      hasLoggedRef.current = true;
-
-      const engagementEnd = Date.now();
-
-      const interaction: DividerInteraction =
-        {
-          interaction_type:
-            "divider_session",
-
-          started_at: new Date(
-            startedAtRef.current
-          ).toISOString(),
-
-          engagement_end: new Date(
-            engagementEnd
-          ).toISOString(),
-
-          metadata: {
-            variant,
-
-            has_label:
-              !!content.label,
-
-            engagement_mode:
-              "visibility_based",
-
-            visible_duration_ms:
-              engagementEnd -
-              startedAtRef.current,
-          },
-        };
-
-      onInteraction?.(interaction);
-    };
-  }, []);
+  useFinalize(() => {
+    if (hasLoggedRef.current) return;
+    hasLoggedRef.current = true;
+    onInteraction?.({
+      interaction_type: "divider_session",
+      attempt_number: 0,
+      metadata: {
+        variant,
+        has_label: !!content.label,
+      },
+    });
+  });
 
   return (
-    <div
-      ref={containerRef}
-      className={`divider-block ${variant}`}
-    >
+    <div className={`divider-block ${variant}`}>
       {variant === "spacer" ? null : (
         <>
           <div className="divider-line" />

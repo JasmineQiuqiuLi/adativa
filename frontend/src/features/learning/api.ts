@@ -1,3 +1,8 @@
+import type {
+    InteractionCreatePayload,
+    EngagementFinalizePayload,
+} from "./types/type";
+
 const API_BASE = "http://127.0.0.1:8000";
 
 // ----- Progress types -----
@@ -22,6 +27,12 @@ export type ObjectiveProgress = {
 export type LessonProgress = {
     current_objective_id: number | null;
     objectives: ObjectiveProgress[];
+};
+
+export type ObjectiveProgressUpdate = {
+    status?: ProgressStatus;
+    attempts_delta?: number;
+    correct_delta?: number;
 };
 
 // ----- Content types -----
@@ -71,6 +82,31 @@ export async function fetchLessonProgress(
     return res.json();
 }
 
+export async function updateObjectiveProgress(
+    lessonId: string | number,
+    objectiveId: number,
+    userId: number,
+    body: ObjectiveProgressUpdate
+): Promise<LessonProgress> {
+    const res = await fetch(
+        `${API_BASE}/lessons/${lessonId}/objectives/${objectiveId}/progress`,
+        {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                user_id: userId,
+                status: body.status,
+                attempts_delta: body.attempts_delta ?? 0,
+                correct_delta: body.correct_delta ?? 0,
+            }),
+        }
+    );
+    if (!res.ok) {
+        throw new Error(`Failed to update progress (${res.status})`);
+    }
+    return res.json();
+}
+
 
 export async function fetchObjectiveContent(
   lessonId: string | number,
@@ -102,4 +138,47 @@ export async function fetchObjectiveContent(
   }
 
   return res.json();
+}
+
+
+// ----- Interactions -----
+
+export type InteractionCreatedResponse = {
+    id: number;
+};
+
+// `keepalive: true` lets the browser complete the request even after the page
+// is being unloaded (tab close, navigation). Required for pagehide-driven
+// engagement_end PATCHes and abandon POSTs to actually reach the server.
+export async function postInteraction(
+    payload: InteractionCreatePayload
+): Promise<InteractionCreatedResponse> {
+    const res = await fetch(`${API_BASE}/interactions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        keepalive: true,
+    });
+    if (!res.ok) {
+        throw new Error(`Failed to create interaction (${res.status})`);
+    }
+    return res.json();
+}
+
+export async function patchInteractionEngagement(
+    engagementId: string,
+    payload: EngagementFinalizePayload
+): Promise<void> {
+    const res = await fetch(
+        `${API_BASE}/interactions/engagement/${engagementId}`,
+        {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+            keepalive: true,
+        }
+    );
+    if (!res.ok) {
+        throw new Error(`Failed to update engagement (${res.status})`);
+    }
 }

@@ -344,3 +344,49 @@ class LessonProgressResponse(BaseModel):
     objectives: list[ObjectiveProgressRow]
 
 
+class ObjectiveProgressUpdateRequest(BaseModel):
+    user_id: int
+    status: Optional[Literal['not_started','in_progress','completed','mastered']] = None
+    attempts_delta: int = 0
+    correct_delta: int = 0
+
+
+# -----------------------------
+# Interaction Schemas (fact_interactions)
+# -----------------------------
+
+class InteractionCreateRequest(BaseModel):
+    user_id: int
+    session_id: str
+    engagement_id: str
+
+    content_id: int
+    content_type: str
+
+    interaction_type: str
+
+    started_at: datetime
+    engagement_end: Optional[datetime] = None
+    active_duration_ms: int = 0
+
+    submitted_at: Optional[datetime] = None
+    response: Optional[str] = None
+    is_correct: Optional[bool] = None
+    score: Optional[float] = None
+    attempt_number: int = 0
+
+    metadata: Optional[dict] = None
+    graded_at: Optional[datetime] = None
+    grading_status: Optional[str] = None
+    grading_feedback: Optional[str] = None
+
+
+class InteractionCreateResponse(BaseModel):
+    id: int
+
+
+class EngagementFinalizeRequest(BaseModel):
+    engagement_end: datetime
+    active_duration_ms: int
+
+

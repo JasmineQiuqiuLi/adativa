@@ -2,27 +2,38 @@ import React from "react";
 import { BLOCK_REGISTRY } from "./BlockRegistry";
 
 import type { ContentBlock } from "../../learning/api";
-import type { InteractionResult } from "../../learning/types/type";
 import type { GradeResult } from "../components/ShortEssay/ShortEssay";
+import EngagementWrapper, {
+    type AttemptPayload,
+    type EngagementRecord,
+    type InteractionRecord,
+} from "../components/EngagementWrapper/EngagementWrapper";
 
-import transformMarkdown from "../utils/transformMarkdown";
 import renderMarkdown from "../utils/renderMarkdown";
+
+const MARKDOWN_BLOCK_TYPES = new Set<string>([
+    "rich_content",
+    "tabs",
+    "accordion",
+]);
 
 type Props = {
     block: ContentBlock;
-    onInteraction?: (interaction: InteractionResult) => Promise<void>;
+    onInteraction?: (record: InteractionRecord) => Promise<void> | void;
+    onEngagementEnd?: (record: EngagementRecord) => Promise<void> | void;
     gradeAnswer?: (response: string) => Promise<GradeResult>;
 };
 
 type GenericBlockProps = {
     content: any;
-    onInteraction?: ( interaction: InteractionResult) => Promise<void>;
+    onInteraction?: (payload: AttemptPayload) => Promise<void> | void;
     gradeAnswer?: (response: string) => Promise<GradeResult>;
 };
 
 const BlockRenderer = ({
     block,
     onInteraction,
+    onEngagementEnd,
     gradeAnswer
 }: Props) => {
 
@@ -48,37 +59,28 @@ const BlockRenderer = ({
     }
 
     const sharedProps = {
-        content: renderMarkdown(block.data),
-        onInteraction
+        content: MARKDOWN_BLOCK_TYPES.has(block.type)
+            ? renderMarkdown(block.data)
+            : block.data,
     };
 
-    switch(block.type){
+    const blockElement =
+        block.type === "short_essay"
+            ? (gradeAnswer
+                ? <Component {...sharedProps} gradeAnswer={gradeAnswer} />
+                : <div>Missing gradeAnswer function</div>)
+            : <Component {...sharedProps} />;
 
-        case "short_essay":
-
-            if(!gradeAnswer){
-                return (
-                    <div>
-                        Missing gradeAnswer function
-                    </div>
-                );
-            }
-
-            return (
-                <Component
-                    {...sharedProps}
-                    gradeAnswer={gradeAnswer}
-                />
-            );
-
-        default:
-
-            return (
-                <Component
-                    {...sharedProps}
-                />
-            );
-    }
+    return (
+        <EngagementWrapper
+            contentId={block.id}
+            contentType={block.type}
+            onInteraction={onInteraction}
+            onEngagementEnd={onEngagementEnd}
+        >
+            {blockElement}
+        </EngagementWrapper>
+    );
 };
 
 export default BlockRenderer;

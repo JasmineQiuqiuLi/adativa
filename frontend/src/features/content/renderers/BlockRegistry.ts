@@ -33,7 +33,7 @@ export const BLOCK_REGISTRY={
     reveal:Reveal,
     rich_content:RichContent,
     scenario:Scenario,
-    short_essary:ShortEssay,
+    short_essay:ShortEssay,
     steps:Steps,
     tabs:Tabs,
     true_false:TrueOrFalse,

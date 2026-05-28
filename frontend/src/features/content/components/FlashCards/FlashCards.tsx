@@ -1,7 +1,12 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import "./FlashCards.css";
+
+import {
+  useFinalize,
+  type AttemptPayload,
+} from "../EngagementWrapper/EngagementWrapper";
 
 type Card = {
   id: string;
@@ -9,25 +14,14 @@ type Card = {
   back: string;
 };
 
-export type FlashCardsInteraction={
-  interaction_type:string;
-  started_at:string;
-  engagement_end:string;
-  metadata?:any;
-}
+export type FlashCardsProps = {
+  content: Card[];
+  onInteraction?: (payload: AttemptPayload) => void | Promise<void>;
+};
 
-export type FlashCardsProps={
-  content:Card[];
-  onInteraction?:(interaction:FlashCardsInteraction)=>void;
-}
-
-const FlashCards = ({content,onInteraction}:FlashCardsProps) => {
+const FlashCards = ({ content, onInteraction }: FlashCardsProps) => {
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
-
-  // 🧠 tracking refs
-  const startedAtRef = useRef<number | null>(null);
-  const lastActivityRef = useRef<number | null>(null);
 
   const cardsSeenRef = useRef<Set<string>>(new Set());
   const revealCountRef = useRef(0);
@@ -35,23 +29,12 @@ const FlashCards = ({content,onInteraction}:FlashCardsProps) => {
 
   const card = content[index];
 
-  // 🔥 helper: mark activity
-  const markActivity = () => {
-    const now = Date.now();
-
-    if (!startedAtRef.current) {
-      startedAtRef.current = now;
-    }
-
-    lastActivityRef.current = now;
-
-    // track card seen
+  const noteCardSeen = () => {
     cardsSeenRef.current.add(card.id);
   };
 
-  // 🔥 flip card (reveal)
   const handleFlip = () => {
-    markActivity();
+    noteCardSeen();
 
     if (!flipped) {
       revealCountRef.current += 1;
@@ -60,10 +43,9 @@ const FlashCards = ({content,onInteraction}:FlashCardsProps) => {
     setFlipped((f) => !f);
   };
 
-  // 🔥 next
   const handleNext = () => {
     if (index < content.length - 1) {
-      markActivity();
+      noteCardSeen();
       navigationCountRef.current += 1;
 
       setIndex(index + 1);
@@ -71,10 +53,9 @@ const FlashCards = ({content,onInteraction}:FlashCardsProps) => {
     }
   };
 
-  // 🔥 prev
   const handlePrev = () => {
     if (index > 0) {
-      markActivity();
+      noteCardSeen();
       navigationCountRef.current += 1;
 
       setIndex(index - 1);
@@ -82,31 +63,21 @@ const FlashCards = ({content,onInteraction}:FlashCardsProps) => {
     }
   };
 
-  // 🔥 finalize interaction on unmount
-  useEffect(() => {
-    return () => {
-      if (!startedAtRef.current) return;
-
-      const engagementEnd = lastActivityRef.current || Date.now();
-
-      const interaction = {
-        interaction_type: "flashcard_session",
-
-        started_at: new Date(startedAtRef.current).toISOString(),
-        // submitted_at: null,
-        engagement_end: new Date(engagementEnd).toISOString(),
-
-        metadata: {
-          cards_viewed: cardsSeenRef.current.size,
-          cards_seen_ids: Array.from(cardsSeenRef.current),
-          reveal_count: revealCountRef.current,
-          navigation_count: navigationCountRef.current,
-        }
-      };
-
-      onInteraction?.(interaction);
-    };
-  }, []);
+  const hasLoggedRef = useRef(false);
+  useFinalize(() => {
+    if (hasLoggedRef.current) return;
+    hasLoggedRef.current = true;
+    onInteraction?.({
+      interaction_type: "flashcard_session",
+      attempt_number: 0,
+      metadata: {
+        cards_viewed: cardsSeenRef.current.size,
+        cards_seen_ids: Array.from(cardsSeenRef.current),
+        reveal_count: revealCountRef.current,
+        navigation_count: navigationCountRef.current,
+      },
+    });
+  });
 
   return (
     <div className="flashcard-block">

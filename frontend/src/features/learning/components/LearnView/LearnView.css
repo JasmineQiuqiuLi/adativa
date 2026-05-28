@@ -28,4 +28,29 @@
     margin: 0.25rem 0;
 }
 
+.learn-next-row{
+    display:flex;
+    justify-content:flex-end;
+    margin-top:16px;
+}
+
+.learn-next-button{
+    padding:10px 24px;
+    background:#2563eb;
+    color:#fff;
+    border:none;
+    border-radius:6px;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.learn-next-button:disabled{
+    background:#9ca3af;
+    cursor:not-allowed;
+}
+
+.learn-next-button:hover:not(:disabled){
+    background:#1d4ed8;
+}
+
 
