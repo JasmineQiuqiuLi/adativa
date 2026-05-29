@@ -30,6 +30,7 @@ from services.skill_mastery_service import (
     backfill_lesson_skill_mastery,
     get_lesson_skill_mastery,
 )
+from services.objective_progression_service import get_objective_progression
 
 from services.interaction_service import (
     create_interaction,
@@ -47,6 +48,7 @@ from models.schemas import (
     ContentBlockSkillBackfillResponse,
     LessonSkillMasteryResponse,
     SkillMasteryBackfillResponse,
+    ObjectiveProgressionResponse,
     RegisterRequest,
     LoginRequest,
     UserResponse,
@@ -270,6 +272,25 @@ def update_objective_progress_route(
             status=req.status,
             attempts_delta=req.attempts_delta,
             correct_delta=req.correct_delta,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+
+
+@app.get(
+    "/lessons/{lesson_id}/objectives/{objective_id}/progression",
+    response_model=ObjectiveProgressionResponse,
+)
+def get_objective_progression_route(
+    lesson_id: int,
+    objective_id: int,
+    user_id: int,
+):
+    try:
+        return get_objective_progression(
+            user_id=user_id,
+            lesson_id=lesson_id,
+            objective_id=objective_id,
         )
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc))

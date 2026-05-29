@@ -348,6 +348,21 @@ class SkillMasteryBackfillResponse(BaseModel):
     processed_interactions: int
     updated_skills: int
 
+
+class ObjectiveProgressionOption(BaseModel):
+    action: Literal['remedial','advance','next']
+    label: str
+    description: str
+    enabled: bool
+    recommended: bool
+
+
+class ObjectiveProgressionResponse(BaseModel):
+    recommended_action: Literal['remedial','advance','next']
+    reason: str
+    weak_skills: list[str]
+    options: list[ObjectiveProgressionOption]
+
 class RegisterRequest(BaseModel):
     email:str
     password:str

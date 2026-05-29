@@ -28,29 +28,122 @@
     margin: 0.25rem 0;
 }
 
-.learn-next-row{
-    display:flex;
-    justify-content:flex-end;
-    margin-top:16px;
+.progression-panel {
+    border: 1px solid #dbe3ef;
+    border-radius: 8px;
+    padding: 18px;
+    background: #fff;
 }
 
-.learn-next-button{
-    padding:10px 24px;
-    background:#2563eb;
-    color:#fff;
-    border:none;
-    border-radius:6px;
-    font-weight:600;
-    cursor:pointer;
+.progression-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
 }
 
-.learn-next-button:disabled{
-    background:#9ca3af;
-    cursor:not-allowed;
+.progression-panel-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: #0f172a;
 }
 
-.learn-next-button:hover:not(:disabled){
-    background:#1d4ed8;
+.progression-status,
+.progression-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #1d4ed8;
+}
+
+.progression-reason,
+.progression-error {
+    margin: 0 0 14px;
+    color: #475569;
+    font-size: 0.9rem;
+    line-height: 1.45;
+}
+
+.progression-error {
+    color: #b91c1c;
+}
+
+.progression-panel--locked {
+    background: #f8fafc;
+}
+
+.progression-meter {
+    height: 8px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #e2e8f0;
+}
+
+.progression-meter-fill {
+    height: 100%;
+    border-radius: inherit;
+    background: #2563eb;
+    transition: width 0.2s ease;
+}
+
+.progression-options {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.progression-option {
+    position: relative;
+    min-height: 112px;
+    padding: 14px;
+    border: 1px solid #dbe3ef;
+    border-radius: 8px;
+    background: #f8fafc;
+    color: #0f172a;
+    text-align: left;
+    cursor: pointer;
+}
+
+.progression-option:hover:not(:disabled) {
+    border-color: #2563eb;
+    background: #eff6ff;
+}
+
+.progression-option:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.progression-option--recommended {
+    border-color: #2563eb;
+    background: #eff6ff;
+}
+
+.progression-option-title,
+.progression-option-desc {
+    display: block;
+}
+
+.progression-option-title {
+    margin-bottom: 8px;
+    font-weight: 700;
+}
+
+.progression-option-desc {
+    font-size: 0.82rem;
+    line-height: 1.4;
+    color: #475569;
+}
+
+.progression-badge {
+    display: block;
+    margin-top: 10px;
+}
+
+@media (max-width: 840px) {
+    .progression-options {
+        grid-template-columns: 1fr;
+    }
 }
 
 

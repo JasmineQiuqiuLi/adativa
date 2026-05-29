@@ -1,6 +1,10 @@
 import "./LearnView.css";
 
-import type { ObjectiveContent } from "../../api";
+import type {
+    ObjectiveContent,
+    ObjectiveProgressionRecommendation,
+    ProgressionAction,
+} from "../../api";
 import type { InteractionRecord, EngagementRecord } from "../../types/type";
 
 import BlockRenderer from "../../../content/renderers/BlockRenderer";
@@ -17,8 +21,12 @@ type Props = {
 
     onInteraction?: (record: InteractionRecord) => Promise<void> | void;
     onEngagementEnd?: (record: EngagementRecord) => Promise<void> | void;
-    onNext?: () => void;
-    canGoNext?: boolean;
+    progression: ObjectiveProgressionRecommendation | null;
+    progressionLoading: boolean;
+    progressionError: string | null;
+    gradedBlocksCompleted: number;
+    gradedBlocksTotal: number;
+    onProgressionAction?: (action: ProgressionAction) => void;
 
     gradeAnswer?: (
         response: string
@@ -37,8 +45,12 @@ const LearnView = ({
 
     onInteraction,
     onEngagementEnd,
-    onNext,
-    canGoNext,
+    progression,
+    progressionLoading,
+    progressionError,
+    gradedBlocksCompleted,
+    gradedBlocksTotal,
+    onProgressionAction,
     gradeAnswer
 
 }: Props) => {
@@ -116,16 +128,79 @@ const LearnView = ({
 
             ))}
 
-            {onNext && (
-                <div className="learn-next-row">
-                    <button
-                        className="learn-next-button"
-                        onClick={onNext}
-                        disabled={!canGoNext}
-                    >
-                        Next
-                    </button>
-                </div>
+            {onProgressionAction && gradedBlocksTotal > gradedBlocksCompleted && (
+                <section className="progression-panel progression-panel--locked">
+                    <div className="progression-panel-header">
+                        <h3>Unlock your next step</h3>
+                    </div>
+                    <p className="progression-reason">
+                        Complete {gradedBlocksCompleted}/{gradedBlocksTotal} checks
+                        to unlock your next step.
+                    </p>
+                    <div className="progression-meter">
+                        <div
+                            className="progression-meter-fill"
+                            style={{
+                                width: `${Math.round(
+                                    (gradedBlocksCompleted / gradedBlocksTotal) * 100
+                                )}%`,
+                            }}
+                        />
+                    </div>
+                </section>
+            )}
+
+            {onProgressionAction && gradedBlocksTotal <= gradedBlocksCompleted && (
+                <section className="progression-panel">
+                    <div className="progression-panel-header">
+                        <h3>Choose your next step</h3>
+                        {progressionLoading && (
+                            <span className="progression-status">
+                                Updating...
+                            </span>
+                        )}
+                    </div>
+
+                    {progressionError && (
+                        <p className="progression-error">
+                            {progressionError}
+                        </p>
+                    )}
+
+                    {progression && (
+                        <p className="progression-reason">
+                            {progression.reason}
+                        </p>
+                    )}
+
+                    <div className="progression-options">
+                        {progression?.options.map((option) => (
+                            <button
+                                key={option.action}
+                                type="button"
+                                className={
+                                    option.recommended
+                                        ? "progression-option progression-option--recommended"
+                                        : "progression-option"
+                                }
+                                onClick={() => onProgressionAction(option.action)}
+                                disabled={!option.enabled || progressionLoading}
+                            >
+                                <span className="progression-option-title">
+                                    {option.label}
+                                </span>
+                                <span className="progression-option-desc">
+                                    {option.description}
+                                </span>
+                                {option.recommended && (
+                                    <span className="progression-badge">
+                                        Recommended
+                                    </span>
+                                )}
+                            </button>
+                        ))}
+                    </div>
+                </section>
             )}
 
         </div>
