@@ -312,6 +312,42 @@ class ObjectiveContentResponse(BaseModel):
     mode: str
     blocks: List[ContentBlockRow]
 
+
+class ContentBlockSkillBackfillResponse(BaseModel):
+    lesson_id: int
+    tagged_blocks: int
+    skipped_blocks: int
+    fallback_blocks: int
+    failed_blocks: int
+
+
+class SkillMasteryRow(BaseModel):
+    skill_id: int
+    name: str
+    description: Optional[str] = None
+    status: Literal['not_started','in_progress','proficient','mastered']
+    attempts_count: int
+    correct_attempts_count: int
+    evidence_count: int
+    correct_evidence_count: int
+    mastery_score: float
+    started_at: Optional[datetime] = None
+    proficient_at: Optional[datetime] = None
+    mastered_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+
+
+class LessonSkillMasteryResponse(BaseModel):
+    lesson_id: int
+    skills: list[SkillMasteryRow]
+
+
+class SkillMasteryBackfillResponse(BaseModel):
+    lesson_id: int
+    user_id: int
+    processed_interactions: int
+    updated_skills: int
+
 class RegisterRequest(BaseModel):
     email:str
     password:str

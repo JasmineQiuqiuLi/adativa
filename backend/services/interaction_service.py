@@ -2,6 +2,7 @@ import json
 
 from database.db import get_connection
 from services.progress_service import update_progress_for_interaction
+from services.skill_mastery_service import update_skill_mastery_for_interaction
 
 
 def create_interaction(payload: dict) -> int:
@@ -56,6 +57,7 @@ def create_interaction(payload: dict) -> int:
         )
         new_id = cur.fetchone()[0]
         update_progress_for_interaction(cur, payload)
+        update_skill_mastery_for_interaction(cur, payload)
         conn.commit()
         return new_id
 
