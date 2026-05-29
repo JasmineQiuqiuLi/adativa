@@ -26,6 +26,10 @@ from services.content_skill_tagging_service import (
 )
 
 from services.progress_service import get_lesson_progress, update_objective_progress
+from services.skill_mastery_service import (
+    backfill_lesson_skill_mastery,
+    get_lesson_skill_mastery,
+)
 
 from services.interaction_service import (
     create_interaction,
@@ -41,6 +45,8 @@ from models.schemas import (
     ObjectiveContentResponse,
     ContentBlockRow,
     ContentBlockSkillBackfillResponse,
+    LessonSkillMasteryResponse,
+    SkillMasteryBackfillResponse,
     RegisterRequest,
     LoginRequest,
     UserResponse,
@@ -441,6 +447,33 @@ def backfill_content_block_skills_route(
         if cur:
             cur.close()
         conn.close()
+
+
+@app.get(
+    "/lessons/{lesson_id}/skills/mastery",
+    response_model=LessonSkillMasteryResponse,
+)
+def get_lesson_skill_mastery_route(lesson_id: int, user_id: int):
+    return get_lesson_skill_mastery(
+        user_id=user_id,
+        lesson_id=lesson_id,
+    )
+
+
+@app.post(
+    "/lessons/{lesson_id}/skills/mastery/backfill",
+    response_model=SkillMasteryBackfillResponse,
+)
+def backfill_lesson_skill_mastery_route(
+    lesson_id: int,
+    user_id: int,
+    force: bool = False,
+):
+    return backfill_lesson_skill_mastery(
+        user_id=user_id,
+        lesson_id=lesson_id,
+        force=force,
+    )
 
 
 @app.post("/interactions", response_model=InteractionCreateResponse)
