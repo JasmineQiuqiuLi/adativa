@@ -20,6 +20,10 @@ from services.content_service import (
     generate_anthropic_content,
     generate_objective_content,
 )
+from services.content_skill_tagging_service import (
+    backfill_lesson_content_block_skills,
+    tag_content_blocks_for_objective,
+)
 
 from services.progress_service import get_lesson_progress, update_objective_progress
 
@@ -36,6 +40,7 @@ from models.schemas import (
     GenerateObjectiveContentRequest,
     ObjectiveContentResponse,
     ContentBlockRow,
+    ContentBlockSkillBackfillResponse,
     RegisterRequest,
     LoginRequest,
     UserResponse,
@@ -388,6 +393,13 @@ def generate_objective_content_route(
                 status="active",
             ))
 
+        tag_content_blocks_for_objective(
+            cur=cur,
+            objective_id=objective_id,
+            blocks=inserted,
+            force=True,
+        )
+
         conn.commit()
         return ObjectiveContentResponse(
             objective_id=objective_id, mode=req.mode, blocks=inserted
@@ -397,6 +409,37 @@ def generate_objective_content_route(
         conn.rollback()
         raise
     finally:
+        conn.close()
+
+
+@app.post(
+    "/lessons/{lesson_id}/content-block-skills/backfill",
+    response_model=ContentBlockSkillBackfillResponse,
+)
+def backfill_content_block_skills_route(
+    lesson_id: int,
+    force: bool = False,
+):
+    conn = get_connection()
+    cur = None
+    try:
+        cur = conn.cursor()
+        counts = backfill_lesson_content_block_skills(
+            cur=cur,
+            lesson_id=lesson_id,
+            force=force,
+        )
+        conn.commit()
+        return ContentBlockSkillBackfillResponse(
+            lesson_id=lesson_id,
+            **counts,
+        )
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        if cur:
+            cur.close()
         conn.close()
 
 

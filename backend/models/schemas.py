@@ -312,6 +312,14 @@ class ObjectiveContentResponse(BaseModel):
     mode: str
     blocks: List[ContentBlockRow]
 
+
+class ContentBlockSkillBackfillResponse(BaseModel):
+    lesson_id: int
+    tagged_blocks: int
+    skipped_blocks: int
+    fallback_blocks: int
+    failed_blocks: int
+
 class RegisterRequest(BaseModel):
     email:str
     password:str
