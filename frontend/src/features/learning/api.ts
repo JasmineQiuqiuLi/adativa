@@ -58,6 +58,7 @@ export type ObjectiveContent = {
 
 export type GenerationMode = "initial" | "advance" | "remedial";
 export type GenerationStrategy = "single" | "plan_execute";
+export type ProgressionAction = "remedial" | "advance" | "next";
 
 export type ContentRequest = {
     mode?: GenerationMode;
@@ -65,6 +66,21 @@ export type ContentRequest = {
     force_regenerate?: boolean;
     strategy?: GenerationStrategy;
     allowed_types?: string[] | null;
+};
+
+export type ObjectiveProgressionOption = {
+    action: ProgressionAction;
+    label: string;
+    description: string;
+    enabled: boolean;
+    recommended: boolean;
+};
+
+export type ObjectiveProgressionRecommendation = {
+    recommended_action: ProgressionAction;
+    reason: string;
+    weak_skills: string[];
+    options: ObjectiveProgressionOption[];
 };
 
 // ----- Fetchers -----
@@ -103,6 +119,20 @@ export async function updateObjectiveProgress(
     );
     if (!res.ok) {
         throw new Error(`Failed to update progress (${res.status})`);
+    }
+    return res.json();
+}
+
+export async function fetchObjectiveProgression(
+    lessonId: string | number,
+    objectiveId: number,
+    userId: number
+): Promise<ObjectiveProgressionRecommendation> {
+    const res = await fetch(
+        `${API_BASE}/lessons/${lessonId}/objectives/${objectiveId}/progression?user_id=${userId}`
+    );
+    if (!res.ok) {
+        throw new Error(`Failed to fetch progression (${res.status})`);
     }
     return res.json();
 }

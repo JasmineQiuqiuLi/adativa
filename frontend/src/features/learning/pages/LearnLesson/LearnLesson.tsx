@@ -6,11 +6,15 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
   import {
     fetchLessonProgress,
     fetchObjectiveContent,
+    fetchObjectiveProgression,
     updateObjectiveProgress,
     postInteraction,
     patchInteractionEngagement,
     type LessonProgress,
     type ObjectiveContent,
+    type GenerationMode,
+    type ObjectiveProgressionRecommendation,
+    type ProgressionAction,
   } from "../../api";
   import type {
     InteractionRecord,
@@ -18,6 +22,17 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
     InteractionCreatePayload,
   } from "../../types/type";
   import "./LeaarnLesson.css";
+
+  const GRADED_BLOCK_TYPES = new Set([
+    "fill_blank",
+    "game",
+    "match",
+    "multiple_answer",
+    "multiple_choice",
+    "order",
+    "short_essay",
+    "true_false",
+  ]);
 
   const LearnLesson = () => {
     const { lessonId } = useParams<{ lessonId: string }>();
@@ -30,6 +45,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
     const [content,setContent] = useState<ObjectiveContent | null> (null)
     const [contentLoading,setContentLoading]=useState(false)
     const [contentError,setContentError]=useState<string | null>(null)
+    const [contentMode,setContentMode]=useState<GenerationMode>("initial")
+    const [progression,setProgression]=useState<ObjectiveProgressionRecommendation | null>(null)
+    const [progressionLoading,setProgressionLoading]=useState(false)
+    const [progressionError,setProgressionError]=useState<string | null>(null)
+    const [gradedBlockIds,setGradedBlockIds]=useState<number[]>([])
+    const [completedGradedBlockIds,setCompletedGradedBlockIds]=useState<Set<number>>(
+      () => new Set()
+    )
 
     // One session id per page load — passed on every interaction.
     const sessionId = useMemo(() => {
@@ -44,6 +67,26 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
     // engagement-only row so non-graded blocks still get recorded.
     const attemptsPerEngagementRef = useRef<Map<string, number>>(new Map());
     const startedObjectivesRef = useRef<Set<number>>(new Set());
+
+    const refreshProgression = useCallback(async () => {
+      if (!lessonId || !userId || currentObjectiveId == null) return;
+
+      try {
+        setProgressionLoading(true);
+        setProgressionError(null);
+        const recommendation = await fetchObjectiveProgression(
+          lessonId,
+          currentObjectiveId,
+          userId
+        );
+        setProgression(recommendation);
+      } catch (err) {
+        console.error(err);
+        setProgressionError("Failed to load next-step recommendation");
+      } finally {
+        setProgressionLoading(false);
+      }
+    }, [lessonId, userId, currentObjectiveId]);
 
     const handleInteraction = useCallback(
       async (record: InteractionRecord) => {
@@ -63,11 +106,31 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
             record.engagement_id,
             count + 1
           );
+          const isGradedAttempt =
+            record.attempt_number > 0 || Boolean(record.submitted_at);
+
+          if (isGradedAttempt) {
+            let shouldRefresh = false;
+            setCompletedGradedBlockIds((prev) => {
+              if (prev.has(record.content_id)) return prev;
+
+              const next = new Set(prev);
+              next.add(record.content_id);
+              shouldRefresh =
+                gradedBlockIds.length > 0 &&
+                gradedBlockIds.every((id) => next.has(id));
+              return next;
+            });
+
+            if (shouldRefresh) {
+              await refreshProgression();
+            }
+          }
         } catch (err) {
           console.error("Failed to post interaction", err);
         }
       },
-      [userId, sessionId]
+      [userId, sessionId, gradedBlockIds, refreshProgression]
     );
 
     const handleEngagementEnd = useCallback(
@@ -124,6 +187,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
           if (cancelled) return;
           setProgress(data);
           setCurrentObjectiveId(data.current_objective_id);
+          setContentMode("initial");
         } catch (err) {
           if (cancelled) return;
           console.error(err);
@@ -148,9 +212,26 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
           setContentLoading(true)
           setContentError(null)
 
-          const data=await fetchObjectiveContent(lessonId!,currentObjectiveId!)
+          const data=await fetchObjectiveContent(
+            lessonId!,
+            currentObjectiveId!,
+            {
+              mode: contentMode,
+              weak_skills:
+                contentMode === "remedial"
+                  ? progression?.weak_skills ?? []
+                  : [],
+            }
+          )
           if (cancelled) return;
           setContent(data)
+          const nextGradedBlockIds = data.blocks
+            .filter((block) => GRADED_BLOCK_TYPES.has(block.type))
+            .map((block) => block.id);
+          setGradedBlockIds(nextGradedBlockIds);
+          setCompletedGradedBlockIds(new Set());
+          setProgression(null);
+          setProgressionError(null);
 
           if (
             userId &&
@@ -166,6 +247,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
             if (!cancelled) {
               setProgress(progressData);
             }
+          }
+
+          if (nextGradedBlockIds.length === 0) {
+            await refreshProgression();
           }
         }
         catch(err){
@@ -185,15 +270,23 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
         cancelled=true;
       }
 
-    },[lessonId,currentObjectiveId,userId])
+    },[lessonId,currentObjectiveId,userId,contentMode,refreshProgression])
 
 
     // Resolve the next objective by order_index. Setting currentObjectiveId
     // causes the content effect above to re-fetch, which unmounts the current
     // blocks — their useFinalize handlers fire POSTs/PATCHes the same way a
     // tab close would.
-    const handleNext = useCallback(async () => {
+    const handleProgressionAction = useCallback(async (
+      action: ProgressionAction
+    ) => {
       if (!lessonId || !userId || currentObjectiveId == null) return;
+
+      if (action === "remedial" || action === "advance") {
+        setContent(null);
+        setContentMode(action);
+        return;
+      }
       // Clearing content first ensures the old blocks unmount before the new
       // ones mount, so cleanup handlers (useFinalize) fire predictably.
       setContent(null);
@@ -206,6 +299,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
         );
         setProgress(progressData);
         setCurrentObjectiveId(progressData.current_objective_id);
+        setContentMode("initial");
+        setProgression(null);
+        setGradedBlockIds([]);
+        setCompletedGradedBlockIds(new Set());
       } catch (err) {
         console.error(err);
         setError("Failed to save lesson progress");
@@ -229,10 +326,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
               content={content}
               contentLoading={contentLoading}
               contentError={contentError}
+              progression={progression}
+              progressionLoading={progressionLoading}
+              progressionError={progressionError}
+              gradedBlocksCompleted={completedGradedBlockIds.size}
+              gradedBlocksTotal={gradedBlockIds.length}
               onInteraction={handleInteraction}
               onEngagementEnd={handleEngagementEnd}
-              onNext={handleNext}
-              canGoNext={currentObjectiveId != null}
+              onProgressionAction={handleProgressionAction}
             />
         </div>
 

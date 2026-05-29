@@ -15,25 +15,31 @@ type Card = {
 };
 
 export type FlashCardsProps = {
-  content: Card[];
+  content: {
+    title?: string;
+    cards?: Card[];
+  };
   onInteraction?: (payload: AttemptPayload) => void | Promise<void>;
 };
 
 const FlashCards = ({ content, onInteraction }: FlashCardsProps) => {
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
+  const cards = content.cards ?? [];
 
   const cardsSeenRef = useRef<Set<string>>(new Set());
   const revealCountRef = useRef(0);
   const navigationCountRef = useRef(0);
 
-  const card = content[index];
+  const card = cards[index];
 
   const noteCardSeen = () => {
+    if (!card) return;
     cardsSeenRef.current.add(card.id);
   };
 
   const handleFlip = () => {
+    if (!card) return;
     noteCardSeen();
 
     if (!flipped) {
@@ -44,7 +50,7 @@ const FlashCards = ({ content, onInteraction }: FlashCardsProps) => {
   };
 
   const handleNext = () => {
-    if (index < content.length - 1) {
+    if (index < cards.length - 1) {
       noteCardSeen();
       navigationCountRef.current += 1;
 
@@ -79,9 +85,22 @@ const FlashCards = ({ content, onInteraction }: FlashCardsProps) => {
     });
   });
 
+  if (!card || cards.length === 0) {
+    return (
+      <div className="flashcard-block">
+        <h3 className="flashcard-title">
+          {content.title ?? "Flashcards"}
+        </h3>
+        <p>No flashcards available.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="flashcard-block">
-      <h3 className="flashcard-title">Flashcards</h3>
+      <h3 className="flashcard-title">
+        {content.title ?? "Flashcards"}
+      </h3>
 
       <div className="flashcard-row">
         <button onClick={handlePrev} disabled={index === 0}>
@@ -100,13 +119,13 @@ const FlashCards = ({ content, onInteraction }: FlashCardsProps) => {
           </div>
         </div>
 
-        <button onClick={handleNext} disabled={index === content.length - 1}>
+        <button onClick={handleNext} disabled={index === cards.length - 1}>
           →
         </button>
       </div>
 
       <div className="counter">
-        {index + 1} / {content.length}
+        {index + 1} / {cards.length}
       </div>
     </div>
   );
