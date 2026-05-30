@@ -1,6 +1,7 @@
 import "./LearnView.css";
 
 import type {
+    GenerationMode,
     ObjectiveContent,
     ObjectiveProgressionRecommendation,
     ProgressionAction,
@@ -8,6 +9,7 @@ import type {
 import type { InteractionRecord, EngagementRecord } from "../../types/type";
 
 import BlockRenderer from "../../../content/renderers/BlockRenderer";
+import GenerationLoading from "../../../../shared/GenerationLoading/GenerationLoading";
 
 type Props = {
     currentObjectiveId: number | null;
@@ -18,6 +20,7 @@ type Props = {
     content: ObjectiveContent | null;
     contentLoading: boolean;
     contentError: string | null;
+    contentMode: GenerationMode;
 
     onInteraction?: (record: InteractionRecord) => Promise<void> | void;
     onEngagementEnd?: (record: EngagementRecord) => Promise<void> | void;
@@ -42,6 +45,7 @@ const LearnView = ({
     content,
     contentLoading,
     contentError,
+    contentMode,
 
     onInteraction,
     onEngagementEnd,
@@ -90,11 +94,12 @@ const LearnView = ({
 
     if (contentLoading) {
         return (
-            <main className="learn-view-panel">
-                <p>
-                    Loading content...
-                </p>
-            </main>
+            <div className="learn-content">
+                <GenerationLoading
+                    variant="content"
+                    mode={contentMode}
+                />
+            </div>
         );
     }
 
