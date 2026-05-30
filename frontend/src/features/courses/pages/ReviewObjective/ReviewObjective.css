@@ -11,12 +11,12 @@
 .objectives-header h2 {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--color-text);
 }
 
 .objectives-header p {
   font-size: 0.9rem;
-  color: #64748b;
+  color: var(--color-text-subtle);
 }
 
 /* List */
@@ -32,7 +32,7 @@
   gap: 0.75rem;
   padding: 1rem;
   border-radius: 12px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
   background: white;
 }
 
@@ -40,8 +40,8 @@
 .objective-index {
   width: 28px;
   height: 28px;
-  background: #e0e7ff;
-  color: #4f46e5;
+  background: var(--color-primary-soft);
+  color: var(--color-primary-hover);
   font-weight: 700;
   font-size: 0.75rem;
   border-radius: 50%;
@@ -54,12 +54,12 @@
 .objective-title {
   font-weight: 600;
   font-size: 0.9rem;
-  color: #1e293b;
+  color: var(--color-text);
 }
 
 .objective-desc {
   font-size: 0.8rem;
-  color: #64748b;
+  color: var(--color-text-subtle);
   margin-top: 2px;
 }
 
@@ -77,26 +77,26 @@
 
 .feedback-section span {
   font-weight: normal;
-  color: #94a3b8;
+  color: var(--color-text-faint);
 }
 
 textarea {
   padding: 0.6rem;
   border-radius: 10px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
 }
 
 textarea:focus {
   outline: none;
-  border-color: #6366f1;
-  box-shadow: 0 0 0 2px #e0e7ff;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-soft);
 }
 
 /* Error */
 .error-box {
   padding: 0.6rem;
-  background: #fef2f2;
-  color: #dc2626;
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
   border-radius: 8px;
   font-size: 0.85rem;
 }
@@ -111,28 +111,28 @@ textarea:focus {
   flex: 1;
   padding: 0.6rem;
   border-radius: 10px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
   background: white;
   cursor: pointer;
 }
 
 .secondary-btn:hover {
-  border-color: #6366f1;
-  color: #6366f1;
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 .primary-btn {
   flex: 1;
   padding: 0.6rem;
   border-radius: 10px;
-  background: #6366f1;
+  background: var(--color-primary);
   color: white;
   border: none;
   cursor: pointer;
 }
 
 .primary-btn:hover {
-  background: #4f46e5;
+  background: var(--color-primary-hover);
 }
 
 button:disabled {

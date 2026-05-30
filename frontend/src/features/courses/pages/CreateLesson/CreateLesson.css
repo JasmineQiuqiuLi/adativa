@@ -3,7 +3,7 @@
   padding: 3rem 1rem;
   display: flex;
   justify-content: center;
-  background: #f8fafc;
+  background: var(--color-surface-soft);
   min-height: 100vh;
 }
 
@@ -26,28 +26,28 @@
 .form-group label {
   font-weight: 600;
   font-size: 0.95rem;
-  color: #334155;
+  color: var(--color-text-muted);
 }
 
 /* Textarea */
 textarea {
   padding: 0.9rem;
   border-radius: 12px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
   font-size: 0.95rem;
   background: white;
 }
 
 textarea:focus {
   outline: none;
-  border-color: #6366f1;
-  box-shadow: 0 0 0 2px #e0e7ff;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-soft);
 }
 
 /* Hint */
 .hint {
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: var(--color-text-faint);
 }
 
 /* Buttons (age + pace) */
@@ -60,23 +60,23 @@ textarea:focus {
 .button-group button {
   padding: 0.4rem 0.8rem;
   border-radius: 999px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
   background: white;
   font-size: 0.85rem;
-  color: #475569;
+  color: var(--color-text-muted);
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .button-group button:hover {
-  border-color: #6366f1;
-  color: #6366f1;
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 .button-group button.active {
-  background: #6366f1;
+  background: var(--color-primary);
   color: white;
-  border-color: #6366f1;
+  border-color: var(--color-primary);
 }
 
 /* Style cards */
@@ -87,7 +87,7 @@ textarea:focus {
 }
 
 .create-lesson-card {
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
   border-radius: 12px;
   padding: 0.8rem;
   background: white;
@@ -96,23 +96,23 @@ textarea:focus {
 }
 
 .create-lesson-card:hover {
-  border-color: #c7d2fe;
+  border-color: var(--color-primary-border);
 }
 
 .create-lesson-card.active {
-  background: #eef2ff;
-  border-color: #6366f1;
+  background: var(--color-primary-soft);
+  border-color: var(--color-primary);
 }
 
 .card-title {
   font-weight: 600;
   font-size: 0.9rem;
-  color: #1e293b;
+  color: var(--color-text);
 }
 
 .card-desc {
   font-size: 0.75rem;
-  color: #64748b;
+  color: var(--color-text-subtle);
   margin-top: 2px;
 }
 
@@ -120,7 +120,7 @@ textarea:focus {
 .submit-btn {
   padding: 0.85rem;
   border-radius: 12px;
-  background: #6366f1;
+  background: var(--color-primary);
   color: white;
   font-weight: 600;
   border: none;
@@ -129,11 +129,11 @@ textarea:focus {
 }
 
 .submit-btn:hover {
-  background: #4f46e5;
+  background: var(--color-primary-hover);
 }
 
 .error-box {
   margin-top: 12px;
-  color: red;
+  color: var(--color-danger);
   font-size: 14px;
 }

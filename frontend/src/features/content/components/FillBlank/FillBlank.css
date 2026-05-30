@@ -8,9 +8,9 @@
 
   border-radius:16px;
 
-  background:#ffffff;
+  background:var(--color-surface);
 
-  border:1px solid #e5e7eb;
+  border:1px solid var(--color-border);
 
   box-shadow:
     0 2px 8px rgba(
@@ -46,7 +46,7 @@
 
   line-height:1.6;
 
-  color:#374151;
+  color:var(--color-text-muted);
 
   margin-bottom:20px;
 
@@ -62,7 +62,7 @@
 
   padding:14px;
 
-  border:1px solid #d1d5db;
+  border:1px solid var(--color-border-strong);
 
   border-radius:10px;
 
@@ -80,7 +80,7 @@
 
 .fbq-input:focus{
 
-  border-color:#2563eb;
+  border-color:var(--color-primary);
 
   box-shadow:
     0 0 0 3px
@@ -96,7 +96,7 @@
 
 .fbq-input:disabled{
 
-  background:#f9fafb;
+  background:var(--color-surface-soft);
 
 }
 
@@ -141,7 +141,7 @@
 
 .fbq-submit{
 
-  background:#2563eb;
+  background:var(--color-primary);
 
   color:white;
 
@@ -150,14 +150,14 @@
 
 .fbq-submit:hover{
 
-  background:#1d4ed8;
+  background:var(--color-primary-hover);
 
 }
 
 
 .fbq-submit:disabled{
 
-  background:#9ca3af;
+  background:var(--color-text-faint);
 
   cursor:not-allowed;
 
@@ -169,16 +169,16 @@
 
 .fbq-skip{
 
-  background:#e5e7eb;
+  background:var(--color-border);
 
-  color:#374151;
+  color:var(--color-text-muted);
 
 }
 
 
 .fbq-skip:hover{
 
-  background:#d1d5db;
+  background:var(--color-border-strong);
 
 }
 
@@ -190,7 +190,7 @@
 
   margin-top:12px;
 
-  background:#f59e0b;
+  background:var(--color-warning);
 
   color:white;
 
@@ -199,7 +199,7 @@
 
 .fbq-retry:hover{
 
-  background:#d97706;
+  background:var(--color-warning-hover);
 
 }
 
@@ -215,7 +215,7 @@
 
   border-radius:10px;
 
-  background:#f9fafb;
+  background:var(--color-surface-soft);
 
   font-size:14px;
 

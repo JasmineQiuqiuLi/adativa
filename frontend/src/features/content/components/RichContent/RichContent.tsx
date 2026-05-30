@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import "./RichContent.css";
 
@@ -32,8 +32,27 @@ type RichContentProps = {
 
 const RichContent = ({content,onInteraction,}: RichContentProps) => {
   const variant = content.variant || "default"
+  const [isImageOpen, setIsImageOpen] = useState(false);
+  const imageAlt = content.image_alt || "content image";
 
   const hasLoggedRef = useRef(false);
+
+  useEffect(() => {
+    if (!isImageOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsImageOpen(false);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isImageOpen]);
+
   useFinalize(() => {
     if (hasLoggedRef.current) return;
     hasLoggedRef.current = true;
@@ -53,14 +72,18 @@ const RichContent = ({content,onInteraction,}: RichContentProps) => {
     >
       {content.image_url && (
         <div className="rich-content-image-wrapper">
-          <img
-            src={content.image_url}
-            alt={
-              content.image_alt ||
-              "content image"
-            }
-            className="rich-content-image"
-          />
+          <button
+            type="button"
+            className="rich-content-image-button"
+            onClick={() => setIsImageOpen(true)}
+            aria-label="Open full image"
+          >
+            <img
+              src={content.image_url}
+              alt={imageAlt}
+              className="rich-content-image"
+            />
+          </button>
 
           {content.caption && (
             <div className="rich-content-caption">
@@ -83,6 +106,42 @@ const RichContent = ({content,onInteraction,}: RichContentProps) => {
           </div>
         )}
       </div>
+
+      {content.image_url && isImageOpen && (
+        <div
+          className="rich-content-lightbox"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Full image preview"
+          onClick={() => setIsImageOpen(false)}
+        >
+          <div
+            className="rich-content-lightbox-panel"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              className="rich-content-lightbox-close"
+              onClick={() => setIsImageOpen(false)}
+              aria-label="Close full image"
+            >
+              ×
+            </button>
+
+            <img
+              src={content.image_url}
+              alt={imageAlt}
+              className="rich-content-lightbox-image"
+            />
+
+            {content.caption && (
+              <div className="rich-content-lightbox-caption">
+                {content.caption}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

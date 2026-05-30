@@ -5,7 +5,7 @@
   padding: 24px;
   border-radius: 20px;
   background: white;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
 }
 
 .steps-header {
@@ -16,7 +16,7 @@
   margin: 0;
   font-size: 1.25rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--color-text);
 }
 
 .steps-list {
@@ -41,7 +41,7 @@
   width: 36px;
   height: 36px;
   border-radius: 999px;
-  background: #4f46e5;
+  background: var(--color-primary-hover);
   color: white;
   font-weight: 700;
 
@@ -54,7 +54,7 @@
   width: 2px;
   flex: 1;
   min-height: 48px;
-  background: #c7d2fe;
+  background: var(--color-primary-border);
   margin: 8px 0;
 }
 
@@ -65,13 +65,13 @@
 .steps-step-title {
   font-size: 1rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--color-text);
   margin-bottom: 6px;
 }
 
 .steps-content {
   font-size: 0.95rem;
   line-height: 1.6;
-  color: #475569;
+  color: var(--color-text-muted);
   white-space: pre-wrap;
 }

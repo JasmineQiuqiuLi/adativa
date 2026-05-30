@@ -9,9 +9,9 @@
 
   border-radius:16px;
 
-  background:#ffffff;
+  background:var(--color-surface);
 
-  border:1px solid #e5e7eb;
+  border:1px solid var(--color-border);
 
   box-shadow:
     0 2px 8px rgba(
@@ -35,7 +35,7 @@
     border-radius: 20px;
 
     background: white;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--color-border);
 
     box-shadow:
       0 8px 24px rgba(15, 23, 42, 0.06),
@@ -64,7 +64,7 @@
 
   line-height:1.6;
 
-  color:#374151;
+  color:var(--color-text-muted);
 
   margin-bottom:24px;
 
@@ -98,7 +98,7 @@
 
   padding:16px;
 
-  border:1px solid #d1d5db;
+  border:1px solid var(--color-border-strong);
 
   border-radius:12px;
 
@@ -121,7 +121,7 @@
 
   font-weight:500;
 
-  color:#111827;
+  color:var(--color-text);
 
 }
 
@@ -135,7 +135,7 @@
 
   padding:10px 14px;
 
-  border:1px solid #d1d5db;
+  border:1px solid var(--color-border-strong);
 
   border-radius:8px;
 
@@ -153,7 +153,7 @@
 
 .match-select:focus{
 
-  border-color:#2563eb;
+  border-color:var(--color-primary);
 
   box-shadow:
     0 0 0 3px
@@ -169,7 +169,7 @@
 
 .match-select:disabled{
 
-  background:#f3f4f6;
+  background:var(--color-surface-muted);
 
 }
 
@@ -179,18 +179,31 @@
 
 .match-row.correct{
 
-  background:#ecfdf5;
+  background:var(--color-success-soft);
 
-  border-color:#16a34a;
+  border-color:var(--color-success);
 
+}
+
+.match-feedback {
+  margin-top: 16px;
+  padding: 10px 12px;
+  background: var(--color-surface-muted);
+  border-radius: 8px;
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+.match-feedback p {
+  margin: 0;
 }
 
 
 .match-row.incorrect{
 
-  background:#fef2f2;
+  background:var(--color-danger-soft);
 
-  border-color:#dc2626;
+  border-color:var(--color-danger);
 
 }
 
@@ -200,7 +213,7 @@
 
 .match-correct-answer{
 
-  color:#16a34a;
+  color:var(--color-success);
 
   font-size:13px;
 
@@ -248,7 +261,7 @@
 
 .match-submit{
 
-  background:#2563eb;
+  background:var(--color-primary);
 
   color:white;
 
@@ -257,7 +270,7 @@
 
 .match-submit:hover{
 
-  background:#1d4ed8;
+  background:var(--color-primary-hover);
 
 }
 
@@ -274,16 +287,16 @@
 
 .match-skip{
 
-  background:#e5e7eb;
+  background:var(--color-border);
 
-  color:#374151;
+  color:var(--color-text-muted);
 
 }
 
 
 .match-skip:hover{
 
-  background:#d1d5db;
+  background:var(--color-border-strong);
 
 }
 
@@ -291,7 +304,7 @@
 
 .match-retry{
 
-  background:#f59e0b;
+  background:var(--color-warning);
 
   color:white;
 
@@ -300,7 +313,7 @@
 
 .match-retry:hover{
 
-  background:#d97706;
+  background:var(--color-warning-hover);
 
 }
 

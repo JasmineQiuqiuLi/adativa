@@ -8,9 +8,9 @@
 
   border-radius:16px;
 
-  background:#ffffff;
+  background:var(--color-surface);
 
-  border:1px solid #e5e7eb;
+  border:1px solid var(--color-border);
 
   box-shadow:
     0 2px 8px rgba(
@@ -48,7 +48,7 @@
 
   line-height:1.6;
 
-  color:#374151;
+  color:var(--color-text-muted);
 
   margin-bottom:24px;
 
@@ -82,7 +82,7 @@
 
   padding:16px;
 
-  border:1px solid #d1d5db;
+  border:1px solid var(--color-border-strong);
 
   border-radius:12px;
 
@@ -98,7 +98,7 @@
 
 .order-item:hover{
 
-  border-color:#2563eb;
+  border-color:var(--color-primary);
 
   transform:
     translateY(-2px);
@@ -120,9 +120,9 @@
 
   opacity:.7;
 
-  background:#eff6ff;
+  background:var(--color-primary-soft);
 
-  border-color:#2563eb;
+  border-color:var(--color-primary);
 
 }
 
@@ -132,18 +132,31 @@
 
 .order-item.correct{
 
-  background:#ecfdf5;
+  background:var(--color-success-soft);
 
-  border-color:#16a34a;
+  border-color:var(--color-success);
 
+}
+
+.order-feedback {
+  margin-top: 16px;
+  padding: 10px 12px;
+  background: var(--color-surface-muted);
+  border-radius: 8px;
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+.order-feedback p {
+  margin: 0;
 }
 
 
 .order-item.incorrect{
 
-  background:#fef2f2;
+  background:var(--color-danger-soft);
 
-  border-color:#dc2626;
+  border-color:var(--color-danger);
 
 }
 
@@ -155,7 +168,7 @@
 
   font-size:18px;
 
-  color:#6b7280;
+  color:var(--color-text-subtle);
 
   cursor:grab;
 
@@ -179,7 +192,7 @@
 
   border-radius:50%;
 
-  background:#f3f4f6;
+  background:var(--color-surface-muted);
 
   font-size:13px;
 
@@ -197,7 +210,7 @@
 
   font-size:14px;
 
-  color:#111827;
+  color:var(--color-text);
 
 }
 
@@ -207,7 +220,7 @@
 
 .order-correct-position{
 
-  color:#16a34a;
+  color:var(--color-success);
 
   font-size:13px;
 
@@ -255,7 +268,7 @@
 
 .order-submit{
 
-  background:#2563eb;
+  background:var(--color-primary);
 
   color:white;
 
@@ -264,7 +277,7 @@
 
 .order-submit:hover{
 
-  background:#1d4ed8;
+  background:var(--color-primary-hover);
 
 }
 
@@ -281,16 +294,16 @@
 
 .order-skip{
 
-  background:#e5e7eb;
+  background:var(--color-border);
 
-  color:#374151;
+  color:var(--color-text-muted);
 
 }
 
 
 .order-skip:hover{
 
-  background:#d1d5db;
+  background:var(--color-border-strong);
 
 }
 
@@ -298,7 +311,7 @@
 
 .order-retry{
 
-  background:#f59e0b;
+  background:var(--color-warning);
 
   color:white;
 
@@ -307,7 +320,7 @@
 
 .order-retry:hover{
 
-  background:#d97706;
+  background:var(--color-warning-hover);
 
 }
 

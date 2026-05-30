@@ -151,6 +151,9 @@ export default function Order({ content, onInteraction, onAttemptRetry }: OrderP
       attempt_number: 0,
       metadata: { status: "skipped" },
     });
+
+    setSubmitted(true);
+    setShowAnswer(true);
   }
 
   function handleRetry() {
@@ -243,29 +246,38 @@ export default function Order({ content, onInteraction, onAttemptRetry }: OrderP
         ))}
       </div>
 
-      <div className="order-actions">
+      {!submitted ? (
+      <div className="graded-actions">
         <button
-          className="order-submit"
+          className="graded-button graded-button--primary"
           onClick={handleSubmit}
-          disabled={submitted}
         >
           Submit
         </button>
 
         <button
-          className="order-skip"
+          className="graded-button graded-button--secondary"
           onClick={handleSkip}
-          disabled={hasSkippedRef.current}
         >
           Skip
         </button>
-
-        {submitted && !showAnswer && (
-          <button className="order-retry" onClick={handleRetry}>
+      </div>
+      ) : (
+      <div className="order-feedback">
+        {hasSkippedRef.current ? (
+          <p>Skipped</p>
+        ) : !showAnswer ? (
+          <button
+            className="graded-button graded-button--retry"
+            onClick={handleRetry}
+          >
             Retry
           </button>
+        ) : (
+          <p>Answer reviewed</p>
         )}
       </div>
+      )}
     </div>
   );
 }

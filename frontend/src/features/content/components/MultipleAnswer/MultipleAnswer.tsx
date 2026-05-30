@@ -35,6 +35,7 @@ export default function MultipleAnswer({ content, onInteraction, onAttemptRetry 
   const [selected, setSelected] = useState<string[]>([]);
   const [submitted, setSubmitted] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
+  const [skipped, setSkipped] = useState(false);
 
   const selectedRef = useRef<string[]>([]);
   const attemptRef = useRef(1);
@@ -109,6 +110,10 @@ export default function MultipleAnswer({ content, onInteraction, onAttemptRetry 
       attempt_number: 0,
       metadata: { status: "skipped" },
     });
+
+    setSkipped(true);
+    setSubmitted(true);
+    setShowAnswer(true);
   }
 
   function handleRetry() {
@@ -117,6 +122,7 @@ export default function MultipleAnswer({ content, onInteraction, onAttemptRetry 
     selectedRef.current = [];
     setSelected([]);
     setSubmitted(false);
+    setSkipped(false);
 
     attemptRef.current += 1;
     hasSkippedRef.current = false;
@@ -190,25 +196,36 @@ export default function MultipleAnswer({ content, onInteraction, onAttemptRetry 
         ))}
       </div>
 
-      <div className="maq-actions">
-        <button
-          onClick={handleSubmit}
-          disabled={selected.length === 0 || submitted}
-        >
-          Submit
-        </button>
+      {!submitted ? (
+        <div className="graded-actions">
+          <button
+            className="graded-button graded-button--primary"
+            onClick={handleSubmit}
+            disabled={selected.length === 0}
+          >
+            Submit
+          </button>
 
-        <button
-          onClick={handleSkip}
-          disabled={hasSkippedRef.current}
-        >
-          Skip
-        </button>
-
-        {submitted && !showAnswer && (
-          <button onClick={handleRetry}>Retry</button>
-        )}
-      </div>
+          <button
+            className="graded-button graded-button--secondary"
+            onClick={handleSkip}
+          >
+            Skip
+          </button>
+        </div>
+      ) : (
+        <div className="maq-feedback">
+          <p>{skipped ? "Skipped" : showAnswer ? "Answer reviewed" : "Try again"}</p>
+          {!showAnswer && (
+            <button
+              className="graded-button graded-button--retry"
+              onClick={handleRetry}
+            >
+              Retry
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }

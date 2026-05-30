@@ -9,7 +9,7 @@
   border-radius: 24px;
 
   background: white;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
 
   box-shadow:
     0 8px 24px rgba(15, 23, 42, 0.06),
@@ -22,7 +22,7 @@
   font-size: 1.5rem;
   font-weight: 800;
 
-  color: #0f172a;
+  color: var(--color-text);
 }
 
 .diagram-node {
@@ -30,8 +30,8 @@
 
   border-radius: 18px;
 
-  background: #f8fafc;
-  border: 1px solid #dbe3ee;
+  background: var(--color-surface-soft);
+  border: 1px solid var(--color-border);
 
   min-width: 160px;
 }
@@ -40,7 +40,7 @@
   font-size: 1rem;
   font-weight: 700;
 
-  color: #0f172a;
+  color: var(--color-text);
 
   margin-bottom: 8px;
 }
@@ -49,14 +49,14 @@
   font-size: 0.95rem;
   line-height: 1.6;
 
-  color: #475569;
+  color: var(--color-text-muted);
 }
 
 .diagram-arrow {
   font-size: 1.8rem;
   font-weight: 700;
 
-  color: #6366f1;
+  color: var(--color-primary);
 }
 
 /* ---------- Flow ---------- */
@@ -92,7 +92,7 @@
 
   border-radius: 999px;
 
-  background: #6366f1;
+  background: var(--color-primary);
 
   margin-top: 8px;
 
@@ -156,8 +156,8 @@
 
   border-radius: 18px;
 
-  background: #f8fafc;
-  border: 1px solid #dbe3ee;
+  background: var(--color-surface-soft);
+  border: 1px solid var(--color-border);
 }
 
 .comparison-title {
@@ -166,7 +166,7 @@
   font-size: 1.1rem;
   font-weight: 800;
 
-  color: #0f172a;
+  color: var(--color-text);
 }
 
 .comparison-list {
@@ -177,7 +177,7 @@
   flex-direction: column;
   gap: 10px;
 
-  color: #475569;
+  color: var(--color-text-muted);
 
   line-height: 1.6;
 }

@@ -46,6 +46,7 @@ export default function ShortEssay({
   const [submitted, setSubmitted] = useState(false);
   const [gradingStatus, setGradingStatus] = useState<GradingStatus | null>(null);
   const [gradeResult, setGradeResult] = useState<GradeResult | null>(null);
+  const [skipped, setSkipped] = useState(false);
 
   const answerRef = useRef("");
   const attemptRef = useRef(1);
@@ -148,6 +149,9 @@ export default function ShortEssay({
       attempt_number: 0,
       metadata: { status: "skipped" },
     });
+
+    setSkipped(true);
+    setSubmitted(true);
   }
 
   // ShortAnswer intentionally has no Retry — each attempt is an independent
@@ -199,9 +203,9 @@ export default function ShortEssay({
       />
 
       {!submitted ? (
-        <div className="saq-actions">
+        <div className="graded-actions">
           <button
-            className="saq-submit"
+            className="graded-button graded-button--primary"
             onClick={handleSubmit}
             disabled={!answer.trim()}
           >
@@ -209,20 +213,23 @@ export default function ShortEssay({
           </button>
 
           <button
-            className="saq-skip"
+            className="graded-button graded-button--secondary"
             onClick={handleSkip}
-            disabled={hasSkippedRef.current}
           >
             Skip
           </button>
         </div>
       ) : (
         <div className="saq-feedback">
-          {gradingStatus === "pending" && (
+          {skipped && (
+            <p className="saq-grading">Skipped</p>
+          )}
+
+          {!skipped && gradingStatus === "pending" && (
             <p className="saq-grading">⏳ Grading your answer…</p>
           )}
 
-          {gradingStatus === "complete" && gradeResult !== null && (
+          {!skipped && gradingStatus === "complete" && gradeResult !== null && (
             <>
               <p className="saq-result">
                 {isCorrect ? "✅ Correct" : "❌ Incorrect"}
@@ -234,7 +241,7 @@ export default function ShortEssay({
             </>
           )}
 
-          {gradingStatus === "failed" && (
+          {!skipped && gradingStatus === "failed" && (
             <p className="saq-error">
               ⚠️ Grading is unavailable right now. Your response has been recorded.
             </p>

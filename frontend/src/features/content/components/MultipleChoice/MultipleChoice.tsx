@@ -38,6 +38,7 @@ export default function MultipleChoice({content,onInteraction,onAttemptRetry,}: 
   const [selectedId, setSelectedId] =useState("");
 
   const [submitted, setSubmitted] = useState(false);
+  const [skipped, setSkipped] = useState(false);
 
   const selectedIdRef = useRef("");
 
@@ -96,6 +97,9 @@ export default function MultipleChoice({content,onInteraction,onAttemptRetry,}: 
       attempt_number: 0,
       metadata: { status: "skipped" },
     });
+
+    setSkipped(true);
+    setSubmitted(true);
   }
 
   function handleRetry() {
@@ -105,6 +109,7 @@ export default function MultipleChoice({content,onInteraction,onAttemptRetry,}: 
 
     setSelectedId("");
     setSubmitted(false);
+    setSkipped(false);
 
     selectedIdRef.current = "";
 
@@ -191,9 +196,9 @@ return (
 
     {!submitted ? (
 
-      <div className="mcq-actions" >
+      <div className="graded-actions" >
         <button
-          className="mcq-submit"
+          className="graded-button graded-button--primary"
           onClick={handleSubmit}
           disabled={!selectedId}
         >
@@ -201,7 +206,7 @@ return (
         </button>
 
         <button
-          className="mcq-submit"
+          className="graded-button graded-button--secondary"
           onClick={handleSkip}
         >
           Skip
@@ -214,7 +219,7 @@ return (
       <div className="mcq-feedback-global"
       >
         <p>
-          {isCorrect ? "✅ Correct": "❌ Incorrect"}
+          {skipped ? "Skipped" : isCorrect ? "Correct" : "Incorrect"}
         </p>
 
         {content.explanation && (
@@ -223,12 +228,14 @@ return (
           </p>
         )}
 
-        <button
-          className="mcq-retry"
-          onClick={handleRetry}
-        >
-          Retry
-        </button>
+        {!skipped && (
+          <button
+            className="graded-button graded-button--retry"
+            onClick={handleRetry}
+          >
+            Retry
+          </button>
+        )}
       </div>
     )}
   </div>

@@ -8,7 +8,7 @@
   border-radius: 24px;
 
   background: white;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
 
   box-shadow:
     0 8px 24px rgba(15, 23, 42, 0.06),
@@ -23,7 +23,7 @@
   font-size: 1.5rem;
   font-weight: 800;
 
-  color: #0f172a;
+  color: var(--color-text);
 }
 
 .video-description {
@@ -32,7 +32,7 @@
   font-size: 1rem;
   line-height: 1.8;
 
-  color: #475569;
+  color: var(--color-text-muted);
 }
 
 /* ---------- Video ---------- */
@@ -44,7 +44,7 @@
 
   border-radius: 18px;
 
-  background: #0f172a;
+  background: var(--color-text);
 }
 
 .video-player {
@@ -65,7 +65,7 @@
   font-size: 0.9rem;
   line-height: 1.6;
 
-  color: #64748b;
+  color: var(--color-text-subtle);
 
   text-align: center;
 }
@@ -79,11 +79,11 @@
 .video-block.featured {
   background: linear-gradient(
     180deg,
-    #eef2ff,
-    #ffffff
+    var(--color-primary-soft),
+    var(--color-surface)
   );
 
-  border-color: #c7d2fe;
+  border-color: var(--color-primary-border);
 }
 
 .video-block.featured .video-title {

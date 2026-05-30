@@ -31,6 +31,7 @@ type Props = {
     gradedBlocksTotal: number;
     progressionEnabled: boolean;
     onProgressionAction?: (action: ProgressionAction) => void;
+    onReturnHome?: () => void;
 
     gradeAnswer?: (
         response: string
@@ -57,6 +58,7 @@ const LearnView = ({
     gradedBlocksTotal,
     progressionEnabled,
     onProgressionAction,
+    onReturnHome,
     gradeAnswer
 
 }: Props) => {
@@ -81,15 +83,30 @@ const LearnView = ({
 
     if (selectedObjectiveId === null) {
         return (
-            <main className="learn-view-panel">
-                <h2>
-                    Lesson complete
-                </h2>
+            <main className="learn-complete-panel" aria-live="polite">
+                <div className="learn-complete-confetti" aria-hidden="true">
+                    {Array.from({ length: 18 }).map((_, index) => (
+                        <span key={index} />
+                    ))}
+                </div>
 
-                <p>
-                    You've finished all objectives
-                    in this lesson.
-                </p>
+                <div className="learn-complete-card">
+                    <div className="learn-complete-horn" aria-hidden="true">🎉</div>
+
+                    <p className="learn-complete-eyebrow">Lesson complete</p>
+                    <h2>You've finished all objectives in this lesson.</h2>
+                    <p>
+                        Nice work. Every objective in this lesson is complete.
+                    </p>
+
+                    <button
+                        type="button"
+                        className="learn-complete-home-btn"
+                        onClick={onReturnHome}
+                    >
+                        Back to home
+                    </button>
+                </div>
             </main>
         );
     }

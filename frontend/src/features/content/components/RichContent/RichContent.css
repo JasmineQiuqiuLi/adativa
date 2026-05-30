@@ -8,7 +8,7 @@
   border-radius: 20px;
 
   background: white;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
 
   box-shadow:
     0 8px 24px rgba(15, 23, 42, 0.06),
@@ -29,14 +29,14 @@
   font-weight: 800;
   line-height: 1.2;
 
-  color: #0f172a;
+  color: var(--color-text);
 }
 
 .rich-content-body {
   font-size: 1rem;
   line-height: 1.6;
 
-  color: #334155;
+  color: var(--color-text-muted);
 
   white-space: normal;
 }
@@ -67,6 +67,38 @@
   gap: 10px;
 }
 
+.rich-content-image-button {
+  position: relative;
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: zoom-in;
+}
+
+.rich-content-image-button::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  border-radius: 16px;
+  background: rgba(15, 23, 42, 0);
+  transition: background 0.2s ease;
+  pointer-events: none;
+}
+
+.rich-content-image-button:hover::after,
+.rich-content-image-button:focus-visible::after {
+  background: rgba(15, 23, 42, 0.12);
+}
+
+.rich-content-image-button:focus-visible {
+  outline: 3px solid var(--color-primary-border);
+  outline-offset: 3px;
+  border-radius: 16px;
+}
+
 .rich-content-image {
   width: 100%;
   max-width: 320px;
@@ -75,14 +107,74 @@
 
   object-fit: cover;
 
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
+}
+
+.rich-content-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  background: rgba(15, 23, 42, 0.78);
+}
+
+.rich-content-lightbox-panel {
+  position: relative;
+  display: flex;
+  max-width: min(1100px, 94vw);
+  max-height: 92vh;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rich-content-lightbox-image {
+  display: block;
+  max-width: 100%;
+  max-height: calc(92vh - 64px);
+  border-radius: 12px;
+  object-fit: contain;
+  background: #020617;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+}
+
+.rich-content-lightbox-close {
+  position: absolute;
+  top: -16px;
+  right: -16px;
+  z-index: 1;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.92);
+  color: white;
+  cursor: pointer;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.rich-content-lightbox-close:hover,
+.rich-content-lightbox-close:focus-visible {
+  background: var(--color-text);
+}
+
+.rich-content-lightbox-caption {
+  max-width: 900px;
+  align-self: center;
+  color: var(--color-border);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  text-align: center;
 }
 
 .rich-content-caption {
   font-size: 0.9rem;
   line-height: 1.5;
 
-  color: #64748b;
+  color: var(--color-text-subtle);
 
   text-align: center;
 }
@@ -98,6 +190,10 @@
 }
 
 .rich-content-block.image_top .rich-content-image-wrapper {
+  width: 100%;
+}
+
+.rich-content-block.image_top .rich-content-image-button {
   width: 100%;
 }
 
@@ -138,6 +234,10 @@
   object-fit: cover;
 }
 
+.rich-content-block.hero .rich-content-image-button {
+  width: 100%;
+}
+
 .rich-content-block.hero .rich-content-text {
   padding: 24px;
 }
@@ -160,9 +260,9 @@
 }
 
 .rich-content-block.quote {
-  background: #f8fafc;
+  background: var(--color-surface-soft);
 
-  border-left: 6px solid #6366f1;
+  border-left: 6px solid var(--color-primary);
 
   padding-left: 28px;
 }
@@ -182,13 +282,13 @@
 
   letter-spacing: 0.04em;
 
-  color: #6366f1;
+  color: var(--color-primary);
 }
 
 .rich-content-block.statement {
-  background: #eef4ff;
+  background: var(--color-primary-soft);
 
-  border-color: #bfdbfe;
+  border-color: var(--color-primary-border);
 }
 
 .rich-content-block.statement .rich-content-headline {
@@ -196,9 +296,9 @@
 }
 
 .rich-content-block.definition {
-  background: #f8fafc;
+  background: var(--color-surface-soft);
 
-  border-color: #cbd5e1;
+  border-color: var(--color-border-strong);
 }
 
 .rich-content-block.definition .rich-content-headline::before {
@@ -216,13 +316,13 @@
 
   letter-spacing: 0.05em;
 
-  color: #64748b;
+  color: var(--color-text-subtle);
 }
 
 .rich-content-block.summary {
-  background: #f0fdf4;
+  background: var(--color-success-soft);
 
-  border-color: #86efac;
+  border-color: var(--color-success-border);
 }
 
 .rich-content-block.summary .rich-content-headline::before {
@@ -238,5 +338,5 @@
 
   text-transform: uppercase;
 
-  color: #15803d;
+  color: var(--color-success);
 }
