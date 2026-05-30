@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
   import { useUser } from "../../../auth/hooks/useUser";
   import {
     fetchLessonProgress,
+    fetchExistingObjectiveContent,
     fetchObjectiveContent,
     fetchObjectiveProgression,
     updateObjectiveProgress,
@@ -40,6 +41,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
     const [progress, setProgress] = useState<LessonProgress | null>(null);
     const [currentObjectiveId, setCurrentObjectiveId] = useState<number | null>(null);
+    const [selectedObjectiveId, setSelectedObjectiveId] = useState<number | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [content,setContent] = useState<ObjectiveContent | null> (null)
@@ -69,7 +71,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
     const startedObjectivesRef = useRef<Set<number>>(new Set());
 
     const refreshProgression = useCallback(async () => {
-      if (!lessonId || !userId || currentObjectiveId == null) return;
+      if (
+        !lessonId ||
+        !userId ||
+        currentObjectiveId == null ||
+        selectedObjectiveId !== currentObjectiveId
+      ) return;
 
       try {
         setProgressionLoading(true);
@@ -86,7 +93,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
       } finally {
         setProgressionLoading(false);
       }
-    }, [lessonId, userId, currentObjectiveId]);
+    }, [lessonId, userId, currentObjectiveId, selectedObjectiveId]);
 
     const handleInteraction = useCallback(
       async (record: InteractionRecord) => {
@@ -187,6 +194,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
           if (cancelled) return;
           setProgress(data);
           setCurrentObjectiveId(data.current_objective_id);
+          setSelectedObjectiveId(data.current_objective_id);
           setContentMode("initial");
         } catch (err) {
           if (cancelled) return;
@@ -204,7 +212,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
     }, [lessonId, userId]);
 
     useEffect(()=>{
-      if (!lessonId || currentObjectiveId==null) return; //what about the scenario when the module is completed?
+      if (!lessonId || selectedObjectiveId==null) return;
       let cancelled=false
 
       async function loadContent(){
@@ -212,17 +220,25 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
           setContentLoading(true)
           setContentError(null)
 
-          const data=await fetchObjectiveContent(
-            lessonId!,
-            currentObjectiveId!,
-            {
-              mode: contentMode,
-              weak_skills:
-                contentMode === "remedial"
-                  ? progression?.weak_skills ?? []
-                  : [],
-            }
-          )
+          const isCurrentObjective =
+            selectedObjectiveId === currentObjectiveId;
+          const data = isCurrentObjective
+            ? await fetchObjectiveContent(
+                lessonId!,
+                selectedObjectiveId!,
+                {
+                  mode: contentMode,
+                  weak_skills:
+                    contentMode === "remedial"
+                      ? progression?.weak_skills ?? []
+                      : [],
+                }
+              )
+            : await fetchExistingObjectiveContent(
+                lessonId!,
+                selectedObjectiveId!,
+                "initial"
+              );
           if (cancelled) return;
           setContent(data)
           const nextGradedBlockIds = data.blocks
@@ -234,13 +250,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
           setProgressionError(null);
 
           if (
+            isCurrentObjective &&
             userId &&
-            !startedObjectivesRef.current.has(currentObjectiveId!)
+            !startedObjectivesRef.current.has(selectedObjectiveId!)
           ) {
-            startedObjectivesRef.current.add(currentObjectiveId!);
+            startedObjectivesRef.current.add(selectedObjectiveId!);
             const progressData = await updateObjectiveProgress(
               lessonId!,
-              currentObjectiveId!,
+              selectedObjectiveId!,
               userId,
               { status: "in_progress" }
             );
@@ -249,14 +266,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
             }
           }
 
-          if (nextGradedBlockIds.length === 0) {
+          if (isCurrentObjective && nextGradedBlockIds.length === 0) {
             await refreshProgression();
           }
         }
         catch(err){
           if (cancelled) return;
           console.error(err)
-          setContentError("Failed to generate content")
+          setContentError("Failed to load content")
         } finally {
           if (!cancelled){
             setContentLoading(false)
@@ -270,7 +287,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
         cancelled=true;
       }
 
-    },[lessonId,currentObjectiveId,userId,contentMode,refreshProgression])
+    },[lessonId,selectedObjectiveId,currentObjectiveId,userId,contentMode,refreshProgression])
 
 
     // Resolve the next objective by order_index. Setting currentObjectiveId
@@ -299,6 +316,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
         );
         setProgress(progressData);
         setCurrentObjectiveId(progressData.current_objective_id);
+        setSelectedObjectiveId(progressData.current_objective_id);
         setContentMode("initial");
         setProgression(null);
         setGradedBlockIds([]);
@@ -307,20 +325,33 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
         console.error(err);
         setError("Failed to save lesson progress");
         setCurrentObjectiveId(currentObjectiveId);
+        setSelectedObjectiveId(currentObjectiveId);
       }
     }, [lessonId, userId, currentObjectiveId]);
+
+    const handleObjectiveSelect = useCallback((objectiveId: number) => {
+      setContent(null);
+      setSelectedObjectiveId(objectiveId);
+      setContentMode("initial");
+      setProgression(null);
+      setProgressionError(null);
+      setGradedBlockIds([]);
+      setCompletedGradedBlockIds(new Set());
+    }, []);
 
 
     return (
       <div className="learn-layout">
         <LessonNavigation 
           currentObjectiveId={currentObjectiveId}
+          selectedObjectiveId={selectedObjectiveId}
           progress={progress}
+          onObjectiveSelect={handleObjectiveSelect}
         />
 
         <div className="middle-panel">
             <LearnView
-              currentObjectiveId={currentObjectiveId}
+              selectedObjectiveId={selectedObjectiveId}
               loading={loading}
               error={error}
               content={content}
@@ -332,6 +363,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
               progressionError={progressionError}
               gradedBlocksCompleted={completedGradedBlockIds.size}
               gradedBlocksTotal={gradedBlockIds.length}
+              progressionEnabled={selectedObjectiveId === currentObjectiveId}
               onInteraction={handleInteraction}
               onEngagementEnd={handleEngagementEnd}
               onProgressionAction={handleProgressionAction}

@@ -170,6 +170,24 @@ export async function fetchObjectiveContent(
   return res.json();
 }
 
+export async function fetchExistingObjectiveContent(
+  lessonId: string | number,
+  objectiveId: number,
+  mode: GenerationMode = "initial"
+): Promise<ObjectiveContent> {
+  const res = await fetch(
+    `${API_BASE}/lessons/${lessonId}/objectives/${objectiveId}/content?mode=${mode}`
+  );
+
+  if (!res.ok) {
+    throw new Error(
+      `Failed to fetch existing content (${res.status})`
+    );
+  }
+
+  return res.json();
+}
+
 
 // ----- Interactions -----
 

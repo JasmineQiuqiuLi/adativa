@@ -58,17 +58,31 @@
 
 /* Objective card */
 .nav-objective {
+  width: 100%;
   margin-bottom: 14px;
   padding: 12px 12px;
+  border: none;
   border-radius: 10px;
   background: #f9fafb;
+  color: inherit;
+  font: inherit;
   transition: all 0.2s ease;
+  cursor: default;
+  text-align: left;
+}
+
+.nav-objective--clickable {
   cursor: pointer;
 }
 
-.nav-objective:hover {
+.nav-objective--clickable:hover {
   background: #f3f4f6;
   transform: translateY(-1px);
+}
+
+.nav-objective--locked {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 /* Objective title */
@@ -140,6 +154,11 @@
   border-left: 4px solid #2563eb;
 }
 
+.nav-objective--selected {
+  background: #fff7ed;
+  border-left: 4px solid #f59e0b;
+}
+
 /* Completed objective */
 
 .nav-objective--completed {
@@ -162,6 +181,10 @@
 
 .nav-objective--current:hover {
   background: #dbeafe;
+}
+
+.nav-objective--selected:hover {
+  background: #ffedd5;
 }
 
 .nav-objective--completed:hover {
