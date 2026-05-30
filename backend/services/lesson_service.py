@@ -380,11 +380,24 @@ def get_lessons_db(user_id:int):
     try:
         cur=conn.cursor()
         cur.execute("""
-            SELECT id, goal
-            FROM lessons
-            WHERE status <> 'deleted'
-            AND created_by = %s
-            ORDER BY created_at DESC
+            SELECT
+                l.id,
+                l.goal,
+                thumbnail.thumbnail_url
+            FROM lessons l
+            LEFT JOIN LATERAL (
+                SELECT cb.data->>'image_url' AS thumbnail_url
+                FROM content_blocks cb
+                WHERE cb.lesson_id = l.id
+                  AND cb.status = 'active'
+                  AND cb.type = 'rich_content'
+                  AND NULLIF(cb.data->>'image_url', '') IS NOT NULL
+                ORDER BY cb.created_at ASC, cb.order_index ASC
+                LIMIT 1
+            ) thumbnail ON TRUE
+            WHERE l.status <> 'deleted'
+            AND l.created_by = %s
+            ORDER BY l.created_at DESC
         """,(user_id,))
         
         rows=cur.fetchall()
@@ -392,7 +405,8 @@ def get_lessons_db(user_id:int):
         lessons=[
             {
                 "id":row[0],
-                "title":row[1]
+                "title":row[1],
+                "thumbnailUrl": row[2]
             }
             for row in rows
         ]

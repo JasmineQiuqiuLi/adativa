@@ -139,6 +139,9 @@ export default function Match({ content, onInteraction, onAttemptRetry }: MatchP
       attempt_number: 0,
       metadata: { status: "skipped" },
     });
+
+    setSubmitted(true);
+    setShowAnswer(true);
   }
 
   function handleRetry() {
@@ -223,29 +226,39 @@ export default function Match({ content, onInteraction, onAttemptRetry }: MatchP
         })}
       </div>
 
-      <div className="match-actions">
+      {!submitted ? (
+      <div className="graded-actions">
         <button
-          className="match-submit"
+          className="graded-button graded-button--primary"
           onClick={handleSubmit}
-          disabled={!hasAnySelection(selections) || submitted}
+          disabled={!hasAnySelection(selections)}
         >
           Submit
         </button>
 
         <button
-          className="match-skip"
+          className="graded-button graded-button--secondary"
           onClick={handleSkip}
-          disabled={hasSkippedRef.current}
         >
           Skip
         </button>
-
-        {submitted && !showAnswer && (
-          <button className="match-retry" onClick={handleRetry}>
+      </div>
+      ) : (
+      <div className="match-feedback">
+        {hasSkippedRef.current ? (
+          <p>Skipped</p>
+        ) : !showAnswer ? (
+          <button
+            className="graded-button graded-button--retry"
+            onClick={handleRetry}
+          >
             Retry
           </button>
+        ) : (
+          <p>Answer reviewed</p>
         )}
       </div>
+      )}
     </div>
   );
 }

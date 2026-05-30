@@ -28,6 +28,7 @@ interface FillBlankProps {
 export default function FillBlank({ content, onInteraction, onAttemptRetry }: FillBlankProps) {
   const [answer, setAnswer] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [skipped, setSkipped] = useState(false);
 
   const answerRef = useRef("");
   const attemptRef = useRef(1);
@@ -91,6 +92,9 @@ export default function FillBlank({ content, onInteraction, onAttemptRetry }: Fi
       attempt_number: 0,
       metadata: { status: "skipped" },
     });
+
+    setSkipped(true);
+    setSubmitted(true);
   }
 
   function handleRetry() {
@@ -98,6 +102,7 @@ export default function FillBlank({ content, onInteraction, onAttemptRetry }: Fi
 
     setAnswer("");
     setSubmitted(false);
+    setSkipped(false);
 
     answerRef.current = "";
     attemptRef.current += 1;
@@ -141,28 +146,36 @@ export default function FillBlank({ content, onInteraction, onAttemptRetry }: Fi
       />
 
       {!submitted ? (
-        <div className="fbq-actions">
+        <div className="graded-actions">
           <button
-            className="fbq-submit"
+            className="graded-button graded-button--primary"
             onClick={handleSubmit}
             disabled={!answer.trim()}
           >
             Submit
           </button>
 
-          <button className="fbq-skip" onClick={handleSkip}>
+          <button
+            className="graded-button graded-button--secondary"
+            onClick={handleSkip}
+          >
             Skip
           </button>
         </div>
       ) : (
         <div className="fbq-feedback">
-          <p>{isCorrect ? "✅ Correct" : "❌ Incorrect"}</p>
+          <p>{skipped ? "Skipped" : isCorrect ? "Correct" : "Incorrect"}</p>
 
           {content.explanation && <p>{content.explanation}</p>}
 
-          <button className="fbq-retry" onClick={handleRetry}>
-            Retry
-          </button>
+          {!skipped && (
+            <button
+              className="graded-button graded-button--retry"
+              onClick={handleRetry}
+            >
+              Retry
+            </button>
+          )}
         </div>
       )}
     </div>

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-  import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
   import LessonNavigation from "../../components/LessonNavigation/LessonNavigation";
   import LearnView from "../../components/LearnView/LearnView";
   import { useUser } from "../../../auth/hooks/useUser";
@@ -37,6 +37,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
   const LearnLesson = () => {
     const { lessonId } = useParams<{ lessonId: string }>();
+    const navigate = useNavigate();
     const userId = useUser((s) => s.user?.id);
 
     const [progress, setProgress] = useState<LessonProgress | null>(null);
@@ -367,6 +368,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
               onInteraction={handleInteraction}
               onEngagementEnd={handleEngagementEnd}
               onProgressionAction={handleProgressionAction}
+              onReturnHome={() => navigate("/")}
             />
         </div>
 

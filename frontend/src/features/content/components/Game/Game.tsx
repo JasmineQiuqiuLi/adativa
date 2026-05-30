@@ -160,7 +160,7 @@ const Game = ({
       <div className="game-actions">
         {submitted && attempt < MAX_ATTEMPTS && (
           <button
-            className="game-retry"
+            className="graded-button graded-button--retry"
             onClick={handleRetry}
           >
             Retry

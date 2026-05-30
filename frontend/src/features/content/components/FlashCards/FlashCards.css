@@ -30,17 +30,17 @@
   position: absolute;
   inset: 0;
   border-radius: 16px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-border);
 }
 
 .ghost-1 {
-  background: #e0e7ff;
+  background: var(--color-primary-soft);
   transform: rotate(-4deg);
   z-index: 1;
 }
 
 .ghost-2 {
-  background: #c7d2fe;
+  background: var(--color-primary-border);
   transform: rotate(3deg);
   z-index: 2;
 }
@@ -83,7 +83,7 @@
   backface-visibility: hidden;
 
   background: white;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-border);
 
   box-shadow:
     0 8px 20px rgba(0, 0, 0, 0.08),
@@ -92,7 +92,7 @@
 
 .card-back {
   transform: rotateY(180deg);
-  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  background: linear-gradient(135deg, var(--color-primary-hover), var(--color-primary));
   color: white;
 }
 
@@ -100,7 +100,7 @@
 button {
   padding: 8px 12px;
   border-radius: 6px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--color-border-strong);
   background: white;
   cursor: pointer;
 }
@@ -115,5 +115,5 @@ button:disabled {
   text-align: center;
   margin-top: 10px;
   font-size: 13px;
-  color: #9ca3af;
+  color: var(--color-text-faint);
 }

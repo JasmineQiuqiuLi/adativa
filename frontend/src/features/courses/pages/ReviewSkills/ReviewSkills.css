@@ -1,7 +1,17 @@
 .skills-container {
+  height: 100vh;
+  overflow-y: auto;
   max-width: 800px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 24px 24px 96px;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.skills-container::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }
 
 .skills-header h2 {
@@ -9,7 +19,7 @@
 }
 
 .skills-header p {
-  color: #666;
+  color: var(--color-text-subtle);
   font-size: 14px;
 }
 
@@ -21,10 +31,10 @@
 }
 
 .objective-card {
-  border: 1px solid #eee;
+  border: 1px solid var(--color-border);
   border-radius: 12px;
   padding: 16px;
-  background: #fff;
+  background: var(--color-surface);
 }
 
 .objective-top {
@@ -34,7 +44,7 @@
 
 .objective-index {
   font-weight: bold;
-  color: #555;
+  color: var(--color-text-muted);
 }
 
 .objective-title {
@@ -44,7 +54,7 @@
 
 .objective-desc {
   font-size: 14px;
-  color: #666;
+  color: var(--color-text-subtle);
 }
 
 /* 🔥 Skills */
@@ -54,8 +64,8 @@
 
 .skill-tag {
   display: inline-block;
-  background: #eef3ff;
-  color: #3b5bdb;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
   padding: 4px 10px;
   border-radius: 12px;
   font-size: 12px;
@@ -69,7 +79,7 @@
 
 .error-box {
   margin-top: 20px;
-  color: red;
+  color: var(--color-danger);
 }
 
 .start-learning-btn {
@@ -77,7 +87,7 @@
   bottom: 24px;
   right: 24px;
 
-  background: #3b5bdb;
+  background: var(--color-primary);
   color: white;
   border: none;
 
@@ -94,6 +104,6 @@
 }
 
 .start-learning-btn:hover {
-  background: #2f4bc7;
+  background: var(--color-primary-hover);
   transform: translateY(-2px);
 }

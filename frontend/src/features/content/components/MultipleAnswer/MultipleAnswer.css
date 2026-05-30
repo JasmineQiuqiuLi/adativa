@@ -8,7 +8,7 @@
   border-radius: 22px;
 
   background: white;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
 
   box-shadow:
     0 8px 24px rgba(15, 23, 42, 0.06),
@@ -24,7 +24,7 @@
 .maq-question {
   font-size: 14px;
   margin-bottom: 16px;
-  color: #374151;
+  color: var(--color-text-muted);
 }
 
 /* Container spacing FIX */
@@ -38,14 +38,14 @@
   display: flex;
   flex-direction: column;
   padding: 12px 14px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--color-border-strong);
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .maq-option:hover {
-  background: #f9fafb;
+  background: var(--color-surface-soft);
 }
 
 .maq-option-main {
@@ -69,18 +69,18 @@
 
 /* States */
 .maq-option.selected {
-  border-color: #2563eb;
-  background: #eff6ff;
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
 }
 
 .maq-option.correct {
-  border-color: #16a34a;
-  background: #ecfdf5;
+  border-color: var(--color-success);
+  background: var(--color-success-soft);
 }
 
 .maq-option.incorrect {
-  border-color: #dc2626;
-  background: #fef2f2;
+  border-color: var(--color-danger);
+  background: var(--color-danger-soft);
 }
 
 /* Feedback */
@@ -89,11 +89,18 @@
   margin-left: 32px;
   font-size: 12.5px;
   line-height: 1.45;
-  color: #374151;
+  color: var(--color-text-muted);
+}
+
+.maq-block > .maq-feedback {
+  margin: 16px 0 0;
+  padding: 10px 12px;
+  background: var(--color-surface-muted);
+  border-radius: 8px;
 }
 
 .correct-feedback {
-  color: #16a34a;
+  color: var(--color-success);
 }
 
 /* Buttons */
@@ -115,20 +122,20 @@
 }
 
 .maq-submit {
-  background: #2563eb;
+  background: var(--color-primary);
   color: white;
 }
 
 .maq-submit:disabled {
-  background: #9ca3af;
+  background: var(--color-text-faint);
   cursor: not-allowed;
 }
 
 .maq-retry {
-  background: #f59e0b;
+  background: var(--color-warning);
   color: white;
 }
 
 .maq-retry:hover {
-  background: #d97706;
+  background: var(--color-warning-hover);
 }

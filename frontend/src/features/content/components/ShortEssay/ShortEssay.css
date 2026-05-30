@@ -8,9 +8,9 @@
 
   border-radius:16px;
 
-  background:#ffffff;
+  background:var(--color-surface);
 
-  border:1px solid #e5e7eb;
+  border:1px solid var(--color-border);
 
   box-shadow:
     0 2px 8px rgba(
@@ -48,7 +48,7 @@
 
   line-height:1.6;
 
-  color:#111827;
+  color:var(--color-text);
 
   margin-bottom:12px;
 
@@ -66,9 +66,9 @@
 
   border-radius:8px;
 
-  background:#eff6ff;
+  background:var(--color-primary-soft);
 
-  border:1px solid #bfdbfe;
+  border:1px solid var(--color-primary-border);
 
   color:#1e40af;
 
@@ -90,7 +90,7 @@
 
   padding:14px;
 
-  border:1px solid #d1d5db;
+  border:1px solid var(--color-border-strong);
 
   border-radius:10px;
 
@@ -112,7 +112,7 @@
 
 .saq-input:focus{
 
-  border-color:#2563eb;
+  border-color:var(--color-primary);
 
   box-shadow:
     0 0 0 3px
@@ -128,7 +128,7 @@
 
 .saq-input:disabled{
 
-  background:#f9fafb;
+  background:var(--color-surface-soft);
 
 }
 
@@ -170,7 +170,7 @@
 
 .saq-submit{
 
-  background:#2563eb;
+  background:var(--color-primary);
 
   color:white;
 
@@ -179,7 +179,7 @@
 
 .saq-submit:hover{
 
-  background:#1d4ed8;
+  background:var(--color-primary-hover);
 
 }
 
@@ -196,16 +196,16 @@
 
 .saq-skip{
 
-  background:#e5e7eb;
+  background:var(--color-border);
 
-  color:#374151;
+  color:var(--color-text-muted);
 
 }
 
 
 .saq-skip:hover{
 
-  background:#d1d5db;
+  background:var(--color-border-strong);
 
 }
 
@@ -221,7 +221,7 @@
 
   border-radius:12px;
 
-  background:#f9fafb;
+  background:var(--color-surface-soft);
 
 }
 
@@ -231,7 +231,7 @@
 
 .saq-grading{
 
-  color:#2563eb;
+  color:var(--color-primary);
 
   font-size:14px;
 
@@ -256,7 +256,7 @@
 
 .saq-score{
 
-  color:#6b7280;
+  color:var(--color-text-subtle);
 
   font-weight:400;
 
@@ -270,7 +270,7 @@
 
   line-height:1.6;
 
-  color:#374151;
+  color:var(--color-text-muted);
 
 }
 
@@ -280,7 +280,7 @@
 
 .saq-error{
 
-  color:#dc2626;
+  color:var(--color-danger);
 
   font-size:14px;
 

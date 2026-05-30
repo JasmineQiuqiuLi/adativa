@@ -1,31 +1,44 @@
 .learn-layout {
   display: flex;
   height: 100vh;
+  min-height: 0;
   overflow: hidden;
-  background: #f8fafc;
+  background: var(--color-surface-soft);
 }
 
 /* LEFT */
 
 .left-panel {
   width: 260px;
-  border-right: 1px solid #eee;
+  border-right: 1px solid var(--color-border);
   background: white;
   overflow-y: auto;
+  min-height: 0;
 }
 
 /* MIDDLE */
 
 .middle-panel {
   flex: 1;
-  overflow-y: auto;   /* <- move scrolling here */
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.middle-panel::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }
 
 /* RIGHT */
 
 .right-panel {
   width: 300px;
-  border-left: 1px solid #eee;
+  border-left: 1px solid var(--color-border);
   background: white;
   overflow-y: auto;
+  min-height: 0;
 }

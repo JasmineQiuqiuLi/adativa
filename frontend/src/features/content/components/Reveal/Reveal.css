@@ -8,7 +8,7 @@
   border-radius: 20px;
 
   background: white;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
 
   box-shadow:
     0 8px 24px rgba(15, 23, 42, 0.06),
@@ -21,14 +21,14 @@
   font-size: 1.4rem;
   font-weight: 800;
 
-  color: #0f172a;
+  color: var(--color-text);
 }
 
 .reveal-prompt {
   font-size: 1rem;
   line-height: 1.7;
 
-  color: #334155;
+  color: var(--color-text-muted);
 
   margin-bottom: 18px;
 }
@@ -39,7 +39,7 @@
   border: none;
   border-radius: 12px;
 
-  background: #4f46e5;
+  background: var(--color-primary-hover);
   color: white;
 
   font-size: 0.95rem;
@@ -66,13 +66,13 @@
 
   border-radius: 14px;
 
-  background: #f8fafc;
-  border: 1px solid #dbe3ee;
+  background: var(--color-surface-soft);
+  border: 1px solid var(--color-border);
 
   font-size: 1rem;
   line-height: 1.8;
 
-  color: #334155;
+  color: var(--color-text-muted);
 
   white-space: pre-wrap;
 
