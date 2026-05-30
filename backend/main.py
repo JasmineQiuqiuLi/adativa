@@ -446,6 +446,61 @@ def generate_objective_content_route(
         conn.close()
 
 
+@app.get(
+    "/lessons/{lesson_id}/objectives/{objective_id}/content",
+    response_model=ObjectiveContentResponse,
+)
+def get_existing_objective_content_route(
+    lesson_id: int,
+    objective_id: int,
+    mode: str = "initial",
+):
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT id, lesson_id, objective_id, generation_mode, strategy_used,
+                    type, title, data, order_index, status
+            FROM content_blocks
+            WHERE lesson_id = %s
+            AND objective_id = %s
+            AND generation_mode = %s
+            AND status = 'active'
+            ORDER BY order_index;
+        """, (lesson_id, objective_id, mode))
+        rows = cur.fetchall()
+
+        if not rows:
+            raise HTTPException(
+                status_code=404,
+                detail="Content has not been generated for this objective",
+            )
+
+        blocks = [
+            ContentBlockRow(
+                id=row[0],
+                lesson_id=row[1],
+                objective_id=row[2],
+                generation_mode=row[3],
+                strategy_used=row[4],
+                type=row[5],
+                title=row[6],
+                data=row[7],
+                order_index=row[8],
+                status=row[9],
+            )
+            for row in rows
+        ]
+
+        return ObjectiveContentResponse(
+            objective_id=objective_id,
+            mode=mode,
+            blocks=blocks,
+        )
+    finally:
+        conn.close()
+
+
 @app.post(
     "/lessons/{lesson_id}/content-block-skills/backfill",
     response_model=ContentBlockSkillBackfillResponse,

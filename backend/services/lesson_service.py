@@ -318,6 +318,19 @@ def generate_and_store_skills_for_lesson(lesson_id):
 
 def get_objectives_with_skills_db(cur, lesson_id):
     cur.execute("""
+        SELECT objective_id, ARRAY_AGG(DISTINCT generation_mode)
+        FROM content_blocks
+        WHERE lesson_id = %s
+        AND objective_id IS NOT NULL
+        AND status = 'active'
+        GROUP BY objective_id;
+    """, (lesson_id,))
+    generated_modes_by_objective = {
+        row[0]: row[1] or []
+        for row in cur.fetchall()
+    }
+
+    cur.execute("""
         SELECT 
             o.id AS objective_id,
             o.order_index,
@@ -346,7 +359,11 @@ def get_objectives_with_skills_db(cur, lesson_id):
                 "orderIndex": row[1],
                 "title": row[2],
                 "description": row[3],
-                "skills": []
+                "skills": [],
+                "generatedModes": generated_modes_by_objective.get(obj_id, []),
+                "hasGeneratedContent": bool(
+                    generated_modes_by_objective.get(obj_id)
+                )
             }
 
         if row[5]:

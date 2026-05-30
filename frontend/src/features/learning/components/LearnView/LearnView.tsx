@@ -12,7 +12,7 @@ import BlockRenderer from "../../../content/renderers/BlockRenderer";
 import GenerationLoading from "../../../../shared/GenerationLoading/GenerationLoading";
 
 type Props = {
-    currentObjectiveId: number | null;
+    selectedObjectiveId: number | null;
 
     loading: boolean;
     error: string | null;
@@ -29,6 +29,7 @@ type Props = {
     progressionError: string | null;
     gradedBlocksCompleted: number;
     gradedBlocksTotal: number;
+    progressionEnabled: boolean;
     onProgressionAction?: (action: ProgressionAction) => void;
 
     gradeAnswer?: (
@@ -37,7 +38,7 @@ type Props = {
 };
 
 const LearnView = ({
-    currentObjectiveId,
+    selectedObjectiveId,
 
     loading,
     error,
@@ -54,6 +55,7 @@ const LearnView = ({
     progressionError,
     gradedBlocksCompleted,
     gradedBlocksTotal,
+    progressionEnabled,
     onProgressionAction,
     gradeAnswer
 
@@ -77,7 +79,7 @@ const LearnView = ({
         );
     }
 
-    if (currentObjectiveId === null) {
+    if (selectedObjectiveId === null) {
         return (
             <main className="learn-view-panel">
                 <h2>
@@ -133,7 +135,7 @@ const LearnView = ({
 
             ))}
 
-            {onProgressionAction && gradedBlocksTotal > gradedBlocksCompleted && (
+            {progressionEnabled && onProgressionAction && gradedBlocksTotal > gradedBlocksCompleted && (
                 <section className="progression-panel progression-panel--locked">
                     <div className="progression-panel-header">
                         <h3>Unlock your next step</h3>
@@ -155,7 +157,7 @@ const LearnView = ({
                 </section>
             )}
 
-            {onProgressionAction && gradedBlocksTotal <= gradedBlocksCompleted && (
+            {progressionEnabled && onProgressionAction && gradedBlocksTotal <= gradedBlocksCompleted && (
                 <section className="progression-panel">
                     <div className="progression-panel-header">
                         <h3>Choose your next step</h3>
