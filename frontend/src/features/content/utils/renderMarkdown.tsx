@@ -1,11 +1,33 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-function renderMarkdown(value: any): any {
+const RAW_STRING_KEYS = new Set([
+    "id",
+    "type",
+    "variant",
+    "layout",
+    "image_url",
+    "image_alt",
+    "video_url",
+    "thumbnail_url",
+    "character_avatar",
+]);
 
-    // String → React markdown component
+function shouldKeepRawString(key?: string): boolean {
+    return !!key && (
+        RAW_STRING_KEYS.has(key) ||
+        key.endsWith("_id") ||
+        key.endsWith("_ids") ||
+        key.endsWith("_url")
+    );
+}
+
+function renderMarkdown(value: any,key?: string): any {
+    if (shouldKeepRawString(key)) {
+        return value;
+    }
+
     if (typeof value === "string") {
-
         return (
             <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
@@ -15,27 +37,21 @@ function renderMarkdown(value: any): any {
         );
     }
 
-    // Array
     if (Array.isArray(value)) {
-
-        return value.map(renderMarkdown);
+        return value.map((item)=>renderMarkdown(item,key));
     }
 
-    // Object
     if (
         value &&
         typeof value === "object"
     ) {
-
         return Object.fromEntries(
-
             Object.entries(value).map(
-                ([key,val])=>[
-                    key,
-                    renderMarkdown(val)
+                ([childKey,val])=>[
+                    childKey,
+                    renderMarkdown(val,childKey)
                 ]
             )
-
         );
     }
 

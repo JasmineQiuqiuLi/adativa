@@ -24,6 +24,7 @@ from services.content_skill_tagging_service import (
     backfill_lesson_content_block_skills,
     tag_content_blocks_for_objective,
 )
+from services.rich_content_image_service import enrich_rich_content_images
 
 from services.progress_service import get_lesson_progress, update_objective_progress
 from services.skill_mastery_service import (
@@ -385,6 +386,12 @@ def generate_objective_content_route(
             weak_skills=req.weak_skills,
             allowed_types=req.allowed_types,
             existing_headlines=ctx["existing_headlines"],
+        )
+
+        block_dicts = enrich_rich_content_images(
+            blocks=block_dicts,
+            objective=ctx["objective"],
+            skills=ctx["skills"],
         )
 
         # 5. insert
