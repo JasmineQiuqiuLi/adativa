@@ -75,7 +75,7 @@
 }
 
 .tabs-panel {
-  padding: 24px;
+  padding: 18px 20px;
 
   border:
     1px solid #e2e8f0;
@@ -87,13 +87,33 @@
 
   background: white;
 
-  min-height: 220px;
+  min-height: 0;
 }
 
 .tabs-panel-content {
   color: #334155;
 
-  line-height: 1.7;
+  line-height: 1.6;
 
-  white-space: pre-wrap;
+  white-space: normal;
+}
+
+.tabs-panel-content :where(p, ul, ol, h1, h2, h3, h4, blockquote) {
+  margin: 0;
+}
+
+.tabs-panel-content > * + * {
+  margin-top: 0.65rem;
+}
+
+.tabs-panel-content :where(ul, ol) {
+  padding-left: 1.35rem;
+}
+
+.tabs-panel-content li {
+  margin: 0.25rem 0;
+}
+
+.tabs-panel-content li > p {
+  display: inline;
 }

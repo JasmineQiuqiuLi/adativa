@@ -2,6 +2,7 @@ import "./CreateLesson.css"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../../auth/hooks/useUser";
+import GenerationLoading from "../../../../shared/GenerationLoading/GenerationLoading";
 
 type LearningPreferences={
     style:"visual" | "reading" | "hands-on" | "mixed";
@@ -73,7 +74,10 @@ const CreateLesson = () => {
 
   return (
     <div className="create-lesson-container">
-      <form className="create-lesson-form" onSubmit={handleSubmit}>
+      {loading ? (
+        <GenerationLoading variant="objectives" />
+      ) : (
+        <form className="create-lesson-form" onSubmit={handleSubmit}>
         {/** Goal */}
         <div className="form-group">
             <label >What do you want to learn?</label>
@@ -150,7 +154,8 @@ const CreateLesson = () => {
         <button type="submit" className="submit-btn" disabled={loading}>
             {loading ? "Building your learning path..." : "Build my learning path"}
         </button>
-      </form>
+        </form>
+      )}
       {error && <div className="error-box">{error}</div>}
     </div>
   )

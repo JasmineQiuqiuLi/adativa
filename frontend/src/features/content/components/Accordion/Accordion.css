@@ -65,12 +65,32 @@
 }
 
 .accordion-content.open {
-  max-height: 200px;
+  max-height: 320px;
   padding: 12px 14px;
 }
 
-.accordion-content p {
+.accordion-content {
   font-size: 13px;
   color: #4b5563;
   line-height: 1.5;
+}
+
+.accordion-content :where(p, ul, ol, h1, h2, h3, h4, blockquote) {
+  margin: 0;
+}
+
+.accordion-content > * + * {
+  margin-top: 0.55rem;
+}
+
+.accordion-content :where(ul, ol) {
+  padding-left: 1.25rem;
+}
+
+.accordion-content li {
+  margin: 0.2rem 0;
+}
+
+.accordion-content li > p {
+  display: inline;
 }

@@ -47,6 +47,8 @@
 
   flex-direction:column;
 
+  text-align:left;
+
   width:100%;
 
   padding:16px;
@@ -115,6 +117,7 @@
 
 .mcq-option-text {
   flex: 1;
+  text-align:left;
 }
 
 /* Correct */

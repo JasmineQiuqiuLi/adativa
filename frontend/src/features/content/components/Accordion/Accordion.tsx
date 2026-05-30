@@ -84,7 +84,7 @@ const Accordion = ({ content, onInteraction }: AccordionProps) => {
                   isOpen ? "open" : ""
                 }`}
               >
-                <p>{item.content}</p>
+                {item.content}
               </div>
             </div>
           );

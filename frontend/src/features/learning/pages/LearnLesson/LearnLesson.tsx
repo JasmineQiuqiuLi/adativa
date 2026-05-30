@@ -326,6 +326,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
               content={content}
               contentLoading={contentLoading}
               contentError={contentError}
+              contentMode={contentMode}
               progression={progression}
               progressionLoading={progressionLoading}
               progressionError={progressionError}
